@@ -1,4 +1,19 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+@import "tailwindcss/base";
 
 
+.font-sans {
+    padding-left: 16rem; /* Width of open sidebar */
+    transition: padding-left 0.3s;
+    min-height: 100vh;
+    width: 100%;
+  }
+  
+  .sidebar-closed .font-sans {
+    padding-left: 4rem; /* Width of closed sidebar */
+  }
+  
+  .main-content {
+    padding: 2rem;
+  }

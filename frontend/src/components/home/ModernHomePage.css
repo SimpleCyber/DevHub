@@ -637,8 +637,8 @@
   }
   
   @media (max-width: 768px) {
-    .nav-links a:not(:last-child) {
-      display: none;
+    .feature{
+      display:none
     }
   
     .footer-content {
@@ -670,3 +670,10 @@
     background-color: transparent;
   }
   
+
+
+
+  
+
+
+

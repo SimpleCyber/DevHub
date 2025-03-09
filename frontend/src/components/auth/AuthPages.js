@@ -82,7 +82,7 @@ const AuthPages = () => {
       <div className="auth-card glass-effect">
         <div className="auth-header">
           <div className="logo-section">
-            <ChevronLeft className="back-arrow" size={24} onClick={() => {}} />
+            <ChevronLeft className="back-arrow" size={24} onClick={() => navigate(-1)} />
             <h1>DevHub</h1>
           </div>
           <p className="welcome-text">

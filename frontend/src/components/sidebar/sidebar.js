@@ -9,11 +9,14 @@ import {
   Loader,
   ListCheck,
   BookOpenCheck,
+  MessageSquareText,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./sidebar.css";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { auth } from "../../firebase";
+
+
 
 const SidebarItem = ({ icon: Icon, text, active, onClick }) => (
   <li className={`nav-item ${active ? "active" : ""}`} onClick={onClick}>
@@ -43,7 +46,6 @@ const ProfileSection = ({ userData, isOpen, loading }) => {
           />
           <div className="profile-details-sidebar">
             <h3 className="profile-name">{userData?.fullName || "User"}</h3>
-           
           </div>
         </>
       )}
@@ -69,7 +71,7 @@ export function Sidebar() {
         const db = getFirestore();
         const docRef = doc(db, "profiles", auth.currentUser.uid);
         const docSnap = await getDoc(docRef);
-        
+
         if (docSnap.exists()) {
           setUserData(docSnap.data());
         }
@@ -101,8 +103,9 @@ export function Sidebar() {
     { icon: Home, text: "Home", path: "/" },
     { icon: LayoutDashboard, text: "Dashboard", path: "/dashboard" },
     { icon: BookOpenCheck, text: "Learn", path: "/learn" },
-  { icon: ListCheck, text: "Friends", path: "/friends" },
+    { icon: ListCheck, text: "Friends", path: "/friends" },
     { icon: ClipboardPenLine, text: "Interview Practice", path: "/jobReady" },
+    { icon: MessageSquareText, text: "Internships", path: "/internships" },
     { icon: User, text: "Profile", path: "/profile" },
   ];
 
@@ -115,8 +118,8 @@ export function Sidebar() {
             <span className={isOpen ? "logo-text" : "hidden"}>DevHub</span>
           </div>
 
-          <button 
-            className="sidebar-toggle" 
+          <button
+            className="sidebar-toggle"
             onClick={toggleSidebar}
             aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
           >
@@ -143,11 +146,7 @@ export function Sidebar() {
         </nav>
       </div>
 
-      <ProfileSection 
-        userData={userData}
-        isOpen={isOpen}
-        loading={loading}
-      />
+      <ProfileSection userData={userData} isOpen={isOpen} loading={loading} />
     </div>
   );
 }

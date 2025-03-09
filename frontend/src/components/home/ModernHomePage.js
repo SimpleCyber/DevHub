@@ -31,16 +31,12 @@ const ModernHomePage = () => {
                   <Code2 className="leetcode" size={24} />
                   <Github className="github" size={24} />
                 </span>
-                {/* <span className="rotate-text-home">Developer Journey</span>
-                <span className="rotate-text-home">GitHub Projects</span>
-                <span className="rotate-text-home">LeetCode Progress</span>
-                <span className="rotate-text-home">Portfolio</span> */}
+                
               </div>
             </h1>
             <p className="hero-subtitle glass-effect-dashbord">
               One platform to showcase all your developer achievements and get
               personalized career guidance.
-              {/* Your ultimate developer companion to track progress, learn, and collaborate. */}
             </p>
             <div className="cta-group">
               <button className="primary-cta glass-effect-dashbord">

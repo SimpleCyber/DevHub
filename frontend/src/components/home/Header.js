@@ -32,14 +32,14 @@ const Header = () => {
           <span>DevHub</span>
         </div>
         <div className="nav-links">
-          <a href="#features">Features</a>
+          <a href="#features" className='feature'>Features</a>
           <a href="#showcase" onClick={handleRedirectDashboard}>Dashboard</a>
-          <a href="#analytics">Analytics</a>
+          <a href="#analytics" className='feature'>Analytics</a>
           <button 
             className="theme-toggle glass-effect-dashbord"
             onClick={() => setDarkMode(!darkMode)}
           >
-            {darkMode ? <Sun size={20} style={{color:"white"}}  /> : <Moon size={20}  />}
+            {darkMode ? <Sun size={20} style={{color:"white", cursor:"pointer"}}  /> : <Moon size={20}  style={{ cursor:"pointer"}}  />}
           </button>
           <button className="connect-btn glass-effect-dashbord" onClick={handleRedirect}>
             Connect <ArrowRight size={16} />

@@ -29,8 +29,7 @@ function App() {
         <Route path="/dashboard" element={ <Dashboard />} />
 
         {/* AI checker for job readiness */}
-        
-        <Route path="/jobReady" element={ <JobReady />} />
+        <Route path="/jobReady/*" element={<JobReady />} />
 
         <Route path="/learn" element={<Learn />} />
 
