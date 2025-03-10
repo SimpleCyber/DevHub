@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Link, useParams } from "react-router-dom"
-import { Lightbulb, WebcamIcon } from "lucide-react"
-import { Button } from "../ui/button"
-import { mockInterviewStorage } from "../utils/localStorage"
+import { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { Lightbulb, WebcamIcon } from "lucide-react";
+import { Button } from "../ui/button";
+import { mockInterviewStorage } from "../utils/firebaseStorage";
 
 function Interview() {
-  const { interviewId } = useParams()
-  const [interviewData, setInterviewData] = useState(null)
-  const [webCamEnabled, setWebCamEnabled] = useState(false)
+  const { interviewId } = useParams();
+  const [interviewData, setInterviewData] = useState(null);
+  const [webCamEnabled, setWebCamEnabled] = useState(false);
 
   useEffect(() => {
     // Get interview details from localStorage
-    const interview = mockInterviewStorage.getById(interviewId)
+    const interview = mockInterviewStorage.getById(interviewId);
     if (interview) {
-      setInterviewData(interview)
+      setInterviewData(interview);
     }
-  }, [interviewId])
+  }, [interviewId]);
 
   if (!interviewData) {
     return (
@@ -26,7 +26,7 @@ function Interview() {
           <p>Loading interview data...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -55,16 +55,23 @@ function Interview() {
                 <strong>Information</strong>
               </h2>
               <h2 className="mt-3 text-yellow-500">
-                This interview will consist of several questions related to your job position. You'll be able to record
-                your answers using your webcam and microphone. After each answer, you'll receive AI-generated feedback
-                to help you improve.
+                This interview will consist of several questions related to your
+                job position. You'll be able to record your answers using your
+                webcam and microphone. After each answer, you'll receive
+                AI-generated feedback to help you improve.
               </h2>
             </div>
           </div>
           <div className="flex flex-col items-center justify-center">
             {webCamEnabled ? (
               <div className="bg-black rounded-lg p-5 w-full max-w-md">
-                <video id="webcam" autoPlay playsInline muted className="w-full h-64 rounded"></video>
+                <video
+                  id="webcam"
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-64 rounded"
+                ></video>
               </div>
             ) : (
               <>
@@ -76,16 +83,18 @@ function Interview() {
                     navigator.mediaDevices
                       .getUserMedia({ video: true, audio: true })
                       .then((stream) => {
-                        setWebCamEnabled(true)
-                        const videoElement = document.getElementById("webcam")
+                        setWebCamEnabled(true);
+                        const videoElement = document.getElementById("webcam");
                         if (videoElement) {
-                          videoElement.srcObject = stream
+                          videoElement.srcObject = stream;
                         }
                       })
                       .catch((err) => {
-                        console.error("Error accessing webcam:", err)
-                        alert("Failed to access webcam and microphone. Please check your permissions.")
-                      })
+                        console.error("Error accessing webcam:", err);
+                        alert(
+                          "Failed to access webcam and microphone. Please check your permissions."
+                        );
+                      });
                   }}
                 >
                   Enable Web Cam and Microphone
@@ -101,8 +110,7 @@ function Interview() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Interview
-
+export default Interview;

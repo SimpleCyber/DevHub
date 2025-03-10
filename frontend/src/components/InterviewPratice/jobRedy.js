@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import { Toaster } from "../ui/sonner"
 import Home from "./Home"
-import InterviewDashboard from "./Dashboard"
 import Interview from "./Interview"
+import InterviewDashboard from "./InterviewDashboard"
 import StartInterview from "./StartInterview"
 import Feedback from "./Feedback"
 import { UserProvider } from "../context/UserContext"
@@ -52,6 +52,8 @@ function JobReady() {
               <Route path="/interview/:interviewId/start" element={<StartInterview />} />
               <Route path="/interview/:interviewId/feedback" element={<Feedback />} />
             </Routes>
+            <Home />
+            <InterviewDashboard />
           </div>
         </div>
       </UserProvider>

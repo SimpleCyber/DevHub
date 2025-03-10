@@ -1,35 +1,46 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useParams, useNavigate } from "react-router-dom"
-import { ChevronsUpDown } from "lucide-react"
-import { Button } from "../ui/button"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible"
-import { userAnswerStorage } from "../utils/localStorage"
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { ChevronsUpDown } from "lucide-react";
+import { Button } from "../ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "../ui/collapsible";
+import { userAnswerStorage } from "../utils/firebaseStorage";
 
 function Feedback() {
-  const { interviewId } = useParams()
-  const [feedbackList, setFeedbackList] = useState([])
-  const navigate = useNavigate()
+  const { interviewId } = useParams();
+  const [feedbackList, setFeedbackList] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Get feedback from localStorage
-    const answers = userAnswerStorage.getByMockId(interviewId)
-    setFeedbackList(answers)
-  }, [interviewId])
+    const answers = userAnswerStorage.getByMockId(interviewId);
+    setFeedbackList(answers);
+  }, [interviewId]);
 
   return (
     <div>
       <div className="container mx-auto px-4 py-10">
         {feedbackList?.length === 0 ? (
-          <h2 className="font-bold text-xl text-gray-500">No Interview Feedback Record Found</h2>
+          <h2 className="font-bold text-xl text-gray-500">
+            No Interview Feedback Record Found
+          </h2>
         ) : (
           <>
-            <h2 className="text-3xl font-bold text-green-500">Congratulations!</h2>
-            <h2 className="font-bold text-2xl mt-2 mb-6">Here is your interview feedback</h2>
+            <h2 className="text-3xl font-bold text-green-500">
+              Congratulations!
+            </h2>
+            <h2 className="font-bold text-2xl mt-2 mb-6">
+              Here is your interview feedback
+            </h2>
 
             <h2 className="text-sm text-gray-500 mb-6">
-              Find below interview questions with correct answers, your answers, and feedback for improvement
+              Find below interview questions with correct answers, your answers,
+              and feedback for improvement
             </h2>
 
             {feedbackList.map((item, index) => (
@@ -71,8 +82,7 @@ function Feedback() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
-export default Feedback
-
+export default Feedback;

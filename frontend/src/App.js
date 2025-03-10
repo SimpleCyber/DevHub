@@ -12,6 +12,7 @@ import JobReady from "./components/InterviewPratice/jobRedy";
 import Learn from "./components/Learn/learn";
 import Friend from "./components/Friends/friend";
 
+
 function App() {
   return (
     <Router>
@@ -29,11 +30,12 @@ function App() {
         <Route path="/dashboard" element={ <Dashboard />} />
 
         {/* AI checker for job readiness */}
-        <Route path="/jobReady/*" element={<JobReady />} />
+        <Route path="/jobReady" element={ <JobReady />} />
 
         <Route path="/learn" element={<Learn />} />
 
-        <Route path="/friends" element={<Friend />} />
+        <Route path="/friends" element={<Friend />} />  
+              
 
 
 
