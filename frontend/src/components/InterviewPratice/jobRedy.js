@@ -47,13 +47,11 @@ function JobReady() {
             <Toaster />
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/interviewDashboard" element={<InterviewDashboard />} />
+              {/* <Route path="/interviewDashboard" element={<InterviewDashboard />} />
               <Route path="/interview/:interviewId" element={<Interview />} />
               <Route path="/interview/:interviewId/start" element={<StartInterview />} />
-              <Route path="/interview/:interviewId/feedback" element={<Feedback />} />
+              <Route path="/interview/:interviewId/feedback" element={<Feedback />} /> */}
             </Routes>
-            <Home />
-            <InterviewDashboard />
           </div>
         </div>
       </UserProvider>

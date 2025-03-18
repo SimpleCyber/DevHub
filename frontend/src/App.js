@@ -11,30 +11,28 @@ import Dashboard from "./components/dashboard/dashboard";
 import JobReady from "./components/InterviewPratice/jobRedy";
 import Learn from "./components/Learn/learn";
 import Friend from "./components/Friends/friend";
+import Internships  from "./components/Internships/internships";
 
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Define the Home Route */}
         <Route path="/" element={<ModernHomePage />} />
 
-        {/* Define the Auth Route */}
         <Route path="/auth" element={<AuthPages />} />
 
-        {/* Define the Profile Route */}
         <Route path="/profile" element={<Profile />} />
 
-        {/* Define the dashboard path */}
         <Route path="/dashboard" element={ <Dashboard />} />
 
-        {/* AI checker for job readiness */}
-        <Route path="/jobReady" element={ <JobReady />} />
+        <Route path="/interview" element={ <JobReady />} />
 
         <Route path="/learn" element={<Learn />} />
 
-        <Route path="/friends" element={<Friend />} />  
+        <Route path="/friends" element={<Friend />} /> 
+
+        <Route path="/internships" element={<Internships />} />  
               
 
 

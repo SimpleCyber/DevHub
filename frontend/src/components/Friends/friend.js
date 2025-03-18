@@ -8,6 +8,7 @@ const Friend = () => {
       <Sidebar />
       <div className="friend-content">
         {/* Friend component content */}
+        <h1>Hello</h1>
       </div>
     </div>
   );

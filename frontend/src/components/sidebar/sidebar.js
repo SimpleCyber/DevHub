@@ -104,7 +104,7 @@ export function Sidebar() {
     { icon: LayoutDashboard, text: "Dashboard", path: "/dashboard" },
     { icon: BookOpenCheck, text: "Learn", path: "/learn" },
     { icon: ListCheck, text: "Friends", path: "/friends" },
-    { icon: ClipboardPenLine, text: "Interview Practice", path: "/jobReady" },
+    { icon: ClipboardPenLine, text: "Interview Practice", path: "/interview" },
     { icon: MessageSquareText, text: "Internships", path: "/internships" },
     { icon: User, text: "Profile", path: "/profile" },
   ];

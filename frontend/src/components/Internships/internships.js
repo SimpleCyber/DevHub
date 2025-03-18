@@ -1,14 +1,13 @@
 import React from 'react';
 import { Sidebar } from '../sidebar/sidebar';
-import './learn.css';
 
-const Learn = () => {
+const Internships = () => {
   return (
     <div className="learn-container">
       <Sidebar />
-      <h1>Learn Learn Learn Learn Learn Learn Learn Learn Learn</h1>
+      <h1>Internships</h1>
     </div>
   );
 };
 
-export default Learn;
+export default Internships;
