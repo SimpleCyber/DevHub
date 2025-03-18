@@ -14,11 +14,12 @@ function InterviewDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user === undefined) return; // Prevent navigation before user state is set
-    if (!user) {
-      navigate("/auth"); // Redirect if not logged in
-      return;
-    }
+    // if (user === undefined) return; // Prevent navigation before user state is set
+    // if (!user) {
+    //   // navigate("/auth");
+    //   navigate("/dashboard");
+    //   return;
+    // }
   
     const fetchInterviews = async () => {
       try {
@@ -45,11 +46,14 @@ function InterviewDashboard() {
 
   return (
     <div>
-      <Sidebar />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-6">Your Interview Sessions</h1>
 
+
+
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Add new interview */}
           <AddNewInterview
             onInterviewCreated={async () => {
               const allInterviews = await mockInterviewStorage.getAll();
@@ -60,6 +64,9 @@ function InterviewDashboard() {
               setInterviews(userInterviews);
             }}
           />
+
+
+
 
           {interviews.map((interview) => (
             <Link

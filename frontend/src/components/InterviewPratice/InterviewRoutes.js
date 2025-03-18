@@ -46,11 +46,17 @@ function JobReady() {
           <div className="main-content">
             <Toaster />
             <Routes>
+
               <Route path="/" element={<Home />} />
-              {/* <Route path="/interviewDashboard" element={<InterviewDashboard />} />
-              <Route path="/interview/:interviewId" element={<Interview />} />
-              <Route path="/interview/:interviewId/start" element={<StartInterview />} />
-              <Route path="/interview/:interviewId/feedback" element={<Feedback />} /> */}
+
+              {/* <Route path="/interviewDashboard" element={<InterviewDashboard />} /> */}
+
+              {/* <Route path="/interview/:interviewId" element={<Interview />} /> */}
+
+              {/* <Route path="/interview/:interviewId/start" element={<StartInterview />} /> */}
+
+              {/* <Routes path="/interview/:interviewId/feedback" element={<Feedback />} /> */}
+
             </Routes>
           </div>
         </div>

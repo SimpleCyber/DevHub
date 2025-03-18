@@ -8,7 +8,7 @@ import AuthPages from './components/auth/AuthPages';
 import Profile from "./components/profile/profile";
 import "./components/home/ModernHomePage.css"
 import Dashboard from "./components/dashboard/dashboard";
-import JobReady from "./components/InterviewPratice/jobRedy";
+import JobReady from "./components/InterviewPratice/InterviewRoutes";
 import Learn from "./components/Learn/learn";
 import Friend from "./components/Friends/friend";
 import Internships  from "./components/Internships/internships";
