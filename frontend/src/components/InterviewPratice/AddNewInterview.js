@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 import { useUser } from "../context/UserContext"
@@ -10,6 +10,7 @@ import { Input } from "../ui/input"
 import { Textarea } from "../ui/textarea"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog"
 import { toast } from "../ui/sonner"
+import { Upload, FileText, X } from "lucide-react"
 
 function AddNewInterview({ onInterviewCreated }) {
   const [openDialog, setOpenDialog] = useState(false)
@@ -17,6 +18,8 @@ function AddNewInterview({ onInterviewCreated }) {
   const [jobDesc, setJobDesc] = useState("")
   const [jobExperience, setJobExperience] = useState("")
   const [loading, setLoading] = useState(false)
+  const [resume, setResume] = useState(null)
+  const fileInputRef = useRef(null)
   const navigate = useNavigate()
   const { user } = useUser()
 
@@ -49,6 +52,20 @@ function AddNewInterview({ onInterviewCreated }) {
     return JSON.stringify(questions)
   }
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setResume(file)
+    }
+  }
+
+  const handleRemoveFile = () => {
+    setResume(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
+  }
+
   const onSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -67,10 +84,13 @@ function AddNewInterview({ onInterviewCreated }) {
         jobPosition,
         jobDesc,
         jobExperience,
+        resumeFileName: resume ? resume.name : null,
         createdBy: user?.primaryEmailAddress?.emailAddress,
         createdAt: currentDate,
       }
 
+      // In a real app, you'd upload the resume file here
+      // For now, we'll just store the metadata
       mockInterviewStorage.create(newInterview)
 
       // Notify parent component
@@ -91,87 +111,169 @@ function AddNewInterview({ onInterviewCreated }) {
   return (
     <div>
       <div
-        className="p-10 border rounded-lg bg-secondary
+        className="p-10 border rounded-lg bg-white shadow-sm
         hover:scale-105 hover:shadow-md cursor-pointer
          transition-all border-dashed"
         onClick={() => setOpenDialog(true)}
       >
-        <h2 className="text-lg text-center">+ Add New</h2>
+        <h2 className="text-lg text-center font-medium">+ Add New Interview</h2>
       </div>
 
-      <Dialog open={openDialog}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent 
+          className="w-full p-0 overflow-hidden bg-white rounded-lg"
+          style={{ minWidth: "800px" }}
+        >
+          <DialogHeader className="p-6 border-b">
             <DialogTitle className="text-2xl">Tell us more about your job interview</DialogTitle>
-            <DialogDescription>
-              <form onSubmit={onSubmit}>
-                <div>
-                  <h2>Add details about your job position/role, job description and years of experience</h2>
-
-                  <div className="mt-7 my-3">
-                    <label>Job Role/Job Position</label>
+            <DialogDescription className="text-gray-500 mt-1">
+              Fill in the details below to create a personalized mock interview
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={onSubmit}>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Left column - Job details */}
+                <div className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-medium mb-1.5">Job Position</label>
                     <Input
                       placeholder="Ex. Full Stack Developer"
                       required
+                      value={jobPosition}
                       onChange={(event) => setJobPosition(event.target.value)}
+                      className="w-full"
                     />
                   </div>
-                  <div className="my-3">
-                    <label>Job Description/ Tech Stack (In Short)</label>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-1.5">Tech Skills & Requirements</label>
                     <Textarea
                       placeholder="Ex. React, Angular, NodeJs, MySQL etc"
                       required
+                      value={jobDesc}
                       onChange={(event) => setJobDesc(event.target.value)}
+                      className="w-full min-h-28"
                     />
                   </div>
-                  <div className="my-3">
-                    <label>Years of experience</label>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-1.5">Years of Experience</label>
                     <Input
                       placeholder="Ex. 5"
                       type="number"
+                      min="0"
                       max="100"
                       required
+                      value={jobExperience}
                       onChange={(event) => setJobExperience(event.target.value)}
+                      className="w-full"
                     />
                   </div>
                 </div>
-                <div className="flex gap-5 justify-end mt-4">
-                  <Button type="button" variant="ghost" onClick={() => setOpenDialog(false)}>
-                    Cancel
-                  </Button>
-                  <Button type="submit" disabled={loading}>
-                    {loading ? (
-                      <>
-                        <svg
-                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
+
+                {/* Right column - Resume upload */}
+                <div>
+                  <label className="block text-sm font-medium mb-3">Upload Resume (Optional)</label>
+                  
+                  <div className="border-2 border-dashed rounded-lg flex flex-col items-center justify-center bg-gray-50" style={{ minHeight: "17rem" }}>
+                    {!resume ? (
+                      <div 
+                        className="flex flex-col items-center justify-center w-full h-full cursor-pointer p-4" 
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <div className="mb-4 text-gray-400">
+                          <Upload size={40} />
+                        </div>
+                        <p className="text-sm text-center text-gray-500 mb-3">
+                          Drop your resume here or click to browse
+                        </p>
+                        <input
+                          type="file"
+                          id="resumeUpload"
+                          ref={fileInputRef}
+                          accept=".pdf,.doc,.docx"
+                          className="hidden"
+                          onChange={handleFileChange}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => fileInputRef.current?.click()}
                         >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        Generating from AI
-                      </>
+                          Browse files
+                        </Button>
+                        <p className="text-xs text-gray-400 mt-2">Supports PDF, DOC, DOCX (Max 5MB)</p>
+                      </div>
                     ) : (
-                      "Start Interview"
+                      <div className="flex flex-col items-center p-6">
+                        <div className="mb-4 text-gray-600">
+                          <FileText size={40} />
+                        </div>
+                        <p className="text-sm font-medium mb-1">{resume.name}</p>
+                        <p className="text-xs text-gray-500 mb-5">
+                          {(resume.size / (1024 * 1024)).toFixed(2)} MB
+                        </p>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          className="flex items-center"
+                          onClick={handleRemoveFile}
+                        >
+                          <X size={16} className="mr-1" />
+                          Remove
+                        </Button>
+                      </div>
                     )}
-                  </Button>
+                  </div>
                 </div>
-              </form>
-            </DialogDescription>
-          </DialogHeader>
+              </div>
+            </div>
+
+            <div className="flex gap-4 justify-end p-6 border-t bg-gray-50">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setOpenDialog(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={loading}
+                className="px-6"
+              >
+                {loading ? (
+                  <div className="flex items-center">
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Generating from AI
+                  </div>
+                ) : (
+                  "Start Interview"
+                )}
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
@@ -179,4 +281,3 @@ function AddNewInterview({ onInterviewCreated }) {
 }
 
 export default AddNewInterview
-

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { Routes, Route } from "react-router-dom"
 import { Toaster } from "../ui/sonner"
 import Home from "./Home"
 import Interview from "./Interview"
@@ -13,6 +13,8 @@ import './jobready.css'
 
 function JobReady() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeComponent, setActiveComponent] = useState('home');
+  const [activeInterviewId, setActiveInterviewId] = useState(null);
 
   // Listen for sidebar state changes
   useEffect(() => {
@@ -38,6 +40,31 @@ function JobReady() {
     return () => observer.disconnect();
   }, []);
 
+  // Function to change the active component
+  const switchComponent = (componentName, interviewId = null) => {
+    setActiveComponent(componentName);
+    if (interviewId) {
+      setActiveInterviewId(interviewId);
+    }
+  };
+
+  // Render the appropriate component based on activeComponent state
+  const renderActiveComponent = () => {
+    switch (activeComponent) {
+      case 'interviewDashboard':
+        return <InterviewDashboard switchComponent={switchComponent} />;
+      case 'interview':
+        return <Interview switchComponent={switchComponent} interviewId={activeInterviewId} />;
+      case 'startInterview':
+        return <StartInterview switchComponent={switchComponent} interviewId={activeInterviewId} />;
+      case 'feedback':
+        return <Feedback switchComponent={switchComponent} interviewId={activeInterviewId} />;
+      case 'home':
+      default:
+        return <Home switchComponent={switchComponent} />;
+    }
+  };
+
   return (
     <ThemeProvider defaultTheme="light">
       <UserProvider>
@@ -45,19 +72,7 @@ function JobReady() {
           <Sidebar />
           <div className="main-content">
             <Toaster />
-            <Routes>
-
-              <Route path="/" element={<Home />} />
-
-              {/* <Route path="/interviewDashboard" element={<InterviewDashboard />} /> */}
-
-              {/* <Route path="/interview/:interviewId" element={<Interview />} /> */}
-
-              {/* <Route path="/interview/:interviewId/start" element={<StartInterview />} /> */}
-
-              {/* <Routes path="/interview/:interviewId/feedback" element={<Feedback />} /> */}
-
-            </Routes>
+            {renderActiveComponent()}
           </div>
         </div>
       </UserProvider>

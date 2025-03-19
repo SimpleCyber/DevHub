@@ -3,13 +3,31 @@ import { cn } from "../utils/cn";
 
 const Dialog = ({ children, open, onOpenChange }) => {
   if (!open) return null;
+  
+  const handleBackdropClick = () => {
+    if (onOpenChange) {
+      onOpenChange(false);
+    }
+  };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-background rounded-lg p-6 shadow-lg max-w-md w-full">
-        {children}
+    <>
+      <DialogOverlay onClick={handleBackdropClick} />
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="">
+          {children}
+        </div>
       </div>
-    </div>
+    </>
+  );
+};
+
+const DialogOverlay = ({ onClick }) => {
+  return (
+    <div 
+      className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+      onClick={onClick}
+    />
   );
 };
 
@@ -60,6 +78,7 @@ const DialogDescription = ({ className, ...props }) => {
 
 export {
   Dialog,
+  DialogOverlay,
   DialogTrigger,
   DialogContent,
   DialogHeader,
