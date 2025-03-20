@@ -1,6 +1,8 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect } from "react"
+import { auth } from "../../firebase" // Import Firebase auth
+import { onAuthStateChanged } from "firebase/auth"
 
 const UserContext = createContext()
 
@@ -9,27 +11,42 @@ export function UserProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check if user is stored in localStorage
-    const storedUser = localStorage.getItem("user")
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-    }
-    setIsLoading(false)
+    // Listen for Firebase auth state changes
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        // Create a user object that matches your expected format
+        const userData = {
+          primaryEmailAddress: { emailAddress: firebaseUser.email },
+          fullName: firebaseUser.displayName || "User",
+          userId: firebaseUser.uid,
+          // Add other properties you need from firebaseUser
+        }
+        setUser(userData)
+        // Also save to localStorage if needed
+        localStorage.setItem("user", JSON.stringify(userData))
+      } else {
+        setUser(null)
+        localStorage.removeItem("user")
+      }
+      setIsLoading(false)
+    })
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe()
   }, [])
 
+  // Keep these methods for compatibility with your existing code
+  // but modify them to work with Firebase
   const signIn = (email, name) => {
-    const newUser = {
-      primaryEmailAddress: { emailAddress: email },
-      fullName: name,
-    }
-    localStorage.setItem("user", JSON.stringify(newUser))
-    setUser(newUser)
-    return true
+    // This function is just for compatibility
+    // Actual sign in should happen through Firebase Auth
+    console.log("Use Firebase Auth instead of this method")
+    return false
   }
 
   const signOut = () => {
-    localStorage.removeItem("user")
-    setUser(null)
+    auth.signOut() // Use Firebase signOut
+    // The listener above will handle clearing the user state
   }
 
   return <UserContext.Provider value={{ user, isLoading, signIn, signOut }}>{children}</UserContext.Provider>
@@ -42,4 +59,3 @@ export const useUser = () => {
   }
   return context
 }
-

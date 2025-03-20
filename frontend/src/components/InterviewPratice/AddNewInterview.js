@@ -72,6 +72,12 @@ function AddNewInterview({ onInterviewCreated }) {
 
     try {
       // Generate mock interview questions
+      if (!user) {
+        toast.error("Please sign in to create an interview")
+        setLoading(false)
+        return
+      }
+
       const mockJsonResp = generateMockInterviewQuestions(jobPosition, jobDesc, jobExperience)
 
       // Create a new interview in localStorage
@@ -79,34 +85,45 @@ function AddNewInterview({ onInterviewCreated }) {
       const currentDate = new Date().toLocaleDateString("en-GB")
 
       const newInterview = {
-        mockId,
-        jsonMockResp: mockJsonResp,
-        jobPosition,
-        jobDesc,
-        jobExperience,
-        resumeFileName: resume ? resume.name : null,
-        createdBy: user?.primaryEmailAddress?.emailAddress,
-        createdAt: currentDate,
-      }
+      mockId,
+      jsonMockResp: mockJsonResp,
+      jobPosition,
+      jobDesc,
+      jobExperience,
+      resumeFileName: resume ? resume.name : null,
+      createdBy: user.primaryEmailAddress?.emailAddress || "anonymous@example.com", // Add fallback
+      userName: user.fullName || "Anonymous User",
+      userId: user.userId || `temp_${Date.now()}`,
+      createdAt: currentDate,
+    }
+
+
 
       // In a real app, you'd upload the resume file here
-      // For now, we'll just store the metadata
-      mockInterviewStorage.create(newInterview)
+      await mockInterviewStorage.create(newInterview)
+
 
       // Notify parent component
-      if (onInterviewCreated) {
-        onInterviewCreated()
-      }
-
-      setOpenDialog(false)
-      navigate(`/dashboard/interview/${mockId}`)
-    } catch (error) {
-      console.error("Error creating interview:", error)
-      toast.error("Failed to create interview. Please try again.")
-    } finally {
-      setLoading(false)
+    if (onInterviewCreated) {
+      onInterviewCreated()
     }
+
+    setOpenDialog(false)
+    navigate(`/dashboard/interview/${mockId}`)
+  } catch (error) {
+    console.error("Error creating interview:", error)
+    
+    if (error.code === 'permission-denied') {
+      toast.error("Permission denied. Please check if you're properly signed in.")
+    } else if (error.message.includes('invalid data')) {
+      toast.error("Some data is invalid. Please check all fields.")
+    } else {
+      toast.error("Failed to create interview. Please try again.")
+    }
+  } finally {
+    setLoading(false)
   }
+}
 
   return (
     <div>
@@ -147,7 +164,7 @@ function AddNewInterview({ onInterviewCreated }) {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-1.5">Tech Skills & Requirements</label>
+                    <label className="block text-sm font-medium mb-1.5">Tech Skills & Job description</label>
                     <Textarea
                       placeholder="Ex. React, Angular, NodeJs, MySQL etc"
                       required
@@ -174,7 +191,7 @@ function AddNewInterview({ onInterviewCreated }) {
 
                 {/* Right column - Resume upload */}
                 <div>
-                  <label className="block text-sm font-medium mb-3">Upload Resume (Optional)</label>
+                  <label className="block text-sm font-medium mb-3">Upload Resume</label>
                   
                   <div className="border-2 border-dashed rounded-lg flex flex-col items-center justify-center bg-gray-50" style={{ minHeight: "17rem" }}>
                     {!resume ? (

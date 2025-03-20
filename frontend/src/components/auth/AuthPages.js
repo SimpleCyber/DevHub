@@ -37,7 +37,7 @@ const AuthPages = () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user; // Firebase User Object
-      navigate('/profile', { state: { email: user.email } }); // Navigate with email
+      navigate('/dashboard', { state: { email: user.email } }); // Navigate with email
     } catch (error) {
       alert(`Error: ${error.message}`);
     } finally {
@@ -54,8 +54,8 @@ const AuthPages = () => {
       if (isLogin) {
         // Sign in with email and password
         const result = await signInWithEmailAndPassword(auth, formData.email, formData.password);
-        const user = result.user; // Firebase User Object
-        navigate('/profile', { state: { email: user.email } }); // Navigate with email
+        // Navigate to dashboard or wherever the interview form is
+        navigate('/dashboard'); // Update this to your correct path
       } else {
         // Create a new account
         await createUserWithEmailAndPassword(auth, formData.email, formData.password);
