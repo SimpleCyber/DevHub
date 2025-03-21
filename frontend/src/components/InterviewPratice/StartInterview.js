@@ -14,28 +14,14 @@ function StartInterview() {
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
 
   useEffect(() => {
-  // Get interview details from localStorage
-  async function fetchInterview() {
-    try {
-      const interview = await mockInterviewStorage.getById(interviewId);
-      if (interview) {
-        setInterviewData(interview);
-        if (interview.jsonMockResp) {
-          const questions = JSON.parse(interview.jsonMockResp);
-          setMockInterviewQuestions(questions);
-        } else {
-          console.error("Interview data is missing jsonMockResp");
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching interview:", error);
+    // Get interview details from localStorage
+    const interview = mockInterviewStorage.getById(interviewId);
+    if (interview) {
+      setInterviewData(interview);
+      const questions = JSON.parse(interview.jsonMockResp);
+      setMockInterviewQuestions(questions);
     }
-  }
-  
-  fetchInterview();
-}, [interviewId]);
-
-
+  }, [interviewId]);
 
   if (!interviewData || mockInterviewQuestions.length === 0) {
     return (

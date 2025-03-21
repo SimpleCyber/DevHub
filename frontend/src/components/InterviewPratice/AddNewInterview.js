@@ -1,6 +1,3 @@
-///Addnewinterwiew.js
-
-
 "use client"
 
 import { useState, useRef } from "react"
@@ -112,8 +109,7 @@ function AddNewInterview({ onInterviewCreated }) {
     }
 
     setOpenDialog(false)
-    // navigate(`/dashboard/interview/${mockId}`)
-    
+    navigate(`/dashboard/interview/${mockId}`)
   } catch (error) {
     console.error("Error creating interview:", error)
     
