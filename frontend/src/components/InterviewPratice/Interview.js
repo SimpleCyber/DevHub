@@ -1,3 +1,4 @@
+//interview.js
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,8 +7,8 @@ import { Lightbulb, WebcamIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { mockInterviewStorage } from "../utils/firebaseStorage";
 
-function Interview() {
-  const { interviewId } = useParams();
+function Interview({ switchComponent, interviewId }) {
+  // const { interviewId } = useParams();
   const [interviewData, setInterviewData] = useState(null);
   const [webCamEnabled, setWebCamEnabled] = useState(false);
 
@@ -104,9 +105,13 @@ function Interview() {
           </div>
         </div>
         <div className="flex justify-end mt-8">
-          <Link to={`/dashboard/interview/${interviewId}/start`}>
-            <Button>Start Interview</Button>
-          </Link>
+          {/* <Link to={`/dashboard/interview/${interviewId}/start`}> */}
+          <Button
+            onClick={() => switchComponent("startInterview", interviewId)}
+          >
+            Start Interview
+          </Button>
+          {/* </Link> */}
         </div>
       </div>
     </div>

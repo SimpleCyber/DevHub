@@ -1,3 +1,4 @@
+//interviewdashobard.js
 "use client";
 
 import { useState, useEffect } from "react";
@@ -63,7 +64,7 @@ function InterviewDashboard({ switchComponent }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Add new interview */}
           <AddNewInterview
-            onInterviewCreated={async () => {
+            onInterviewCreated={async (mockId) => {
               const allInterviews = await mockInterviewStorage.getAll();
               const userInterviews = allInterviews.filter(
                 (interview) =>
