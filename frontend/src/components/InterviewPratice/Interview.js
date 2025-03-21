@@ -3,7 +3,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
 import { Lightbulb, WebcamIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { mockInterviewStorage } from "../utils/firebaseStorage";
@@ -53,6 +52,7 @@ function Interview({ switchComponent, interviewId }) {
       <div>
         <div className="container mx-auto px-4 py-8 text-center">
           <p>Loading interview data...</p>
+          
         </div>
       </div>
     );
@@ -117,7 +117,7 @@ function Interview({ switchComponent, interviewId }) {
                         if (videoElement) {
                           videoElement.srcObject = stream;
                         }
-                      })
+                      },100)
                       .catch((err) => {
                         console.error("Error accessing webcam:", err);
                         alert(

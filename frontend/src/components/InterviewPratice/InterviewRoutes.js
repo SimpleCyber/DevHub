@@ -1,6 +1,5 @@
 // InterviewRoutes.js
 
-import { Routes, Route } from "react-router-dom"
 import { Toaster } from "../ui/sonner"
 import Home from "./Home"
 import Interview from "./Interview"

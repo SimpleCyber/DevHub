@@ -11,7 +11,7 @@ import {
 } from "../ui/collapsible";
 import { userAnswerStorage } from "../utils/firebaseStorage";
 
-function Feedback() {
+function Feedback({switchComponent}) {
   const { interviewId } = useParams();
   const [feedbackList, setFeedbackList] = useState([]);
   const navigate = useNavigate();

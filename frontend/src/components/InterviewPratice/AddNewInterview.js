@@ -3,7 +3,6 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 import { useUser } from "../context/UserContext"
 import { mockInterviewStorage } from "../utils/firebaseStorage"
@@ -23,7 +22,6 @@ function AddNewInterview({ onInterviewCreated ,switchComponent}) {
   const [loading, setLoading] = useState(false)
   const [resume, setResume] = useState(null)
   const fileInputRef = useRef(null)
-  const navigate = useNavigate()
   const { user } = useUser()
 
   // Mock AI response generator
