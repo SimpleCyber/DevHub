@@ -1,3 +1,5 @@
+//AddNewInterwiew.js
+
 "use client"
 
 import { useState, useRef } from "react"
@@ -12,7 +14,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { toast } from "../ui/sonner"
 import { Upload, FileText, X } from "lucide-react"
 
-function AddNewInterview({ onInterviewCreated }) {
+
+function AddNewInterview({ onInterviewCreated ,switchComponent}) {
   const [openDialog, setOpenDialog] = useState(false)
   const [jobPosition, setJobPosition] = useState("")
   const [jobDesc, setJobDesc] = useState("")
@@ -98,6 +101,9 @@ function AddNewInterview({ onInterviewCreated }) {
     }
 
 
+    const savedInterview = await mockInterviewStorage.create(newInterview)
+
+
 
       // In a real app, you'd upload the resume file here
       await mockInterviewStorage.create(newInterview)
@@ -109,7 +115,11 @@ function AddNewInterview({ onInterviewCreated }) {
     }
 
     setOpenDialog(false)
-    navigate(`/dashboard/interview/${mockId}`)
+    switchComponent('interview', savedInterview.id);
+
+
+
+
   } catch (error) {
     console.error("Error creating interview:", error)
     

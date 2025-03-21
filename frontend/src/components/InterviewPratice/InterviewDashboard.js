@@ -63,15 +63,16 @@ function InterviewDashboard({ switchComponent }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Add new interview */}
           <AddNewInterview
-            onInterviewCreated={async () => {
-              const allInterviews = await mockInterviewStorage.getAll();
-              const userInterviews = allInterviews.filter(
-                (interview) =>
-                  interview.createdBy === user?.primaryEmailAddress?.emailAddress
-              );
-              setInterviews(userInterviews);
-            }}
-          />
+  onInterviewCreated={async () => {
+    const allInterviews = await mockInterviewStorage.getAll();
+    const userInterviews = allInterviews.filter(
+      (interview) =>
+        interview.createdBy === user?.primaryEmailAddress?.emailAddress
+    );
+    setInterviews(userInterviews);
+  }}
+  switchComponent={switchComponent}
+/>
 
           {interviews.map((interview) => (
             <div

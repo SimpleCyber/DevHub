@@ -1,3 +1,5 @@
+//interview.js
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,18 +8,45 @@ import { Lightbulb, WebcamIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { mockInterviewStorage } from "../utils/firebaseStorage";
 
-function Interview() {
-  const { interviewId } = useParams();
+function Interview({ switchComponent, interviewId }) {
   const [interviewData, setInterviewData] = useState(null);
   const [webCamEnabled, setWebCamEnabled] = useState(false);
 
+
+
+
+
+
   useEffect(() => {
-    // Get interview details from localStorage
-    const interview = mockInterviewStorage.getById(interviewId);
-    if (interview) {
-      setInterviewData(interview);
+    async function fetchInterviewData() {
+      try {
+        console.log("Attempting to fetch interview with ID:", interviewId);
+        
+        // Check if interviewId is valid
+        if (!interviewId) {
+          console.error("Interview ID is undefined or null");
+          return;
+        }
+        
+        const interview = await mockInterviewStorage.getById(interviewId);
+        console.log("Fetched interview:", interview);
+        
+        if (interview) {
+          setInterviewData(interview);
+        } else {
+          console.error("Interview not found");
+        }
+      } catch (error) {
+        console.error("Error fetching interview:", error);
+      }
     }
+    
+    fetchInterviewData();
   }, [interviewId]);
+
+
+
+
 
   if (!interviewData) {
     return (
@@ -104,9 +133,11 @@ function Interview() {
           </div>
         </div>
         <div className="flex justify-end mt-8">
-          <Link to={`/dashboard/interview/${interviewId}/start`}>
-            <Button>Start Interview</Button>
-          </Link>
+          <Button
+            onClick={() => switchComponent("startInterview", interviewId)}
+          >
+            Start Interview
+          </Button>
         </div>
       </div>
     </div>
