@@ -7,14 +7,10 @@ import { Lightbulb, WebcamIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { mockInterviewStorage } from "../utils/firebaseStorage";
 
+
 function Interview({ switchComponent, interviewId }) {
   const [interviewData, setInterviewData] = useState(null);
   const [webCamEnabled, setWebCamEnabled] = useState(false);
-
-
-
-
-
 
   useEffect(() => {
     async function fetchInterviewData() {
@@ -132,12 +128,21 @@ function Interview({ switchComponent, interviewId }) {
             )}
           </div>
         </div>
+
+
         <div className="flex justify-end mt-8">
+
+
+
           <Button
             onClick={() => switchComponent("startInterview", interviewId)}
+             className="bg-green-600 text-white px-5 py-2 flex items-center gap-2 rounded-md hover:bg-green-700 transition-all duration-200 shadow-md"
           >
             Start Interview
           </Button>
+
+
+
         </div>
       </div>
     </div>

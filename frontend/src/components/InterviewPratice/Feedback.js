@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import { ChevronsUpDown } from "lucide-react";
 import { Button } from "../ui/button";
 import {
@@ -11,24 +10,58 @@ import {
 } from "../ui/collapsible";
 import { userAnswerStorage } from "../utils/firebaseStorage";
 
-function Feedback({switchComponent}) {
-  const { interviewId } = useParams();
+function Feedback({switchComponent, interviewId}) {
   const [feedbackList, setFeedbackList] = useState([]);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get feedback from localStorage
-    const answers = userAnswerStorage.getByMockId(interviewId);
-    setFeedbackList(answers);
+    async function fetchAnswers() {
+      try {
+        setLoading(true);
+        console.log("Fetching answers for interview ID:", interviewId);
+        
+        if (!interviewId) {
+          console.error("Interview ID is undefined or null");
+          setLoading(false);
+          return;
+        }
+        
+        const answers = await userAnswerStorage.getByMockId(interviewId);
+        console.log("Fetched answers:", answers);
+        setFeedbackList(Array.isArray(answers) ? answers : []);
+      } catch (error) {
+        console.error("Error fetching answers:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchAnswers();
   }, [interviewId]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-10 text-center">
+        <p>Loading feedback data...</p>
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="container mx-auto px-4 py-10">
-        {feedbackList?.length === 0 ? (
-          <h2 className="font-bold text-xl text-gray-500">
-            No Interview Feedback Record Found
-          </h2>
+        {feedbackList.length === 0 ? (
+          <div>
+            <h2 className="font-bold text-xl text-gray-500">
+              No Interview Feedback Record Found
+            </h2>
+            <p className="mt-2 text-gray-500">
+              This could be because no answers were recorded for this interview session.
+            </p>
+            <div className="mt-8">
+              <Button onClick={() => switchComponent("dashboard")}>Go Home</Button>
+            </div>
+          </div>
         ) : (
           <>
             <h2 className="text-3xl font-bold text-green-500">
@@ -76,7 +109,7 @@ function Feedback({switchComponent}) {
             ))}
 
             <div className="mt-8">
-              <Button onClick={() => navigate("/dashboard")}>Go Home</Button>
+              <Button onClick={() => switchComponent("dashboard")}>Go Home</Button>
             </div>
           </>
         )}

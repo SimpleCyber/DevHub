@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import AddNewInterview from "./AddNewInterview";
 import { mockInterviewStorage } from "../utils/firebaseStorage";
-import { Sidebar } from "../sidebar/sidebar";
 import { ArrowLeft } from "lucide-react"; // Import arrow icon for back button
 
 function InterviewDashboard({ switchComponent }) {
@@ -15,12 +14,6 @@ function InterviewDashboard({ switchComponent }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // if (user === undefined) return; // Prevent navigation before user state is set
-    // if (!user) {
-    //   // navigate("/auth");
-    //   navigate("/dashboard");
-    //   return;
-    // }
   
     const fetchInterviews = async () => {
       try {

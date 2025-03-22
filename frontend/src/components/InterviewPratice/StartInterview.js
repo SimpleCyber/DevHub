@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import QuestionsSection from "./QuestionSection";
 import RecordAnswerSection from "./RecordAnswerSection";
 import { mockInterviewStorage } from "../utils/firebaseStorage";
+import { ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
 
 function StartInterview({ switchComponent, interviewId }) {
   // Remove useParams and accept interviewId as a prop
@@ -73,22 +74,28 @@ function StartInterview({ switchComponent, interviewId }) {
           {activeQuestionIndex > 0 && (
             <Button
               onClick={() => setActiveQuestionIndex(activeQuestionIndex - 1)}
+              className="bg-gray-500 text-white px-4 py-2 flex items-center gap-2 rounded-md hover:bg-gray-600 transition-all duration-200 shadow-md"
+
             >
-              Previous Question
+              <ArrowLeft size={18} /> Previous Question
             </Button>
           )}
           {activeQuestionIndex !== mockInterviewQuestions.length - 1 && (
             <Button
               onClick={() => setActiveQuestionIndex(activeQuestionIndex + 1)}
+              className="bg-blue-600 text-white px-4 py-2 flex items-center gap-2 rounded-md hover:bg-blue-700 transition-all duration-200 shadow-md"
+
             >
-              Next Question
+              Next Question <ArrowRight size={18} />
             </Button>
           )}
           {activeQuestionIndex === mockInterviewQuestions.length - 1 && (
             <Button 
               onClick={() => switchComponent("feedback", interviewId)}
+              className="bg-red-600 text-white px-4 py-2 flex items-center gap-2 rounded-md hover:bg-red-700 transition-all duration-200 shadow-md"
+
             >
-              End Interview
+              <CheckCircle size={18} />End Interview
             </Button>
           )}
         </div>
