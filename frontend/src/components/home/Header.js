@@ -24,6 +24,8 @@ const Header = () => {
   const handleRedirectDashboard = () => {
     navigate("/dashboard");
   };
+
+
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="nav-content">
@@ -34,7 +36,7 @@ const Header = () => {
         <div className="nav-links">
           <a href="#features" className='feature'>Features</a>
           <a href="#showcase" onClick={handleRedirectDashboard}>Dashboard</a>
-          <a href="#analytics" className='feature'>Analytics</a>
+          <a href="/internships" className='feature' >Internship</a>
           <button 
             className="theme-toggle glass-effect-dashbord"
             onClick={() => setDarkMode(!darkMode)}

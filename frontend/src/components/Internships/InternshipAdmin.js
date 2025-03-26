@@ -46,8 +46,10 @@ const InternshipAdmin = () => {
   }, []);
 
   const handleLogin = (e) => {
+    console.log( "HELLO 🔹🔹🔹🔹 ",process.env.REACT_APP_ADMIN);
+
     e.preventDefault();
-    if (adminCredentials.username === process.env.REACT_APP_ADMIN && adminCredentials.password === process.env.REACT_APP_ADMIN_PASSWORD) {
+    if (adminCredentials.username === process.env.REACT_APP_ADMIN  && adminCredentials.password === process.env.REACT_APP_ADMIN_PASSWORD) {
       setIsAdmin(true);
     } else {
       alert('Invalid credentials');
@@ -119,6 +121,50 @@ const InternshipAdmin = () => {
     setEditId(internship.id);
     setFormData({ ...internship, skills: internship.skills.join(', '), responsibilities: internship.responsibilities.join(', ') });
   };
+
+
+
+   // Login Form
+   if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+        <div className="bg-white shadow-md rounded-lg p-8 max-w-md w-full">
+          <h2 className="text-2xl font-bold text-center mb-6">Admin Login</h2>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-gray-700 font-bold mb-2">Username</label>
+              <input
+                type="text"
+                value={adminCredentials.username}
+                onChange={(e) => setAdminCredentials(prev => ({
+                  ...prev, username: e.target.value
+                }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                placeholder="Enter username"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-bold mb-2">Password</label>
+              <input
+                type="password"
+                value={adminCredentials.password}
+                onChange={(e) => setAdminCredentials(prev => ({
+                  ...prev, password: e.target.value
+                }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                placeholder="Enter password"
+                required
+              />
+            </div>
+            <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md">
+              Login
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
