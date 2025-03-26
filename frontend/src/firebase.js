@@ -18,9 +18,3 @@ const app = initializeApp(firebaseConfig);
 // Export Firebase Auth and Google Provider
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
-
-
-
-
-
-

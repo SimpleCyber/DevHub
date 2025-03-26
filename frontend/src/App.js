@@ -1,6 +1,8 @@
 // src/App.js
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Toaster } from "sonner"; 
+
 
 // Components
 import ModernHomePage from './components/home/ModernHomePage'; 
@@ -12,6 +14,8 @@ import JobReady from "./components/InterviewPratice/InterviewRoutes";
 import Learn from "./components/Learn/learn";
 import Friend from "./components/Friends/friend";
 import Internships  from "./components/Internships/internships";
+import InternshipAdmin from "./components/Internships/InternshipAdmin";
+import InternshipDetail from "./components/Internships/InternshipDetail";
 
 
 function App() {
@@ -33,11 +37,19 @@ function App() {
         <Route path="/friends" element={<Friend />} /> 
 
         <Route path="/internships" element={<Internships />} />  
-              
 
+        <Route path="/admin" element={<InternshipAdmin />} />
+
+        <Route path="/internship/:id" element={<InternshipDetail />} />
+
+        
+        
 
 
       </Routes>
+      
+      <Toaster richColors position="top-right" />
+
     </Router>
   );
 }

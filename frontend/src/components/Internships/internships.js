@@ -1,13 +1,15 @@
-import React from 'react';
-import { Sidebar } from '../sidebar/sidebar';
+import { Sidebar } from "../sidebar/sidebar"
+import InternshipList from "./InternshipList"
 
 const Internships = () => {
   return (
-    <div className="learn-container">
+    <div className="flex">
       <Sidebar />
-      <h1>Internships</h1>
+      <div className="flex-1 overflow-auto">
+        <InternshipList />
+      </div>
     </div>
-  );
-};
+  )
+}
 
 export default Internships;

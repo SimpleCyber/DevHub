@@ -2,6 +2,10 @@
 import { getFirestore, collection, addDoc, getDocs, doc, getDoc, query, where } from "firebase/firestore";
 const db = getFirestore();
 
+
+
+
+
 // Mock Interview storage
 export const mockInterviewStorage = {
     // Create a new mock interview
@@ -39,3 +43,6 @@ export const userAnswerStorage = {
         return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     },
 };
+
+
+export {db};
