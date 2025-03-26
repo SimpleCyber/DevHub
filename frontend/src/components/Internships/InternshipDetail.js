@@ -13,8 +13,6 @@ import {
   Clock,
   X,
 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { Sidebar } from "../sidebar/sidebar";
 
 import { toast } from "sonner"; // Make sure to import toast from sonner
@@ -27,24 +25,25 @@ const InternshipDetail = () => {
   const handleShareJob = () => {
     try {
       const currentUrl = window.location.href;
-  
+
       // Log to verify function is called
       console.log("Share job function triggered");
-  
+
       // Check clipboard support
       if (!navigator.clipboard) {
         console.error("Clipboard API not supported");
         toast.error("Clipboard not supported");
         return;
       }
-  
+
       // Attempt to copy
-      navigator.clipboard.writeText(currentUrl)
+      navigator.clipboard
+        .writeText(currentUrl)
         .then(() => {
           // Multiple logging for debugging
           console.log("URL copy attempt successful");
           console.log("Attempting to show toast");
-          
+
           // Try different toast methods
           toast.success("Internship URL copied successfully!");
           // Alternatively, try:
@@ -59,8 +58,6 @@ const InternshipDetail = () => {
       toast.error("An unexpected error occurred");
     }
   };
-  
-
 
   useEffect(() => {
     const fetchInternshipDetails = async () => {
@@ -229,13 +226,18 @@ const InternshipDetail = () => {
                 </div>
 
                 {/* Job Overview */}
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mb-8">
-  <div className="prose prose-lg text-gray-700 leading-relaxed">
-    <ReactMarkdown remarkPlugins={[remarkGfm]}>{internship.description}</ReactMarkdown>
-  </div>
-</div>
 
-                
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mb-8">
+                  <div className="prose prose-lg text-gray-700 leading-relaxed">
+                    <div className="prose-headings:text-gray-900 prose-headings:font-semibold prose-ul:list-disc prose-ul:pl-5">
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: internship.description,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
 
                 {/* Skills Required */}
                 {internship.skills && internship.skills.length > 0 && (
@@ -277,12 +279,12 @@ const InternshipDetail = () => {
                   </button>
 
                   <button
-  onClick={handleShareJob}
-  className="bg-gray-800 hover:bg-gray-900 text-white w-full py-3 rounded-md transition flex items-center justify-center gap-2 font-medium"
->
-  <Share2 className="w-5 h-5" />
-  Share Job
-</button>
+                    onClick={handleShareJob}
+                    className="bg-gray-800 hover:bg-gray-900 text-white w-full py-3 rounded-md transition flex items-center justify-center gap-2 font-medium"
+                  >
+                    <Share2 className="w-5 h-5" />
+                    Share Job
+                  </button>
                 </div>
 
                 {/* Job Details */}

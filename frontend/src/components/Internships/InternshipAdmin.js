@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../utils/firebaseStorage';
-import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 
 const InternshipAdmin = () => {
   const [formData, setFormData] = useState({
@@ -26,8 +26,8 @@ const InternshipAdmin = () => {
     username: '',
     password: ''
   });
+  const [editId, setEditId] = useState(null);
 
-  // Fetch internships from Firestore
   useEffect(() => {
     const fetchInternships = async () => {
       try {
@@ -45,17 +45,15 @@ const InternshipAdmin = () => {
     fetchInternships();
   }, []);
 
-  // Handle Admin Login
   const handleLogin = (e) => {
     e.preventDefault();
-    if (adminCredentials.username === "satyan" && adminCredentials.password === "satyan") {
+    if (adminCredentials.username === process.env.REACT_APP_ADMIN && adminCredentials.password === process.env.REACT_APP_ADMIN_PASSWORD) {
       setIsAdmin(true);
     } else {
       alert('Invalid credentials');
     }
   };
 
-  // Handle Input Change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -64,7 +62,6 @@ const InternshipAdmin = () => {
     }));
   };
 
-  // Handle Submit (Add Internship)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -74,13 +71,17 @@ const InternshipAdmin = () => {
         responsibilities: formData.responsibilities.split(',').map(resp => resp.trim()),
       };
 
-      const docRef = await addDoc(collection(db, 'internships'), internshipData);
-      alert('Internship added successfully!');
+      if (editId) {
+        await updateDoc(doc(db, 'internships', editId), internshipData);
+        alert('Internship updated successfully!');
+        setInternships(internships.map(item => item.id === editId ? { id: editId, ...internshipData } : item));
+        setEditId(null);
+      } else {
+        const docRef = await addDoc(collection(db, 'internships'), internshipData);
+        alert('Internship added successfully!');
+        setInternships([...internships, { id: docRef.id, ...internshipData }]);
+      }
 
-      // Update local state
-      setInternships([...internships, { id: docRef.id, ...internshipData }]);
-
-      // Reset form
       setFormData({
         companyName: '',
         jobRole: '',
@@ -97,20 +98,16 @@ const InternshipAdmin = () => {
         description: '',
         postDate: new Date().toISOString()
       });
-
     } catch (error) {
-      console.error('Error adding internship: ', error);
-      alert('Failed to add internship');
+      console.error('Error submitting internship: ', error);
+      alert('Failed to submit internship');
     }
   };
 
-  // Handle Delete Internship
   const handleDelete = async (id) => {
     try {
       await deleteDoc(doc(db, 'internships', id));
       alert('Internship deleted successfully!');
-      
-      // Update local state after deletion
       setInternships(internships.filter(internship => internship.id !== id));
     } catch (error) {
       console.error('Error deleting internship:', error);
@@ -118,55 +115,18 @@ const InternshipAdmin = () => {
     }
   };
 
-  // Login Form
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-        <div className="bg-white shadow-md rounded-lg p-8 max-w-md w-full">
-          <h2 className="text-2xl font-bold text-center mb-6">Admin Login</h2>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-gray-700 font-bold mb-2">Username</label>
-              <input
-                type="text"
-                value={adminCredentials.username}
-                onChange={(e) => setAdminCredentials(prev => ({
-                  ...prev, username: e.target.value
-                }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="Enter username"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 font-bold mb-2">Password</label>
-              <input
-                type="password"
-                value={adminCredentials.password}
-                onChange={(e) => setAdminCredentials(prev => ({
-                  ...prev, password: e.target.value
-                }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="Enter password"
-                required
-              />
-            </div>
-            <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md">
-              Login
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
+  const handleEdit = (internship) => {
+    setEditId(internship.id);
+    setFormData({ ...internship, skills: internship.skills.join(', '), responsibilities: internship.responsibilities.join(', ') });
+  };
 
-  // Admin Dashboard
   return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4">
-      <div className="min-h-screen bg-gray-100 py-12 px-4">
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-8">
-        <h1 className="text-3xl font-bold text-center mb-8">Add Internship</h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="min-h-screen bg-gray-100 p-8">
+      <div className="container mx-auto grid md:grid-cols-2 gap-8">
+        {/* Form Section */}
+        <div className="bg-white shadow-2xl rounded-xl p-8 border-t-4 border-blue-500">
+          <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">Add Internship</h1>
+          <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label className="block text-gray-700 font-bold mb-2">Company Name</label>
@@ -309,30 +269,43 @@ const InternshipAdmin = () => {
             Add Internship
           </button>
         </form>
-      </div>
-    </div>
-  
+        </div>
 
-      {/* Display Internships */}
-      <div className="max-w-4xl mx-auto mt-12 bg-white shadow-md rounded-lg p-8">
-        <h2 className="text-2xl font-bold text-center mb-6">Internships</h2>
-        {internships.length > 0 ? (
-          <ul>
-            {internships.map((internship) => (
-              <li key={internship.id} className="flex justify-between items-center border-b py-3">
-                <div>
-                  <h3 className="text-lg font-bold">{internship.companyName} - {internship.jobRole}</h3>
-                  <p className="text-sm text-gray-600">{internship.location} | {internship.salaryRange}</p>
+        {/* Internships List Section */}
+        <div className="bg-white shadow-2xl rounded-xl p-8 border-t-4 border-green-500">
+          <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Internships</h2>
+          {internships.length > 0 ? (
+            <div className="space-y-4">
+              {internships.map((internship) => (
+                <div 
+                  key={internship.id} 
+                  className="bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300 border border-gray-200 flex justify-between items-center"
+                >
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-800">{internship.companyName} - {internship.jobRole}</h3>
+                    <p className="text-sm text-gray-600">{internship.location} | {internship.salaryRange}</p>
+                  </div>
+                  <div className="flex space-x-2">
+                    <button 
+                      onClick={() => handleEdit(internship)} 
+                      className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600 transition duration-300 transform hover:scale-105"
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(internship.id)} 
+                      className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition duration-300 transform hover:scale-105"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-                <button onClick={() => handleDelete(internship.id)} className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600">
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-center text-gray-600">No internships available.</p>
-        )}
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-gray-600">No internships available.</p>
+          )}
+        </div>
       </div>
     </div>
   );
