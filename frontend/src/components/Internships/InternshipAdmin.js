@@ -46,7 +46,6 @@ const InternshipAdmin = () => {
   }, []);
 
   const handleLogin = (e) => {
-    console.log( "HELLO 🔹🔹🔹🔹 ",process.env.REACT_APP_ADMIN);
 
     e.preventDefault();
     if (adminCredentials.username === process.env.REACT_APP_ADMIN  && adminCredentials.password === process.env.REACT_APP_ADMIN_PASSWORD) {

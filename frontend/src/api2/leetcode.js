@@ -132,7 +132,7 @@ const LeetCodeStats = ({ profile }) => {
             <h3>Badges</h3>
             <div className="badges-container">
               {badges.length > 0 ? (
-                badges.map((badge, index) => (
+                badges.slice(0, 4).map((badge, index) => (
                   <div key={index} className="badge-item">
                     <img
                       src={badge.icon?.startsWith('http') 

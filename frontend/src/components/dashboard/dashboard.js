@@ -177,7 +177,7 @@ export default function Dashboard() {
     <>
       <Sidebar />
       <div className="dashboard-container">
-        <h1>Hello! {userData?.fullName || "User"}</h1>
+        <h1 className="text-2xl font-bold">Hello! {userData?.fullName || "User"}</h1>
         <p className="subtitle">Welcome back! Check your progress here</p>
 
         <div className="metrics-grid">
