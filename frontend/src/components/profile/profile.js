@@ -3,8 +3,6 @@ import { useLocation } from "react-router-dom";
 import { auth } from "../../firebase";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
-import Header from "../home/Header";
-import Footer from "../home/Footer";
 import "./profile.css";
 import { Sidebar } from "../sidebar/sidebar";
 
@@ -368,7 +366,6 @@ const Profile = () => {
           </form>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
