@@ -1,5 +1,5 @@
 "use client"
-import { FileText, Youtube, Code, PenTool, Star, Check } from "lucide-react"
+import {  Youtube, Code, Star, Check } from "lucide-react"
 
 const LessonTable = ({ lessons, onToggleComplete }) => {
   return (
@@ -11,18 +11,14 @@ const LessonTable = ({ lessons, onToggleComplete }) => {
               STATUS
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PROBLEM</th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
-              ARTICLE
-            </th>
+            
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
               YOUTUBE
             </th>
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
               PRACTICE
             </th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
-              NOTE
-            </th>
+            
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
               DIFFICULTY
             </th>
@@ -51,17 +47,11 @@ const LessonTable = ({ lessons, onToggleComplete }) => {
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm font-medium text-gray-900">{lesson.title}</div>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {lesson.article && (
-                  <div className="flex justify-center">
-                    <FileText className="w-5 h-5 text-gray-500" />
-                  </div>
-                )}
-              </td>
+              
               <td className="px-6 py-4 whitespace-nowrap">
                 {lesson.youtube && (
                   <div className="flex justify-center">
-                    <Youtube className="w-5 h-5 text-red-500" />
+                    <Youtube className="w-5 h-5 text-red-500 " />
                   </div>
                 )}
               </td>
@@ -72,13 +62,7 @@ const LessonTable = ({ lessons, onToggleComplete }) => {
                   </div>
                 )}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {lesson.note && (
-                  <div className="flex justify-center">
-                    <PenTool className="w-5 h-5 text-gray-500" />
-                  </div>
-                )}
-              </td>
+              
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex justify-center">
                   <span
@@ -109,5 +93,5 @@ const LessonTable = ({ lessons, onToggleComplete }) => {
   )
 }
 
-export default LessonTable
+export default LessonTable;
 

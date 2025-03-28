@@ -11,7 +11,7 @@ const LearningTopic = ({ title, currentLesson, totalLessons, completedLessons, c
     <div className="bg-white rounded-lg shadow-sm mb-4 overflow-hidden">
       <div className="border-b border-gray-200">
         <div className="flex justify-between items-center p-4">
-          <h3 className="text-md font-medium text-[#ff5631]">{title}</h3>
+          <h3 className="text-md font-bold text-gray-500">{title}</h3>
           <div className="flex items-center">
             <span className="text-sm text-gray-500 mr-4">
               {currentLesson} / {totalLessons}
@@ -24,7 +24,7 @@ const LearningTopic = ({ title, currentLesson, totalLessons, completedLessons, c
         <div className="px-4 pb-4">
           <div className="w-full bg-gray-200 rounded-full h-1.5">
             <div
-              className="bg-green-500 h-1.5 rounded-full transition-all duration-500"
+              className="bg-purple-500 h-1.5 rounded-full transition-all duration-500"
               style={{ width: `${progressPercentage}%` }}
             ></div>
           </div>

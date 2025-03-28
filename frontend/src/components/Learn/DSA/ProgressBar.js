@@ -7,15 +7,15 @@ const ProgressBar = ({ current, total, percentage, onShowRevision }) => {
       <div className="flex justify-between items-center mb-2">
         <div className="text-sm text-gray-600">
           Your Progress:{" "}
-          <span className="font-medium">
+          <span className="font-bold">
             {current}/{total}
           </span>
         </div>
-        <div className="text-orange-500 font-medium">{percentage}% complete</div>
+        <div className="text-purple-500 font-medium">{percentage}% complete</div>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-2.5">
         <div
-          className="bg-orange-500 h-2.5 rounded-full transition-all duration-500"
+          className="bg-purple-500 h-2.5 rounded-full transition-all duration-500"
           style={{ width: `${percentage}%` }}
         ></div>
       </div>

@@ -12,90 +12,88 @@ const Dsa = ({ onGoBack }) => {
     {
       title: "User Input / Output",
       completed: true,
-      article: true,
       youtube: true,
       practice: true,
-      note: true,
       difficulty: "Easy",
       starred: false,
     },
     {
       title: "Data Types",
       completed: true,
-      article: false,
+       
       youtube: true,
       practice: true,
-      note: true,
+       
       difficulty: "Easy",
       starred: false,
     },
     {
       title: "If Else statements",
       completed: true,
-      article: true,
+       
       youtube: true,
       practice: true,
-      note: true,
+       
       difficulty: "Easy",
       starred: false,
     },
     {
       title: "Switch Statement",
       completed: true,
-      article: true,
+       
       youtube: true,
       practice: true,
-      note: true,
+       
       difficulty: "Easy",
       starred: false,
     },
     {
       title: "What are arrays, strings?",
       completed: true,
-      article: false,
+       
       youtube: true,
       practice: false,
-      note: true,
+       
       difficulty: "Easy",
       starred: false,
     },
     {
       title: "For loops",
       completed: true,
-      article: true,
+       
       youtube: true,
       practice: true,
-      note: true,
+       
       difficulty: "Easy",
       starred: false,
     },
     {
       title: "While loops",
       completed: true,
-      article: true,
+       
       youtube: true,
       practice: true,
-      note: true,
+       
       difficulty: "Easy",
       starred: false,
     },
     {
       title: "Functions (Pass by Reference and Value)",
       completed: true,
-      article: false,
+       
       youtube: true,
       practice: true,
-      note: true,
+       
       difficulty: "Easy",
       starred: false,
     },
     {
       title: "Time Complexity (Learn Basics, and then analyse in next Steps)",
       completed: true,
-      article: true,
+       
       youtube: true,
       practice: false,
-      note: true,
+       
       difficulty: "Easy",
       starred: false,
     },
@@ -106,17 +104,17 @@ const Dsa = ({ onGoBack }) => {
     {
       title: "Arrays Introduction",
       completed: true,
-      article: true,
+       
       youtube: true,
       practice: true,
-      note: true,
+       
       difficulty: "Easy",
       starred: false,
     },
     {
       title: "Array Operations",
       completed: true,
-      article: true,
+       
       youtube: true,
       practice: true,
       note: false,
@@ -126,17 +124,17 @@ const Dsa = ({ onGoBack }) => {
     {
       title: "Linked Lists Basics",
       completed: false,
-      article: true,
+       
       youtube: true,
       practice: true,
-      note: true,
+       
       difficulty: "Medium",
       starred: false,
     },
     {
       title: "Stacks and Queues",
       completed: false,
-      article: true,
+       
       youtube: true,
       practice: true,
       note: false,
@@ -146,10 +144,10 @@ const Dsa = ({ onGoBack }) => {
     {
       title: "Recursion Fundamentals",
       completed: false,
-      article: true,
+       
       youtube: true,
       practice: true,
-      note: true,
+       
       difficulty: "Medium",
       starred: false,
     },
@@ -225,17 +223,17 @@ const Dsa = ({ onGoBack }) => {
             <div className="flex justify-between items-center mb-2">
               <div className="text-sm text-gray-600">
                 Your Progress:{" "}
-                <span className="font-medium">
-                  {progressData.current}/{progressData.total}
+                <span className="font-bold">
+                  {progressData.current} / {progressData.total}
                 </span>
               </div>
-              <div className="text-[#ff5631] font-medium">
+              <div className="text-purple-500 font-bold">
                 {progressData.percentage}% complete
               </div>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5">
               <div
-                className="bg-[#ff5631] h-2.5 rounded-full transition-all duration-500"
+                className="bg-[#9050ff] h-2.5 rounded-full transition-all duration-500"
                 style={{ width: `${progressData.percentage}%` }}
               ></div>
             </div>

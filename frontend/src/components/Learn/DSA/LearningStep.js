@@ -10,7 +10,7 @@ const LearningStep = ({ title, currentStep, totalSteps, children }) => {
     <div className="bg-white rounded-lg shadow-sm mb-4 overflow-hidden">
       <div className="border-b border-gray-200">
         <div className="flex justify-between items-center p-4">
-          <h2 className="text-lg font-medium text-gray-800">{title}</h2>
+          <h2 className="text-xl font-bold text-red-600">{title}</h2>
           <div className="flex items-center">
             <span className="text-sm text-gray-500 mr-4">
               {currentStep} / {totalSteps}

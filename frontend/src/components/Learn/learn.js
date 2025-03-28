@@ -20,7 +20,7 @@ const Learn = () => {
       title: "Data Structure and Algorithms",
       progress: 26,
       steps: 31,
-      difficulty: "Easy"
+      difficulty: "Medium"
     },
     {
       id: 'aptitude',
@@ -36,7 +36,7 @@ const Learn = () => {
       title: "Web Development",
       progress: 5,
       steps: 75,
-      difficulty: "Hard"
+      difficulty: "Easy"
     }
   ]);
 
@@ -83,7 +83,7 @@ const Learn = () => {
               <h2 className="text-xl font-bold text-gray-800 mb-4">{track.title}</h2>
               <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
                 <div 
-                  className="bg-blue-600 h-2.5 rounded-full" 
+                  className="bg-purple-500 h-2.5 rounded-full" 
                   style={{ width: `${track.progress}%` }}
                 ></div>
               </div>
@@ -93,7 +93,7 @@ const Learn = () => {
               </div>
               <button 
                 onClick={() => setSelectedTrack(track)}
-                className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
+                className="w-full bg-purple-600   text-white py-2 rounded-md hover:bg-purple-400 transition"
               >
                 Continue Learning
               </button>
