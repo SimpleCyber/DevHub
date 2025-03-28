@@ -129,7 +129,7 @@ const InternshipList = () => {
     }
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 ">
         {internships.map((internship) => (
           <div
             key={internship.id}

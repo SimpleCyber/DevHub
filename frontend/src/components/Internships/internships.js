@@ -3,7 +3,7 @@ import InternshipList from "./InternshipList"
 
 const Internships = () => {
   return (
-    <div className="flex">
+    <div className="flex bg-[#e9effe]">
       <Sidebar />
       <div className="flex-1 overflow-auto">
         <InternshipList />

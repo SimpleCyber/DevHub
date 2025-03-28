@@ -200,7 +200,7 @@ const Dsa = ({ onGoBack }) => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50 ml-64">
+    <div className="flex h-screen bg-[#e9effe] ml-64">
       <Sidebar />
       <div className="flex-1 overflow-auto">
         <div className="p-6">

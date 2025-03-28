@@ -14,7 +14,7 @@ import Footer from "./Footer";
 
 const ModernHomePage = () => {
   return (
-    <div className="page-container">
+    <div className="page-container bg-[#e9effe]">
       <div className="gradient-blob"></div>
       <div className="gradient-blob2"></div>
 

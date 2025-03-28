@@ -6,6 +6,7 @@ import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 import Header from "../home/Header";
 import Footer from "../home/Footer";
 import "./profile.css";
+import { Sidebar } from "../sidebar/sidebar";
 
 const Profile = () => {
   const location = useLocation();
@@ -127,11 +128,12 @@ const Profile = () => {
   };
 
   return (
-    <>
-      <Header />
+    <div className="ml-48">
+      {/* <Header /> */}
+      <Sidebar />
       <div className="gradient-blob"></div>
       <div className="gradient-blob2"></div>
-      <div className="main-profile-page-container glass-effect auth-card">
+      <div className="main-profile-page-container glass-effect auth-card  ">
         <div className="main-profile-toast-container">
           {message && (
             <div
@@ -367,7 +369,7 @@ const Profile = () => {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 

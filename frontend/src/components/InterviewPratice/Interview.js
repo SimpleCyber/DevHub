@@ -45,7 +45,7 @@ function Interview({ switchComponent, interviewId }) {
 
   if (!interviewData) {
     return (
-      <div>
+      <div className="bg-[#e9effe]">
         <div className="container mx-auto px-4 py-8 text-center">
           <p>Loading interview data...</p>
           
@@ -55,7 +55,7 @@ function Interview({ switchComponent, interviewId }) {
   }
 
   return (
-    <div>
+    <div className="bg-[#e9effe]">
       <div className="container mx-auto px-4 py-8">
         <h2 className="font-bold text-2xl mb-6">Let's Get Started</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
