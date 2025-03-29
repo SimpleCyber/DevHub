@@ -18,9 +18,6 @@ const FriendCard = ({ friend }) => {
               <span className="text-sm font-semibold text-gray-500">
               {friend.stats.streak} Day Streak
             </span>
-
-
-
             </div>
           </div>
 
