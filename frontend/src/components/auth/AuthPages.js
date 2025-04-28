@@ -37,7 +37,7 @@ const AuthPages = () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user; // Firebase User Object
-      navigate('/dashboard', { state: { email: user.email } }); // Navigate with email
+      navigate('/', { state: { email: user.email } }); // Navigate with email
     } catch (error) {
       alert(`Error: ${error.message}`);
     } finally {
