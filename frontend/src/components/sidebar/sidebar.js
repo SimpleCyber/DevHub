@@ -101,9 +101,13 @@ export function Sidebar() {
 
   const navItems = [
     { icon: Home, text: "Home", path: "/" },
-    { icon: LayoutDashboard, text: "Dashboard", path: "/dashboard" },
+    { 
+      icon: LayoutDashboard, 
+      text: "Dashboard", 
+      path: userData ? `/dashboard/${auth.currentUser?.uid}` : "/auth",
+    },
     { icon: BookOpenCheck, text: "Learn", path: "/learn" },
-    { icon: ListCheck, text: "Friends", path: "/friends" },
+    // { icon: ListCheck, text: "Friends", path: "/friends" },
     { icon: ClipboardPenLine, text: "Interview Practice", path: "/interview" },
     { icon: MessageSquareText, text: "Internships", path: "/internships" },
     { icon: User, text: "Profile", path: "/profile" },
@@ -132,18 +136,29 @@ export function Sidebar() {
         </div>
 
         <nav className="sidebar-nav">
-          <ul className="nav-list">
-            {navItems.map((item, index) => (
-              <SidebarItem
-                key={index}
-                icon={item.icon}
-                text={item.text}
-                active={location.pathname === item.path}
-                onClick={() => navigate(item.path)}
-              />
-            ))}
-          </ul>
-        </nav>
+  <ul className="nav-list">
+    {navItems.map((item, index) => {
+      const isActive = item.path === "/" 
+      ? location.pathname === "/" 
+      : location.pathname.startsWith(item.path);
+    
+
+      return (
+        <SidebarItem
+          key={index}
+          icon={item.icon}
+          text={item.text}
+          active={isActive}
+          onClick={() => {
+            if (loading && item.text === "Dashboard") return;
+            navigate(item.path);
+          }}
+        />
+      );
+    })}
+  </ul>
+</nav>
+
       </div>
 
       <ProfileSection userData={userData} isOpen={isOpen} loading={loading} />

@@ -55,7 +55,7 @@ const AuthPages = () => {
         // Sign in with email and password
         const result = await signInWithEmailAndPassword(auth, formData.email, formData.password);
         // Navigate to dashboard or wherever the interview form is
-        navigate('/dashboard'); // Update this to your correct path
+        navigate('/'); // Update this to your correct path
       } else {
         // Create a new account
         await createUserWithEmailAndPassword(auth, formData.email, formData.password);

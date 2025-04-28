@@ -1,7 +1,21 @@
 "use client"
-import {  Youtube, Code, Star, Check } from "lucide-react"
+import { useState } from "react"
+import { Youtube, Code, Star, Check } from "lucide-react"
+import YouTubeModal from "../YouTubeModal"
 
 const LessonTable = ({ lessons, onToggleComplete }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState("")
+
+  const handleYoutubeClick = (videoUrl) => {
+    setSelectedVideoUrl(videoUrl)
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+  }
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
@@ -51,7 +65,10 @@ const LessonTable = ({ lessons, onToggleComplete }) => {
               <td className="px-6 py-4 whitespace-nowrap">
                 {lesson.youtube && (
                   <div className="flex justify-center">
-                    <Youtube className="w-5 h-5 text-red-500 " />
+                    <Youtube 
+                      className="w-5 h-5 text-red-500 cursor-pointer hover:text-red-600" 
+                      onClick={() => handleYoutubeClick(lesson.youtube)}
+                    />
                   </div>
                 )}
               </td>
@@ -89,9 +106,14 @@ const LessonTable = ({ lessons, onToggleComplete }) => {
           ))}
         </tbody>
       </table>
+      
+      <YouTubeModal 
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        videoUrl={selectedVideoUrl}
+      />
     </div>
   )
 }
 
 export default LessonTable;
-

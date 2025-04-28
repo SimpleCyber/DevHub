@@ -12,7 +12,7 @@ const Dsa = ({ onGoBack }) => {
     {
       title: "User Input / Output",
       completed: true,
-      youtube: true,
+      youtube: "https://youtu.be/EAR7De6Goz4?si=ZIn7meMTrrXLbAkO",
       practice: true,
       difficulty: "Easy",
       starred: false,

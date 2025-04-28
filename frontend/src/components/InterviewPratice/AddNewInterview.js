@@ -1,5 +1,4 @@
 //AddNewInterwiew.js
-
 "use client"
 
 import { useState, useRef } from "react"
@@ -103,8 +102,6 @@ function AddNewInterview({ onInterviewCreated ,switchComponent}) {
 
 
 
-      // In a real app, you'd upload the resume file here
-      await mockInterviewStorage.create(newInterview)
 
 
       // Notify parent component

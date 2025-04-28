@@ -32,17 +32,20 @@ const MajorProjectItem = ({ name, date, link, isActive }) => {
   );
 };
 
-export const MajorProject = () => {
+export const MajorProject = ({ userId }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
     const fetchProjects = async () => {
-      if (!auth.currentUser) return;
-
+      // Determine which userId to use
+      const uidToUse = userId || (auth.currentUser ? auth.currentUser.uid : null);
+      
+      if (!uidToUse) return;
+  
       const db = getFirestore();
-      const docRef = doc(db, "profiles", auth.currentUser.uid);
-
+      const docRef = doc(db, "profiles", uidToUse);
+  
       try {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -55,10 +58,10 @@ export const MajorProject = () => {
         console.error("Failed to fetch projects data", err);
       }
     };
-
+  
     fetchProjects();
-  }, []);
-
+  }, [userId]); // Add userId to dependency array
+  
   const nextProject = () => {
     setCurrentIndex((prev) => (prev + 1) % projects.length);
   };

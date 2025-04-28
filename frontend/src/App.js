@@ -28,7 +28,8 @@ function App() {
 
         <Route path="/profile" element={<Profile />} />
 
-        <Route path="/dashboard" element={ <Dashboard />} />
+        <Route path="/dashboard/:uid" element={<Dashboard />} />
+
 
         <Route path="/interview" element={ <JobReady />} />
 

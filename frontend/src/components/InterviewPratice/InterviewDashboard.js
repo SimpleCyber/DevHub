@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import AddNewInterview from "./AddNewInterview";
 import { mockInterviewStorage } from "../utils/firebaseStorage";
-import { ArrowLeft, ChevronLeft } from "lucide-react"; // Import arrow icon for back button
 
 function InterviewDashboard({ switchComponent }) {
   const { user } = useUser();
@@ -44,14 +43,6 @@ function InterviewDashboard({ switchComponent }) {
         <div className="flex items-center mb-6">
 
 
-
-
-          {/* <button
-            onClick={() => switchComponent("home")}
-            className="flex items-center text-gray-600 hover:text-gray-900"
-          >
-            <ChevronLeft className="h-5 w-5 mr-1" />
-          </button> */}
 
 
 
