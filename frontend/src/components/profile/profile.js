@@ -12,6 +12,10 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  
+  // State to hold the skills input string separately from the skills array
+  const [skillsInput, setSkillsInput] = useState("");
+  
   const [formData, setFormData] = useState({
     email: locationEmail || "",
     fullName: "",
@@ -22,11 +26,19 @@ const Profile = () => {
     resume: "",
     profileImage: "https://shorturl.at/yHqIn",
     projects: [{ name: "", url: "", date: "" }],
+    skills: [],
   });
 
   useEffect(() => {
     loadProfileData();
   }, []);
+
+  // Update skillsInput when formData.skills changes (e.g., on initial load)
+  useEffect(() => {
+    if (Array.isArray(formData.skills) && formData.skills.length > 0) {
+      setSkillsInput(formData.skills.join(", "));
+    }
+  }, [formData.skills]);
 
   const loadProfileData = async () => {
     if (!auth.currentUser) return;
@@ -37,9 +49,24 @@ const Profile = () => {
     try {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        setFormData((prev) => ({ ...prev, ...docSnap.data() }));
+        const data = docSnap.data();
+        // Ensure skills is always an array
+        const skills = Array.isArray(data.skills) ? data.skills : [];
+        
+        // Clone the data and explicitly set skills as an array
+        const updatedData = { ...data, skills };
+        
+        setFormData((prev) => ({ ...prev, ...updatedData }));
+        
+        // Set the skills input field with the joined skills
+        if (skills.length > 0) {
+          setSkillsInput(skills.join(", "));
+        }
+        
+        console.log("Loaded profile data with skills:", skills); // Debug log
       }
     } catch (error) {
+      console.error("Error loading profile data:", error);
       setMessage("Error loading profile data");
     }
   };
@@ -54,11 +81,33 @@ const Profile = () => {
     setLoading(true);
     const db = getFirestore();
     try {
-      await setDoc(doc(db, "profiles", auth.currentUser.uid), formData);
+      // Process skills from the skillsInput string before saving
+      const skillsArray = skillsInput
+        .split(",")
+        .map(skill => skill.trim())
+        .filter(skill => skill !== "");
+      
+      // Create a data object with the processed skills array
+      const dataToSave = {
+        ...formData,
+        skills: skillsArray
+      };
+      
+      console.log("Saving profile with skills:", dataToSave.skills); // Debug log
+      
+      await setDoc(doc(db, "profiles", auth.currentUser.uid), dataToSave);
+      
+      // Update formData with the new skills array
+      setFormData(prev => ({
+        ...prev,
+        skills: skillsArray
+      }));
+      
       setMessage("Profile saved successfully!");
       setIsEditing(false);
     } catch (error) {
       setMessage("Error saving profile");
+      console.error("Save error:", error);
     } finally {
       setLoading(false);
     }
@@ -66,12 +115,18 @@ const Profile = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  
+    if (name === "skills") {
+      // Just update the skills input string
+      setSkillsInput(value);
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
-
+  
   const handleProjectChange = (index, e) => {
     const { name, value } = e.target;
     setFormData((prev) => {
@@ -86,7 +141,6 @@ const Profile = () => {
 
   const addNewProject = () => {
     if (formData.projects.length < 3) {
-      // 🤪 Limit to 3 projects 🌿 #comment 1
       setFormData((prev) => ({
         ...prev,
         projects: [...prev.projects, { name: "", url: "", date: "" }],
@@ -98,7 +152,7 @@ const Profile = () => {
 
   const deleteProject = (index) => {
     setFormData((prev) => {
-      const updatedProjects = prev.projects.filter((_, i) => i !== index); // 🤪 Remove project at index 🌿 #comment 2
+      const updatedProjects = prev.projects.filter((_, i) => i !== index);
       return { ...prev, projects: updatedProjects };
     });
   };
@@ -127,7 +181,6 @@ const Profile = () => {
 
   return (
     <div className="ml-48">
-      {/* <Header /> */}
       <Sidebar />
       <div className="gradient-blob"></div>
       <div className="gradient-blob2"></div>
@@ -169,8 +222,9 @@ const Profile = () => {
                 isEditing ? "main-profile-save-mode" : ""
               }`}
               onClick={() => setIsEditing(!isEditing)}
+              type="button"
             >
-              {isEditing ? "Save Changes" : "Edit Profile"}
+              {isEditing ? "Cancel Editing" : "Edit Profile"}
             </button>
           </div>
 
@@ -254,6 +308,25 @@ const Profile = () => {
                 />
               </div>
 
+              <div className="main-profile-form-group">
+                <label htmlFor="skills">Skills (comma separated)</label>
+                <input
+                  type="text"
+                  id="skills"
+                  name="skills"
+                  value={skillsInput}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  placeholder="e.g. React, Node.js, MongoDB"
+                  className="main-profile-form-input"
+                />
+                {Array.isArray(formData.skills) && formData.skills.length > 0 && (
+                  <div className="skills-preview">
+                    Current skills: {formData.skills.join(", ")}
+                  </div>
+                )}
+              </div>
+
               <div className="main-profile-resume-section">
                 <label>Resume</label>
                 {isEditing ? (
@@ -287,7 +360,6 @@ const Profile = () => {
             {/* Projects Section */}
             <h2>Projects</h2>
             <div className="main-profile-projects-section">
-              
               {formData.projects.map((project, index) => (
                 <div key={index} className="main-profile-projects-form">
                   <div className="main-profile-form-group">
@@ -327,24 +399,23 @@ const Profile = () => {
                     <button
                       type="button"
                       className="main-profile-delete-project-button"
-                      onClick={() => deleteProject(index)} // 🤪 Delete button logic 🌿 #comment 3
+                      onClick={() => deleteProject(index)}
                     >
                       Delete
                     </button>
                   )}
                 </div>
               ))}
-             
             </div>
             {isEditing && formData.projects.length < 3 && (
-                <button
-                  type="button"
-                  className="main-profile-add-project-button"
-                  onClick={addNewProject}
-                >
-                  Add Project
-                </button>
-              )}
+              <button
+                type="button"
+                className="main-profile-add-project-button"
+                onClick={addNewProject}
+              >
+                Add Project
+              </button>
+            )}
             {isEditing && (
               <div className="main-profile-form-actions">
                 <button

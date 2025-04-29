@@ -11,142 +11,121 @@ const Dsa = ({ onGoBack }) => {
   const [lecture1Lessons, setLecture1Lessons] = useState([
     {
       title: "User Input / Output",
-      completed: true,
+      completed: false,
       youtube: "https://youtu.be/EAR7De6Goz4?si=ZIn7meMTrrXLbAkO",
-      practice: true,
+      practice: false,
       difficulty: "Easy",
       starred: false,
     },
     {
-      title: "Data Types",
-      completed: true,
+      title: "Patterns",
+      completed: false,
        
-      youtube: true,
-      practice: true,
-       
-      difficulty: "Easy",
-      starred: false,
-    },
-    {
-      title: "If Else statements",
-      completed: true,
-       
-      youtube: true,
-      practice: true,
-       
-      difficulty: "Easy",
-      starred: false,
-    },
-    {
-      title: "Switch Statement",
-      completed: true,
-       
-      youtube: true,
-      practice: true,
-       
-      difficulty: "Easy",
-      starred: false,
-    },
-    {
-      title: "What are arrays, strings?",
-      completed: true,
-       
-      youtube: true,
+      youtube: "https://www.youtube.com/watch?v=tNm_NNSB3_w&list=PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz&index=3",
       practice: false,
        
       difficulty: "Easy",
       starred: false,
     },
     {
-      title: "For loops",
-      completed: true,
+      title: "C++ STL",
+      completed: false,
        
-      youtube: true,
-      practice: true,
-       
-      difficulty: "Easy",
-      starred: false,
-    },
-    {
-      title: "While loops",
-      completed: true,
-       
-      youtube: true,
-      practice: true,
-       
-      difficulty: "Easy",
-      starred: false,
-    },
-    {
-      title: "Functions (Pass by Reference and Value)",
-      completed: true,
-       
-      youtube: true,
-      practice: true,
-       
-      difficulty: "Easy",
-      starred: false,
-    },
-    {
-      title: "Time Complexity (Learn Basics, and then analyse in next Steps)",
-      completed: true,
-       
-      youtube: true,
+      youtube: "https://www.youtube.com/watch?v=RRVYpIET_RU",
       practice: false,
        
       difficulty: "Easy",
+      starred: false,
+    },
+    {
+      title: "Know the basic Maths",
+      completed: false,
+       
+      youtube: "https://www.youtube.com/watch?v=1xNbjMdbjug",
+      practice: false,
+       
+      difficulty: "Medium",
+      starred: false,
+    },
+    {
+      title: "Learn Basic Recursion",
+      completed: false,
+       
+      youtube: "https://www.youtube.com/watch?v=yVdKa8dnKiE&list=PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+      practice: "https://leetcode.com/problems/valid-palindrome/",
+       
+      difficulty: "Hard",
+      starred: false,
+    },
+
+
+    {
+      title: "Learn Basic Hashing",
+      completed: false,
+       
+      youtube: "https://www.youtube.com/watch?v=KEs5UyBJ39g",
+      practice: "https://leetcode.com/problems/frequency-of-the-most-frequent-element/",
+       
+      difficulty: "Medium",
       starred: false,
     },
   ]);
 
+
+
+
+
   // Initial data for Lecture 2
   const [lecture2Lessons, setLecture2Lessons] = useState([
     {
-      title: "Arrays Introduction",
-      completed: true,
+      title: "Selection Sort",
+      completed: false,
        
-      youtube: true,
-      practice: true,
+      youtube: "https://www.youtube.com/watch?t=167&v=HGk_ypEuS24",
+      practice: "https://leetcode.com/problems/rotate-list/description/",
        
       difficulty: "Easy",
       starred: false,
     },
     {
-      title: "Array Operations",
-      completed: true,
+      title: "Bubble Sort",
+      completed: false,
        
-      youtube: true,
-      practice: true,
+      youtube: "https://www.youtube.com/watch?t=1061&v=HGk_ypEuS24",
+      practice: "https://leetcode.com/problems/sort-list/description/",
       note: false,
       difficulty: "Easy",
       starred: false,
     },
     {
-      title: "Linked Lists Basics",
+      title: "Insertion Sort",
       completed: false,
        
-      youtube: true,
-      practice: true,
+      youtube: "https://www.youtube.com/watch?t=1900&v=HGk_ypEuS24",
+      practice: "https://leetcode.com/problems/insertion-sort-list/description/",
        
       difficulty: "Medium",
       starred: false,
     },
+
+
     {
-      title: "Stacks and Queues",
+      title: "Merge Sort",
       completed: false,
        
-      youtube: true,
-      practice: true,
+      youtube: "https://www.youtube.com/watch?v=ogjf7ORKfd8",
+      practice: "https://leetcode.com/problems/merge-intervals/description/",
       note: false,
       difficulty: "Medium",
       starred: false,
     },
+
     {
-      title: "Recursion Fundamentals",
+      title: "Quick Sort",
       completed: false,
        
-      youtube: true,
-      practice: true,
+      youtube: "https://www.youtube.com/watch?v=WIrA4YexLRQ",
+      practice: "https://leetcode.com/problems/count-subarrays-where-max-element-appears-at-least-k-times/description/?envType=daily-question&envId=2025-04-29",
        
       difficulty: "Medium",
       starred: false,
@@ -154,9 +133,9 @@ const Dsa = ({ onGoBack }) => {
   ]);
 
   const [progressData, setProgressData] = useState({
-    current: 118,
+    current: 0,
     total: 455,
-    percentage: 25,
+    percentage: 0,
   });
 
   // Calculate completed lessons
@@ -245,7 +224,7 @@ const Dsa = ({ onGoBack }) => {
             totalSteps={31}
           >
             <LearningTopic
-              title="Lec 1: Things to Know in C++/Java/Python or any language"
+              title="Lec 1: Learn the basics "
               currentLesson={9}
               totalLessons={9}
               completedLessons={completedLecture1Lessons}
@@ -257,7 +236,7 @@ const Dsa = ({ onGoBack }) => {
             </LearningTopic>
 
             <LearningTopic
-              title="Lec 2: Data Structures Fundamentals"
+              title="Lec 2: Learn importance of Sorting Techniques"
               currentLesson={2}
               totalLessons={5}
               completedLessons={completedLecture2Lessons}

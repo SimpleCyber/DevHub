@@ -14,7 +14,7 @@ import Footer from "./Footer";
 
 const ModernHomePage = () => {
   return (
-    <div className="page-container bg-[#e9effe]">
+    <div className="page-container ">
       <div className="gradient-blob"></div>
       <div className="gradient-blob2"></div>
 
@@ -31,7 +31,6 @@ const ModernHomePage = () => {
                   <Code2 className="leetcode" size={24} />
                   <Github className="github" size={24} />
                 </span>
-                
               </div>
             </h1>
             <p className="hero-subtitle glass-effect-dashbord">

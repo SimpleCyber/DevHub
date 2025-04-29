@@ -1,24 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../utils/firebaseStorage";
 import {
   Eye,
-  Share2,
-  Bookmark,
   Calendar,
   Briefcase,
-  Clock,
   ZapIcon,
   FilterIcon,
-  MapPin,
-  Building,
-  ExternalLink,
-  X,
 } from "lucide-react";
-import Markdown from "react-markdown";
-import InternshipDetail from "./InternshipDetail";
 import { useNavigate } from "react-router-dom";
 
 const InternshipList = () => {
@@ -27,36 +18,77 @@ const InternshipList = () => {
   const [internships, setInternships] = useState([]);
   const [selectedInternship, setSelectedInternship] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userProfileSkills, setUserProfileSkills] = useState([]);
   const [filters, setFilters] = useState({
     jobType: "",
     employmentType: "",
     skills: "",
+    skills2: ""
   });
 
   useEffect(() => {
-    const fetchInternships = async () => {
+    const fetchInternshipsAndProfiles = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "internships"));
-        const internshipData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-          timeAgo: getTimeAgo(doc.data().postDate),
-        }));
+        // Fetch user profile data first to get skills2
+        const profileSnapshot = await getDocs(collection(db, "profiles"));
+        const profileSkills = [];
+        
+        profileSnapshot.forEach((doc) => {
+          const data = doc.data();
+          const skills = Array.isArray(data.skills) ? data.skills : ["none"];
+          profileSkills.push(...skills);
+        });
+        
+        // Remove duplicates and set as available skills from profiles
+        setUserProfileSkills([...new Set(profileSkills)]);
 
-        // Sort internships by post date (most recent first)
+        // Fetch internships
+        const internshipSnapshot = await getDocs(collection(db, "internships"));
+        const internshipData = internshipSnapshot.docs.map((doc) => {
+          const data = doc.data();
+          
+          // Calculate matched skills
+          const matchedSkills = profileSkills.filter(skill => 
+            data.skills && data.skills.includes(skill)
+          );
+          
+          // Calculate days since posting (for recency score)
+          const postDate = new Date(data.postDate);
+          const now = new Date();
+          const daysSincePosting = Math.floor((now - postDate) / (1000 * 60 * 60 * 24));
+          
+          // Calculate match score (combination of skills match and recency)
+          // Higher weight to skills match (0-100 points) with recency as a secondary factor
+          const matchScore = (matchedSkills.length * 20) + Math.max(0, 100 - (daysSincePosting * 2));
+          
+          return {
+            id: doc.id,
+            ...data,
+            timeAgo: getTimeAgo(data.postDate),
+            skills2: matchedSkills,
+            matchScore: matchScore,
+            skillsMatchCount: matchedSkills.length
+          };
+        });
+
+        // Sort internships by match score (highest first)
+        // If scores are equal, sort by post date (most recent first)
         setInternships(
-          internshipData.sort(
-            (a, b) => new Date(b.postDate) - new Date(a.postDate)
-          )
+          internshipData.sort((a, b) => {
+            if (b.matchScore !== a.matchScore) {
+              return b.matchScore - a.matchScore; // Higher score first
+            }
+            return new Date(b.postDate) - new Date(a.postDate); // Most recent first
+          })
         );
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching internships:", error);
+        console.error("Error fetching data:", error);
         setLoading(false);
       }
     };
 
-    fetchInternships();
+    fetchInternshipsAndProfiles();
   }, []);
 
   const getTimeAgo = (postDate) => {
@@ -90,32 +122,8 @@ const InternshipList = () => {
       jobType: "",
       employmentType: "",
       skills: "",
+      skills2: ""
     });
-  };
-
-  const viewInternshipDetails = async (internshipId) => {
-    try {
-      setLoading(true);
-      const docRef = doc(db, "internships", internshipId);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        setSelectedInternship({
-          id: docSnap.id,
-          ...docSnap.data(),
-        });
-      } else {
-        console.log("No such document!");
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching internship:", error);
-      setLoading(false);
-    }
-  };
-
-  const closeDetails = () => {
-    setSelectedInternship(null);
   };
 
   // Render the list of internships
@@ -129,11 +137,15 @@ const InternshipList = () => {
     }
 
     return (
-      <div className="space-y-6 ">
+      <div className="space-y-6">
         {internships.map((internship) => (
           <div
             key={internship.id}
-            className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 hover:shadow-md transition"
+            className={`bg-white rounded-lg shadow-sm border ${
+              internship.skillsMatchCount > 0 
+                ? `border-l-4 border-l-green-500 border-gray-100` 
+                : `border-gray-100`
+            } p-6 hover:shadow-md transition`}
           >
             <div className="flex flex-col md:flex-row gap-4">
               {/* Company Logo */}
@@ -147,7 +159,7 @@ const InternshipList = () => {
                     />
                   ) : (
                     <div className="w-12 h-12 bg-blue-100 flex items-center justify-center rounded-md text-blue-500 font-bold">
-                      {internship.companyName.charAt(0)}
+                      {internship.companyName?.charAt(0) || "?"}
                     </div>
                   )}
                 </div>
@@ -176,35 +188,49 @@ const InternshipList = () => {
                   </div>
                 </div>
 
-                {/* Skills */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {internship.skills &&
-                    internship.skills.slice(0, 4).map((skill, index) => (
-                      <span
-                        key={index}
-                        className="bg-blue-50 text-blue-600 text-xs px-3 py-1 rounded-full"
-                      >
-                        {skill}
+                {/* Required Skills */}
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                    <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                    Required Skills
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {internship.skills &&
+                      internship.skills.slice(0, 4).map((skill, index) => (
+                        <span
+                          key={index}
+                          className="bg-blue-50 text-blue-600 text-xs px-4 py-1.5 rounded-full border border-blue-100 shadow-sm hover:bg-blue-100 transition-colors duration-200"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    {internship.skills && internship.skills.length > 4 && (
+                      <span className="text-blue-500 text-xs px-3 py-1.5 rounded-full border border-blue-100 hover:bg-blue-50 transition-colors duration-200">
+                        +{internship.skills.length - 4} more
                       </span>
-                    ))}
-                  {internship.skills && internship.skills.length > 4 && (
-                    <span className="text-gray-500 text-xs px-2 py-1">
-                      +{internship.skills.length - 4} more
-                    </span>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
 
               {/* Right Side - Salary and Actions */}
               <div className="flex flex-col items-end justify-between">
-                <div className="text-right">
-                  <div className="text-green-600 font-bold">
-                    {internship.salaryRange}
-                  </div>
-                  <div className="text-gray-500 text-sm">
-                    {internship.timeAgo}
-                  </div>
-                </div>
+  <div className="text-right">
+    <div className="text-green-600 font-bold">
+      {internship.salaryRange}
+    </div>
+    <div className="text-gray-500 text-sm">
+      {internship.timeAgo}
+    </div>
+    {internship.skillsMatchCount > 0 && (
+      <div className="mt-2 flex items-center justify-end">
+        <span className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-md flex items-center">
+          <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-1"></span>
+          {Math.round((internship.skillsMatchCount / internship.skills.length) * 100)}% chance for selection
+        </span>
+      </div>
+    )}
+  </div>
 
                 <div className="flex flex-col gap-2 mt-4 w-full md:w-auto">
                   <a
@@ -224,11 +250,6 @@ const InternshipList = () => {
                     <Eye className="w-4 h-4" />
                     View Details
                   </button>
-
-                  {/* <button className="text-gray-500 hover:text-blue-500 transition p-2">
-                      <Share2 className="w-5 h-5" />
-                    </button> */}
-
                 </div>
               </div>
             </div>
@@ -242,11 +263,14 @@ const InternshipList = () => {
     <div className="min-h-screen bg-gray-50 p-6 ml-64">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">
-            {selectedInternship
-              ? "Internship Details"
-              : `${internships.length} internships found`}
-          </h1>
+          <div className="flex flex-col">
+            <h1 className="text-2xl font-bold text-gray-800">
+              {selectedInternship
+                ? "Internship Details"
+                : `${internships.length} internships found`}
+            </h1>
+
+          </div>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
@@ -293,7 +317,7 @@ const InternshipList = () => {
                   </div>
 
                   <div>
-                    <label className="block text-gray-700 mb-2">Skills</label>
+                    <label className="block text-gray-700 mb-2">Required Skills</label>
                     <input
                       type="text"
                       name="skills"
@@ -306,6 +330,25 @@ const InternshipList = () => {
                       Separate multiple skills with commas
                     </p>
                   </div>
+
+                  {userProfileSkills.length > 0 && (
+                    <div>
+                      <label className="block text-gray-700 mb-2">Filter by Your Skills</label>
+                      <select
+                        name="skills2"
+                        value={filters.skills2}
+                        onChange={handleFilterChange}
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="">All Skills</option>
+                        {userProfileSkills.map((skill, index) => (
+                          <option key={index} value={skill}>
+                            {skill}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-6 space-y-3">
