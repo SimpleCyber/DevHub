@@ -1,7 +1,16 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { Mic, Brain, BarChart3 } from "lucide-react";
+import { useEffect } from "react"
+import { Mic, Brain, BarChart3 } from "lucide-react"
+import { auth } from "../../firebase"
 
 function Home({ switchComponent }) {
+  useEffect(() => {
+    if (auth.currentUser) {
+      switchComponent("dashboard")
+      console.log(auth.currentUser.uid)
+    }
+  }, [])
+
   return (
     <div>
       <section>
