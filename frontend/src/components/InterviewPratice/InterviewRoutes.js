@@ -38,11 +38,11 @@ function InterviewRoutes() {
   }
 
   return (
-    <ThemeProvider defaultTheme="light">
+    <ThemeProvider defaultTheme="light" className="bg-blue-50">
       <UserProvider>
         <div className="font-sans flex">
           <Sidebar switchComponent={switchComponent} />
-          <div className="main-content flex-grow">
+          <div className="main-content flex-grow bg-blue-50">
             <Toaster />
             {renderActiveComponent()}
           </div>

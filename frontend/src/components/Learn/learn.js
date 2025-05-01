@@ -58,7 +58,7 @@ const Learn = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#e9effe] p-6 ml-64">
+    <div className="min-h-screen  p-6 ml-64">
       <Sidebar />
       <div className="container mx-auto">
         <div className="flex items-center mb-8">
