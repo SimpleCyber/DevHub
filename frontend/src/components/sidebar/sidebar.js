@@ -16,8 +16,6 @@ import "./sidebar.css";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { auth } from "../../firebase";
 
-
-
 const SidebarItem = ({ icon: Icon, text, active, onClick }) => (
   <li className={`nav-item ${active ? "active" : ""}`} onClick={onClick}>
     <Icon className="nav-icon" />
@@ -45,7 +43,7 @@ const ProfileSection = ({ userData, isOpen, loading }) => {
             }}
           />
           <div className="profile-details-sidebar">
-            <h3 className="profile-name">{userData?.fullName || "User"}</h3>
+            <h3 className="profile-name">{userData?.name || "User"}</h3>
           </div>
         </>
       )}
@@ -101,9 +99,9 @@ export function Sidebar() {
 
   const navItems = [
     { icon: Home, text: "Home", path: "/" },
-    { 
-      icon: LayoutDashboard, 
-      text: "Dashboard", 
+    {
+      icon: LayoutDashboard,
+      text: "Dashboard",
       path: userData ? `/dashboard/${auth.currentUser?.uid}` : "/auth",
     },
     { icon: BookOpenCheck, text: "Learn", path: "/learn" },
@@ -136,29 +134,28 @@ export function Sidebar() {
         </div>
 
         <nav className="sidebar-nav">
-  <ul className="nav-list">
-    {navItems.map((item, index) => {
-      const isActive = item.path === "/" 
-      ? location.pathname === "/" 
-      : location.pathname.startsWith(item.path);
-    
+          <ul className="nav-list">
+            {navItems.map((item, index) => {
+              const isActive =
+                item.path === "/"
+                  ? location.pathname === "/"
+                  : location.pathname.startsWith(item.path);
 
-      return (
-        <SidebarItem
-          key={index}
-          icon={item.icon}
-          text={item.text}
-          active={isActive}
-          onClick={() => {
-            if (loading && item.text === "Dashboard") return;
-            navigate(item.path);
-          }}
-        />
-      );
-    })}
-  </ul>
-</nav>
-
+              return (
+                <SidebarItem
+                  key={index}
+                  icon={item.icon}
+                  text={item.text}
+                  active={isActive}
+                  onClick={() => {
+                    if (loading && item.text === "Dashboard") return;
+                    navigate(item.path);
+                  }}
+                />
+              );
+            })}
+          </ul>
+        </nav>
       </div>
 
       <ProfileSection userData={userData} isOpen={isOpen} loading={loading} />

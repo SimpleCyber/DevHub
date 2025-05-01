@@ -208,7 +208,7 @@ export default function Dashboard() {
         <div className="flex justify-between items-center mb-4">
           <div>
             <h1 className="text-2xl font-bold mb-7">
-              Hello! {userData?.fullName || "User"}
+              Hello! {userData?.name || "User"}
             </h1>
             <p className="subtitle">Welcome back! Check your progress here</p>
           </div>

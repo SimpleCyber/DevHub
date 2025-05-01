@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import {
   signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-} from 'firebase/auth';
-import { auth, googleProvider } from '../../firebase'; // Import your Firebase config
+} from "firebase/auth";
+import { auth, googleProvider } from "../../firebase"; // Import your Firebase config
 import {
   Mail,
   Lock,
@@ -15,14 +15,18 @@ import {
   EyeOff,
   Loader2,
   ChevronLeft,
-} from 'lucide-react';
-import './AuthPages.css';
+} from "lucide-react";
+import "./AuthPages.css";
 
 const AuthPages = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ email: '', password: '', fullName: '' });
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    name: "",
+  });
 
   const navigate = useNavigate(); // React Router's navigate hook
 
@@ -37,7 +41,7 @@ const AuthPages = () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user; // Firebase User Object
-      navigate('/', { state: { email: user.email } }); // Navigate with email
+      navigate("/", { state: { email: user.email } }); // Navigate with email
     } catch (error) {
       alert(`Error: ${error.message}`);
     } finally {
@@ -53,13 +57,21 @@ const AuthPages = () => {
     try {
       if (isLogin) {
         // Sign in with email and password
-        const result = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+        const result = await signInWithEmailAndPassword(
+          auth,
+          formData.email,
+          formData.password
+        );
         // Navigate to dashboard or wherever the interview form is
-        navigate('/'); // Update this to your correct path
+        navigate("/"); // Update this to your correct path
       } else {
         // Create a new account
-        await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-        alert('Account Created Successfully!');
+        await createUserWithEmailAndPassword(
+          auth,
+          formData.email,
+          formData.password
+        );
+        alert("Account Created Successfully!");
         setIsLogin(true); // Switch to login mode
       }
     } catch (error) {
@@ -82,11 +94,17 @@ const AuthPages = () => {
       <div className="auth-card glass-effect">
         <div className="auth-header">
           <div className="logo-section">
-            <ChevronLeft className="back-arrow" size={24} onClick={() => navigate(-1)} />
+            <ChevronLeft
+              className="back-arrow"
+              size={24}
+              onClick={() => navigate(-1)}
+            />
             <h1>DevHub</h1>
           </div>
           <p className="welcome-text">
-            {isLogin ? 'Welcome back, developer!' : 'Join the developer community'}
+            {isLogin
+              ? "Welcome back, developer!"
+              : "Join the developer community"}
           </p>
         </div>
 
@@ -97,7 +115,7 @@ const AuthPages = () => {
             disabled={loading}
           >
             <Chrome size={20} />
-            <span>{loading ? 'Loading...' : 'Continue with Google'}</span>
+            <span>{loading ? "Loading..." : "Continue with Google"}</span>
           </button>
         </div>
 
@@ -112,9 +130,9 @@ const AuthPages = () => {
               <div className="input-wrapper glass-effect">
                 <input
                   type="text"
-                  name="fullName"
+                  name="name"
                   placeholder="John Doe"
-                  value={formData.fullName}
+                  value={formData.name}
                   onChange={handleChange}
                   required
                 />
@@ -142,7 +160,7 @@ const AuthPages = () => {
             <div className="input-wrapper glass-effect">
               <Lock size={18} />
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="••••••••"
                 value={formData.password}
@@ -167,14 +185,14 @@ const AuthPages = () => {
 
           <button
             type="submit"
-            className={`submit-btn ${loading ? 'loading' : ''}`}
+            className={`submit-btn ${loading ? "loading" : ""}`}
             disabled={loading}
           >
             {loading ? (
               <Loader2 className="spinner" size={20} />
             ) : (
               <>
-                {isLogin ? 'Sign In' : 'Create Account'}
+                {isLogin ? "Sign In" : "Create Account"}
                 <ArrowRight size={18} />
               </>
             )}
@@ -183,15 +201,18 @@ const AuthPages = () => {
 
         <div className="auth-switch">
           <p>
-            {isLogin ? "Don't have an account?" : 'Already have an account?'}
-            <button onClick={switchMode}>{isLogin ? 'Sign Up' : 'Sign In'}</button>
+            {isLogin ? "Don't have an account?" : "Already have an account?"}
+            <button onClick={switchMode}>
+              {isLogin ? "Sign Up" : "Sign In"}
+            </button>
           </p>
         </div>
 
         {!isLogin && (
           <p className="terms">
-            By signing up, you agree to our <a href="#terms">Terms of Service</a>{' '}
-            and <a href="#privacy">Privacy Policy</a>
+            By signing up, you agree to our{" "}
+            <a href="#terms">Terms of Service</a> and{" "}
+            <a href="#privacy">Privacy Policy</a>
           </p>
         )}
       </div>

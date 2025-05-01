@@ -12,13 +12,13 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  
+
   // State to hold the skills input string separately from the skills array
   const [skillsInput, setSkillsInput] = useState("");
-  
+
   const [formData, setFormData] = useState({
     email: locationEmail || "",
-    fullName: "",
+    name: "",
     phone: "",
     github: "",
     linkedin: "",
@@ -52,17 +52,17 @@ const Profile = () => {
         const data = docSnap.data();
         // Ensure skills is always an array
         const skills = Array.isArray(data.skills) ? data.skills : [];
-        
+
         // Clone the data and explicitly set skills as an array
         const updatedData = { ...data, skills };
-        
+
         setFormData((prev) => ({ ...prev, ...updatedData }));
-        
+
         // Set the skills input field with the joined skills
         if (skills.length > 0) {
           setSkillsInput(skills.join(", "));
         }
-        
+
         console.log("Loaded profile data with skills:", skills); // Debug log
       }
     } catch (error) {
@@ -84,25 +84,25 @@ const Profile = () => {
       // Process skills from the skillsInput string before saving
       const skillsArray = skillsInput
         .split(",")
-        .map(skill => skill.trim())
-        .filter(skill => skill !== "");
-      
+        .map((skill) => skill.trim())
+        .filter((skill) => skill !== "");
+
       // Create a data object with the processed skills array
       const dataToSave = {
         ...formData,
-        skills: skillsArray
+        skills: skillsArray,
       };
-      
+
       console.log("Saving profile with skills:", dataToSave.skills); // Debug log
-      
+
       await setDoc(doc(db, "profiles", auth.currentUser.uid), dataToSave);
-      
+
       // Update formData with the new skills array
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        skills: skillsArray
+        skills: skillsArray,
       }));
-      
+
       setMessage("Profile saved successfully!");
       setIsEditing(false);
     } catch (error) {
@@ -115,18 +115,18 @@ const Profile = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-  
+
     if (name === "skills") {
       // Just update the skills input string
       setSkillsInput(value);
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [name]: value
+        [name]: value,
       }));
     }
   };
-  
+
   const handleProjectChange = (index, e) => {
     const { name, value } = e.target;
     setFormData((prev) => {
@@ -244,12 +244,12 @@ const Profile = () => {
               </div>
 
               <div className="main-profile-form-group">
-                <label htmlFor="fullName">Full Name</label>
+                <label htmlFor="name">Full Name</label>
                 <input
                   type="text"
-                  id="fullName"
-                  name="fullName"
-                  value={formData.fullName}
+                  id="name"
+                  name="name"
+                  value={formData.name}
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   className="main-profile-form-input"
@@ -320,11 +320,12 @@ const Profile = () => {
                   placeholder="e.g. React, Node.js, MongoDB"
                   className="main-profile-form-input"
                 />
-                {Array.isArray(formData.skills) && formData.skills.length > 0 && (
-                  <div className="skills-preview">
-                    Current skills: {formData.skills.join(", ")}
-                  </div>
-                )}
+                {Array.isArray(formData.skills) &&
+                  formData.skills.length > 0 && (
+                    <div className="skills-preview">
+                      Current skills: {formData.skills.join(", ")}
+                    </div>
+                  )}
               </div>
 
               <div className="main-profile-resume-section">
