@@ -18,5 +18,13 @@
     padding: 2rem;
   }
 
-
-
+  .hide-scrollbar {
+    overflow-y: auto; /* Ensures vertical scrolling */
+    overflow-x: hidden; /* Hides horizontal scrollbar */
+    scrollbar-width: none; /* Hides scrollbar in Firefox */
+    -ms-overflow-style: none; /* Hides scrollbar in Edge */
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none; /* Hides scrollbar in Chrome, Safari, and Opera */
+  }

@@ -51,8 +51,8 @@ const Header = () => {
           <span>DevHub</span>
         </div>
         <div className="nav-links">
-          <a href="#features" className='feature'>Features</a>
-          <a href="#user" onClick={handleRedirectDashboard}>Dashboard</a>
+        <a href="#user" onClick={handleRedirectDashboard}>Dashboard</a>
+          <a href="/interview" className='feature'>Interview</a>
           <a href="/internships" className='feature'>Internship</a>
           <button 
             className="theme-toggle glass-effect-dashbord"

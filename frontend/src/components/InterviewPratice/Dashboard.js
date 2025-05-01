@@ -1,12 +1,22 @@
+'use client'
 import React from 'react'
-import InterviewHeader from './InterviewHeader'
 
 const Dashboard = () => {
   return (
-    <div>
-       <InterviewHeader />
-       <h1 className="text-2xl font-bold mt-5 text-gray-900">Your Interviews</h1>
-       <h1 className="text-2xl font-bold mt-5 text-gray-900">Your Interviews</h1>
+    <div className="m-0 p-0 overflow-hidden bg-blue-50">
+      <iframe 
+        src="https://devhub-interview-bg.vercel.app/" 
+        title="DevHub Interview Integration" 
+        className="w-full h-screen border-none outline-none"
+        style={{ 
+          margin: 0, 
+          padding: 0, 
+          overflow: 'auto', 
+          scrollbarWidth: 'none', 
+          msOverflowStyle: 'none',
+          WebkitScrollbar: { display: 'none' }
+        }} 
+      />
     </div>
   )
 }

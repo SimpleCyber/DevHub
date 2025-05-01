@@ -20,7 +20,8 @@ ALLOWED_HOSTS = [
     'devhub-k9dg.onrender.com',  # Render domain
     '127.0.0.1',                 # Localhost for development
     'localhost',                 # Localhost for testing
-    'https://devhub-backend2-oi69.onrender.com'
+    'https://devhub-backend2-oi69.onrender.com',
+    'https://devhub-interview-bg.vercel.app/'
 ]
 # Application definition
 
