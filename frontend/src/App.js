@@ -10,7 +10,7 @@ import AuthPages from './components/auth/AuthPages';
 import Profile from "./components/profile/profile";
 import "./components/home/ModernHomePage.css"
 import Dashboard from "./components/dashboard/dashboard";
-import JobReady from "./components/InterviewPratice/InterviewRoutes";
+import InterviewRoutes from "./components/InterviewPratice/InterviewRoutes";
 import Learn from "./components/Learn/learn";
 import Friend from "./components/Friends/friend";
 import Internships  from "./components/Internships/internships";
@@ -31,7 +31,7 @@ function App() {
         <Route path="/dashboard/:uid" element={<Dashboard />} />
 
 
-        <Route path="/interview" element={ <JobReady />} />
+        <Route path="/interview" element={ <InterviewRoutes />} />
 
         <Route path="/learn" element={<Learn />} />
 
