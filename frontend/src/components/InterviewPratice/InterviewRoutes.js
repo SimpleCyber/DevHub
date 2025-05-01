@@ -42,7 +42,7 @@ function InterviewRoutes() {
       <UserProvider>
         <div className="font-sans flex">
           <Sidebar switchComponent={switchComponent} />
-          <div className="main-content flex-grow bg-blue-50">
+          <div className="main-content flex-grow bg-[#e9effe]">
             <Toaster />
             {renderActiveComponent()}
           </div>
