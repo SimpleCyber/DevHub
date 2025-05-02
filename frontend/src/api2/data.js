@@ -1,82 +1,79 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { auth } from "../firebase";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
+// API endpoint configuration
 // const API_URL = "http://127.0.0.1:8000/api/";
 const API_URL = "https://devhub-k9dg.onrender.com/api/";
 
-// Custom Hook
+// Cache duration in milliseconds (24 hours)
+const CACHE_DURATION = 24 * 60 * 60 * 1000;
+
+/**
+ * Custom hook to fetch platform data with caching
+ * @param {string} uid - User ID (optional, defaults to current user)
+ * @returns {Object} Platform data and loading state
+ */
 const useFetchPlatformData = (uid) => {
-  const [linkedinData, setLinkedinData] = useState(null);
-  const [githubData, setGithubData] = useState(null);
-  const [leetcodeData, setLeetcodeData] = useState(null);
+  const [platformData, setPlatformData] = useState({
+    linkedin: null,
+    github: null,
+    leetcode: null
+  });
   const [usernames, setUsernames] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-
+  
   const db = getFirestore();
 
-  // Utility: Check if data should be fetched (based on cache)
-  const shouldFetchData = (timestamp) => {
-    console.log("Checking timestamp:", timestamp, "Current time:", Date.now());
-    console.log("Diff:", Date.now() - timestamp, "Cache duration:", CACHE_DURATION);
+  // Check if cached data is stale
+  const isCacheStale = (timestamp) => {
+    if (!timestamp) return true;
     return Date.now() - timestamp > CACHE_DURATION;
   };
 
-  // Fetch data from Firestore
-  const fetchFromFirestore = async (platform) => {
-    const userId = uid || (auth.currentUser ? auth.currentUser.uid : null);
+  // Get the current user ID
+  const getUserId = () => {
+    return uid || (auth.currentUser ? auth.currentUser.uid : null);
+  };
 
+  // Fetch data from Firestore
+  const fetchFromFirestore = async () => {
+    const userId = getUserId();
     if (!userId) {
       console.log("No authenticated user");
-      return null;
+      return {};
     }
 
-    console.log(`Fetching ${platform} data from Firestore for user:`, userId);
-    const userRef = doc(db, "profiles", userId);
-    
+    console.log("Fetching profile data from Firestore for user:", userId);
     try {
+      const userRef = doc(db, "profiles", userId);
       const docSnap = await getDoc(userRef);
       
       if (docSnap.exists()) {
-        const data = docSnap.data();
-        console.log(`Firestore ${platform} data:`, data[platform]);
-        
-        if (!data[platform]) {
-          // If data exists but is stale, return it but mark for refresh
-          const isStale = shouldFetchData(data[platform].timestamp);
-          console.log(`${platform} data stale?`, isStale);
-          
-          return {
-            data: data[platform].data,
-            isStale: isStale
-          };
-        }
+        return docSnap.data();
       } else {
-        console.log("No document found for user");
+        console.log("No profile document found");
+        return {};
       }
     } catch (error) {
-      console.error(`Error fetching ${platform} data from Firestore:`, error);
+      console.error("Error fetching data from Firestore:", error);
+      return {};
     }
-    
-    return null; // No data or error
   };
 
   // Save data to Firestore
   const saveToFirestore = async (platform, data) => {
-    if (!auth.currentUser || (uid && uid !== auth.currentUser.uid)) return;
+    const userId = getUserId();
+    if (!userId) return;
     
     console.log(`Saving ${platform} data to Firestore`);
-    const userRef = doc(db, "profiles", auth.currentUser.uid);
-    const timestamp = Date.now();
-
     try {
+      const userRef = doc(db, "profiles", userId);
       await setDoc(userRef, {
         [platform]: {
           data: data,
-          timestamp: timestamp,
+          timestamp: Date.now(),
         },
       }, { merge: true });
       console.log(`${platform} data saved successfully`);
@@ -85,12 +82,12 @@ const useFetchPlatformData = (uid) => {
     }
   };
 
-  // Fetch fresh data from API
+  // Fetch data from API
   const fetchFromAPI = async (platform, username) => {
     console.log(`Fetching ${platform} data from API for username:`, username);
     try {
       const response = await axios.get(`${API_URL}${platform}/${username}/`);
-      console.log(`${platform} API response:`, response.data);
+      console.log(`${platform} API response received`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching ${platform} data from API:`, error);
@@ -98,137 +95,92 @@ const useFetchPlatformData = (uid) => {
     }
   };
 
-  // Load usernames from Firestore
-  useEffect(() => {
-    const fetchUsernames = async () => {
-      const userId = uid || (auth.currentUser ? auth.currentUser.uid : null);
-
-      if (!userId) {
-        console.log("No authenticated user for username fetch");
-        setIsLoading(false);
-        return;
-      }
-
-      console.log("Fetching usernames for user:", userId);
-      
-      try {
-        const docRef = doc(db, "profiles", userId);
-        const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          console.log("Profile data:", data);
-          
-          setUsernames({
-            linkedin: data.linkedin,
-            github: data.github,
-            leetcode: data.leetcode,
-          });
-        } else {
-          console.log("No profile document found");
-        }
-      } catch (err) {
-        console.error("Failed to fetch profile data", err);
-      }
-      
-      setIsLoading(false);
-    };
-
-    fetchUsernames();
-  }, []);
-
-  // Fetch platform data once usernames are available
-  useEffect(() => {
-    if (!usernames) {
-      console.log("No usernames available yet");
+  // Fetch and process data for a single platform
+  const fetchPlatformData = async (platform, username, firestoreData) => {
+    // Check if we have cached data
+    const cachedInfo = firestoreData[platform] || {};
+    const isStale = isCacheStale(cachedInfo.timestamp);
+    
+    // Use cached data if available and not stale
+    if (cachedInfo.data && !isStale) {
+      console.log(`Using cached ${platform} data`);
+      setPlatformData(prev => ({
+        ...prev,
+        [platform]: cachedInfo.data
+      }));
       return;
     }
+    
+    // If stale or no cached data, fetch fresh data
+    console.log(`Fetching fresh ${platform} data`);
+    const freshData = await fetchFromAPI(platform, username);
+    
+    if (freshData) {
+      setPlatformData(prev => ({
+        ...prev,
+        [platform]: freshData
+      }));
+      saveToFirestore(platform, freshData);
+    } else if (cachedInfo.data) {
+      // If API fetch fails but we have stale data, use it as fallback
+      console.log(`Using stale ${platform} data as fallback`);
+      setPlatformData(prev => ({
+        ...prev,
+        [platform]: cachedInfo.data
+      }));
+    }
+  };
 
-    console.log("Usernames loaded:", usernames);
-    setIsLoading(true);
-
-    const fetchData = async () => {
-      // GitHub data
-      if (usernames.github) {
-        const githubResult = await fetchFromFirestore("github");
-        
-        if (githubResult) {
-          console.log("Setting GitHub data from Firestore");
-          setGithubData(githubResult.data);
-          
-          // If data is stale, update in background
-          if (githubResult.isStale) {
-            console.log("GitHub data is stale, fetching fresh data in background");
-            const freshData = await fetchFromAPI("github", usernames.github);
-            if (freshData) {
-              console.log("Updating GitHub data");
-              setGithubData(freshData);
-              saveToFirestore("github", freshData);
-            }
-          }
-        } else {
-          console.log("No GitHub data in Firestore, fetching from API");
-          const freshData = await fetchFromAPI("github", usernames.github);
-          if (freshData) {
-            setGithubData(freshData);
-            saveToFirestore("github", freshData);
-          }
-        }
-      }
-
-      // LinkedIn data
-      if (usernames.linkedin) {
-        const linkedinResult = await fetchFromFirestore("linkedin");
-        
-        if (linkedinResult) {
-          setLinkedinData(linkedinResult.data);
-          
-          if (linkedinResult.isStale) {
-            const freshData = await fetchFromAPI("linkedin", usernames.linkedin);
-            if (freshData) {
-              setLinkedinData(freshData);
-              saveToFirestore("linkedin", freshData);
-            }
-          }
-        } else {
-          const freshData = await fetchFromAPI("linkedin", usernames.linkedin);
-          if (freshData) {
-            setLinkedinData(freshData);
-            saveToFirestore("linkedin", freshData);
-          }
-        }
-      }
-
-      // LeetCode data
-      if (usernames.leetcode) {
-        const leetcodeResult = await fetchFromFirestore("leetcode");
-        
-        if (leetcodeResult) {
-          setLeetcodeData(leetcodeResult.data);
-          
-          if (leetcodeResult.isStale) {
-            const freshData = await fetchFromAPI("leetcode", usernames.leetcode);
-            if (freshData) {
-              setLeetcodeData(freshData);
-              saveToFirestore("leetcode", freshData);
-            }
-          }
-        } else {
-          const freshData = await fetchFromAPI("leetcode", usernames.leetcode);
-          if (freshData) {
-            setLeetcodeData(freshData);
-            saveToFirestore("leetcode", freshData);
-          }
-        }
-      }
+  // Load usernames from Firestore
+  useEffect(() => {
+    const loadUsernames = async () => {
+      const firestoreData = await fetchFromFirestore();
+      
+      // Extract usernames
+      setUsernames({
+        linkedin: firestoreData.linkedin || null,
+        github: firestoreData.github || null,
+        leetcode: firestoreData.leetcode || null
+      });
       
       setIsLoading(false);
     };
 
-    fetchData();
+    loadUsernames();
+  }, [uid]);
+
+  // Fetch platform data when usernames are available
+  useEffect(() => {
+    if (!usernames) return;
+    
+    const fetchAllPlatformData = async () => {
+      setIsLoading(true);
+      console.log("Starting to fetch platform data");
+      
+      const firestoreData = await fetchFromFirestore();
+      
+      // Fetch data for each configured platform
+      const platforms = ['github', 'linkedin', 'leetcode'];
+      const fetchPromises = platforms.map(platform => {
+        if (usernames[platform]) {
+          return fetchPlatformData(platform, usernames[platform], firestoreData);
+        }
+        return Promise.resolve();
+      });
+      
+      await Promise.all(fetchPromises);
+      setIsLoading(false);
+    };
+
+    fetchAllPlatformData();
   }, [usernames]);
 
-  return { linkedinData, githubData, leetcodeData, isLoading };
+  return {
+    linkedinData: platformData.linkedin,
+    githubData: platformData.github,
+    leetcodeData: platformData.leetcode,
+    isLoading
+  };
 };
 
 export default useFetchPlatformData;
