@@ -44,7 +44,7 @@ const useFetchPlatformData = (uid) => {
         const data = docSnap.data();
         console.log(`Firestore ${platform} data:`, data[platform]);
         
-        if (data[platform]) {
+        if (!data[platform]) {
           // If data exists but is stale, return it but mark for refresh
           const isStale = shouldFetchData(data[platform].timestamp);
           console.log(`${platform} data stale?`, isStale);
