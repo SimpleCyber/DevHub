@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import DemoCredentialsBox from "./DemoCredentialsBox";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import {
   signInWithPopup,
@@ -87,6 +88,7 @@ const AuthPages = () => {
   };
 
   return (
+    <div>
     <div className="auth-container">
       <div className="auth-blob-1"></div>
       <div className="auth-blob-2"></div>
@@ -107,6 +109,7 @@ const AuthPages = () => {
               : "Join the developer community"}
           </p>
         </div>
+
 
         <div className="social-auth">
           <button
@@ -216,6 +219,8 @@ const AuthPages = () => {
           </p>
         )}
       </div>
+    </div>
+    <DemoCredentialsBox />
     </div>
   );
 };
