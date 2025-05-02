@@ -108,7 +108,10 @@ export function Sidebar() {
     // { icon: ListCheck, text: "Friends", path: "/friends" },
 
     { 
-      icon: ClipboardPenLine, text: "Interview Practice", path: "/interview" },
+      icon: ClipboardPenLine,
+       text: "Interview Practice",
+       path: userData ? `/interview` : "/auth"      
+    },
 
 
     { icon: MessageSquareText, text: "Internships", path: "/internships" },

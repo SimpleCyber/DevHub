@@ -43,6 +43,15 @@ const Header = () => {
     }
   };
 
+  const handleRedirectInterview = () => {
+    if (userId) {
+      navigate(`/interview`);
+    } else {
+      navigate("/auth");
+    }
+  };
+  
+
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="nav-content">
@@ -52,7 +61,7 @@ const Header = () => {
         </div>
         <div className="nav-links">
         <a href="#user" onClick={handleRedirectDashboard}>Dashboard</a>
-          <a href="/interview" className='feature'>Interview</a>
+          <a href="#user"   onClick={handleRedirectInterview}  className='feature'>Interview</a>
           <a href="/internships" className='feature'>Internship</a>
           <button 
             className="theme-toggle glass-effect-dashbord"
