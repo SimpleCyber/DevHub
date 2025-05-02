@@ -127,7 +127,7 @@ export function Sidebar() {
             <span className={isOpen ? "logo-text" : "hidden"}>DevHub</span>
           </div>
 
-          <button
+          {/* <button
             className="sidebar-toggle"
             onClick={toggleSidebar}
             aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
@@ -137,7 +137,7 @@ export function Sidebar() {
             ) : (
               <Sparkles className="logo-icon" size={24} />
             )}
-          </button>
+          </button> */}
         </div>
 
         <nav className="sidebar-nav">
