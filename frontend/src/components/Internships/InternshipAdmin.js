@@ -88,7 +88,6 @@ const InternshipAdmin = () => {
         setInternships([...internships, { id: docRef.id, ...internshipData }]);
       }
   
-      // ✅ Send notification
       const deadline = new Date();
       deadline.setDate(deadline.getDate() + 7);
       const formattedDeadline = deadline.toLocaleDateString('en-GB', {
@@ -96,7 +95,17 @@ const InternshipAdmin = () => {
         month: 'long',
         year: 'numeric'
       });
-  
+      
+      const profilesSnapshot = await getDocs(collection(db, 'profiles'));
+        const recipients = profilesSnapshot.docs
+          .map(doc => doc.data())
+          .filter(profile => profile.email && profile.name)
+          .map(profile => ({
+            name: profile.name,
+            email: profile.email
+          }));
+
+
       const notificationPayload = {
         email_config: {
           subject: `Exciting Opportunity: ${internshipData.jobRole} at ${internshipData.companyName}`
@@ -118,12 +127,7 @@ const InternshipAdmin = () => {
           description: internshipData.description || "Exciting opportunity at a great company!"
         },
         skills: internshipData.skills,
-        recipients: [
-          {
-            name: "Satyam",
-            email: "satyamyadav9uv@gmail.com"
-          }
-        ]
+        recipients
       };
   
       try {

@@ -14,7 +14,12 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
-import { auth, googleProvider } from "../../firebase"; // Import your Firebase config
+import { auth, googleProvider ,db } from "../../firebase"; 
+
+import { doc, setDoc, getDoc  } from "firebase/firestore";
+
+
+
 import {
   Mail,
   Lock,
@@ -48,7 +53,20 @@ const AuthPages = () => {
     setLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user; // Firebase User Object
+      const user = result.user;
+  
+      // Optional: Check if user profile already exists
+      const profileRef = doc(db, "profiles", user.uid);
+      const profileSnap = await getDoc(profileRef);
+  
+      if (!profileSnap.exists()) {
+        // Save profile data with default name "user"
+        await setDoc(profileRef, {
+          email: user.email,
+          name: "user",
+        });
+      }
+  
       navigate("/", { state: { email: user.email } }); // Navigate with email
     } catch (error) {
       alert(`Error: ${error.message}`);
@@ -70,17 +88,26 @@ const AuthPages = () => {
           formData.email,
           formData.password
         );
-        // Navigate to dashboard or wherever the interview form is
-        navigate("/"); // Update this to your correct path
+        navigate("/"); 
       } else {
-        // Create a new account
-        await createUserWithEmailAndPassword(
+
+        const result = await createUserWithEmailAndPassword(
           auth,
           formData.email,
           formData.password
         );
+      
+        const user = result.user;
+      
+        await setDoc(doc(db, "profiles", user.uid), {
+          name: formData.name,
+          email: formData.email,
+        });
+      
         alert("Account Created Successfully!");
-        setIsLogin(true); // Switch to login mode
+        setIsLogin(true);
+
+
       }
     } catch (error) {
       alert(`Error: ${error.message}`);
