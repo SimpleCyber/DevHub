@@ -127,7 +127,7 @@ const InternshipAdmin = () => {
       };
   
       try {
-        const response = await fetch('https://devhub1.vercel.app/api/send-job-notification/', {
+        const response = await fetch('https://devhub-k9dg.onrender.com/api/send-job-notification/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(notificationPayload)
