@@ -113,7 +113,7 @@ const AuthPages = () => {
 
         <div className="social-auth">
           <button
-            className="social-btn glass-effect"
+            className="social-btn glass-effect text-gray-600 font-bold"
             onClick={handleGoogleLogin}
             disabled={loading}
           >
