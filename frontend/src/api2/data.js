@@ -7,8 +7,8 @@ import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 // const API_URL = "http://127.0.0.1:8000/api/";
 const API_URL = "https://devhub-k9dg.onrender.com/api/";
 
-// Cache duration in milliseconds (24 hours)
-const CACHE_DURATION = 24 * 60 * 60 * 1000;
+// Cache duration in milliseconds (7 days)
+const CACHE_DURATION = 24 * 60 * 60 * 1000 * 7;
 
 /**
  * Custom hook to fetch platform data with caching
