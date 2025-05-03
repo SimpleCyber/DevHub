@@ -1,5 +1,13 @@
 import React, { useState } from "react";
 import DemoCredentialsBox from "./DemoCredentialsBox";
+
+
+import "../dashboard/dashboard.css"
+import "./AuthPages.css"
+
+
+
+
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import {
   signInWithPopup,
@@ -17,7 +25,6 @@ import {
   Loader2,
   ChevronLeft,
 } from "lucide-react";
-import "./AuthPages.css";
 
 const AuthPages = () => {
   const [isLogin, setIsLogin] = useState(true);
