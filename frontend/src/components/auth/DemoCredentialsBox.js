@@ -6,8 +6,8 @@ const DemoCredentialsBox = () => {
   const [passwordCopied, setPasswordCopied] = useState(false);
   
   const credentials = {
-    email: "satyamyadav@gmil.com",
-    password: "satyamyadav@gmil.com"
+    email: "satyamyadav@gmail.com",
+    password: "satyamyadav@gmail.com"
   };
 
   const copyToClipboard = (text, type) => {
