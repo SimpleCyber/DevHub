@@ -7,6 +7,17 @@ from io import BytesIO
 import base64
 from dotenv import load_dotenv
 
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+import json
+import logging
+
+
+
 # Load environment variables from a .env file
 load_dotenv()
 
@@ -295,3 +306,521 @@ def fetch_linkedin_data(request, username):
             },
             status=500,
         )
+
+
+logger = logging.getLogger(__name__)
+
+
+
+def generate_html_email(job_details, company_info, skills, recipient):
+    """
+    Generate HTML email content based on job details
+    
+    Args:
+        job_details (dict): Job-related information
+        company_info (dict): Company-related information
+        skills (list): Required skills for the job
+        recipient (dict): Recipient information
+        
+    Returns:
+        str: HTML content for the email
+    """
+    # CSS styles
+    css_styles = """
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    body {
+        font-family: 'Poppins', Arial, sans-serif;
+        line-height: 1.6;
+        color: #333333;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+    }
+    
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+    .header {
+        padding: 28px 24px;
+        text-align: center;
+        color: white;
+    }
+    
+    .header h1 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 26px;
+    }
+    
+    .header h2 {
+        font-weight: 400;
+        margin-top: 10px;
+        font-size: 18px;
+        opacity: 0.9;
+    }
+    
+    .content {
+        padding: 30px;
+    }
+    
+    .company-logo {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    
+    .info-card {
+        background-color: #ffffff;
+        border-radius: 6px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+        overflow: hidden;
+        border: 1px solid #eaeaea;
+    }
+    
+    .card-header {
+        background-color: #f8f9fa;
+        padding: 15px 20px;
+        border-bottom: 1px solid #eaeaea;
+    }
+    
+    .card-header h3 {
+        margin: 0;
+        color: #333;
+        font-size: 18px;
+        font-weight: 600;
+    }
+    
+    .card-body {
+        padding: 0;
+    }
+    
+    .detail-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .detail-table tr {
+        border-bottom: 1px solid #eaeaea;
+    }
+    
+    .detail-table tr:last-child {
+        border-bottom: none;
+    }
+    
+    .detail-table td {
+        padding: 12px 20px;
+    }
+    
+    .detail-table td:first-child {
+        font-weight: 500;
+        color: #555;
+        width: 40%;
+    }
+    
+    .detail-table td:last-child {
+        color: #333;
+    }
+    
+    .skills-container {
+        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .skill-badge {
+        background-color: #e8f0fe;
+        color: #4285f4;
+        border-radius: 50px;
+        padding: 6px 14px;
+        font-size: 14px;
+        font-weight: 500;
+        display: inline-block;
+    }
+    
+    .cta-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #4285f4, #0d6efd);
+        color: white;
+        padding: 14px 32px;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 16px;
+        text-align: center; 
+        margin-top: 10px;
+        box-shadow: 0 4px 8px rgba(66, 133, 244, 0.25);
+        transition: all 0.3s ease;
+    }
+    
+    .cta-button:hover {
+        background: linear-gradient(135deg, #0d6efd, #0a58ca);
+        box-shadow: 0 6px 12px rgba(66, 133, 244, 0.35);
+        transform: translateY(-2px);
+    }
+    
+    .card-section {
+        margin-bottom: 30px;
+    }
+    
+    .divider {
+        height: 1px;
+        background-color: #eaeaea;
+        margin: 25px 0;
+    }
+    
+    .key-info {
+        text-align: center;
+        margin: 20px 0 30px;
+        background-color: #f8f9fa;
+        border-radius: 6px;
+        padding: 15px;
+    }
+    
+    .key-info-item {
+        display: inline-block;
+        margin: 0 12px;
+        text-align: center;
+    }
+    
+    .key-info-item .label {
+        font-size: 13px;
+        color: #777;
+        margin-bottom: 5px;
+    }
+    
+    .key-info-item .value {
+        font-weight: 600;
+        color: #333;
+        font-size: 16px;
+    }
+    
+    .footer {
+        padding: 20px;
+        text-align: center;
+        background-color: #f8f9fa;
+        border-top: 1px solid #eaeaea;
+        font-size: 13px;
+        color: #777;
+    }
+    
+    .social-links {
+        margin: 15px 0;
+    }
+    
+    .social-icon {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        background-color: #e8e8e8;
+        border-radius: 50%;
+        margin: 0 5px;
+        line-height: 32px;
+        text-align: center;
+    }
+    
+    .company-info {
+        margin-top: 10px;
+        font-size: 12px;
+    }
+    
+    .section-title {
+        color: #333;
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-weight: 600;
+        font-size: 18px;
+    }
+    
+    .action-center {
+        text-align: center;
+        margin: 30px 0;
+    }
+    
+    @media only screen and (max-width: 600px) {
+        .content {
+            padding: 20px;
+        }
+        
+        .key-info-item {
+            display: flex;
+            align-items: flex-start; 
+            gap: 10px;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+    }
+    """
+    
+    # Generate skills HTML from the skills list
+    skills_html = ""
+    for skill in skills:
+        skills_html += f'<span class="skill-badge">{skill}</span>\n'
+    
+    # Build the HTML content with variables
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>DevHub: Exciting Internship Opportunity</title>
+        <style>
+            {css_styles}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <!-- Header Section -->
+            <div class="header">
+                <h1>✨ DevHub Internship Alert</h1>
+                <h2>{job_details.get('role', 'Job')} Opportunity at {company_info.get('name', 'Company')}</h2>
+            </div>
+            <h3>Hey "{recipient.get('name', 'Candidate')}" unique opportunity is waiting for you</h3>
+            
+            <!-- Content Section -->
+            <div class="content">
+                
+                <!-- Key Information -->
+                <div class="key-info" style="background-color: #e6f4ea; border-left: 4px solid #4caf50; padding: 12px 15px; margin-bottom: 25px; border-radius: 2px;">
+                    <div class="key-info-item">
+                        <div class="label">Location : </div>
+                        <div class="value">{job_details.get('location', 'N/A')}</div>
+                    </div>
+                    <div class="key-info-item">
+                        <div class="label">Salary : </div>
+                        <div class="value">{job_details.get('salary_range', 'N/A')}</div>
+                    </div>
+                    <div class="key-info-item">
+                        <div class="label">Job Type :</div>
+                        <div class="value">{job_details.get('employment_type', 'N/A')}</div>
+                    </div>
+                </div>
+
+                <!-- Application Deadline -->
+                <div style="background-color: #fff4e5; border-left: 4px solid #ff9800; padding: 12px 15px; margin-bottom: 25px; border-radius: 2px;">
+                    <p style="margin: 0; color: #ad5700; font-weight: 500;">
+                        Application Deadline: {job_details.get('deadline', 'N/A')}
+                    </p>
+                </div>
+
+                <!-- Job Details Card -->
+                <div class="info-card card-section">
+                    <div class="card-header">
+                        <h3>Job Details</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="detail-table">
+                            <tr class="highlight">
+                                <td>Job Role</td>
+                                <td>{job_details.get('role', 'N/A')}</td>
+                            </tr>
+                            <tr>
+                                <td>Salary Range</td>
+                                <td>{job_details.get('salary_range', 'N/A')} LPA</td>
+                            </tr>
+                            <tr class="highlight">
+                                <td>Experience Required</td>
+                                <td>{job_details.get('experience', 'N/A')}</td>
+                            </tr>
+                            <tr>
+                                <td>Batch Years</td>
+                                <td>{job_details.get('batch_years', 'N/A')}</td>
+                            </tr>
+                            <tr class="highlight">
+                                <td>Location</td>
+                                <td>{job_details.get('location', 'N/A')}, {job_details.get('state', 'N/A')}</td>
+                            </tr>
+                            <tr>
+                                <td>Job Type</td>
+                                <td>{job_details.get('job_type', 'N/A')}</td>
+                            </tr>
+                            <tr class="highlight">
+                                <td>Employment Type</td>
+                                <td>{job_details.get('employment_type', 'N/A')}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Skills Card -->
+                <div class="info-card card-section">
+                    <div class="card-header">
+                        <h3>Technical Skills Required</h3>
+                    </div>
+                    <div class="card-body" style="padding: 20px;">
+                        <div class="skills-container">
+                            {skills_html}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- About Company Section -->
+                <div class="card-section">
+                    <h3 class="section-title">About {company_info.get('name', 'Company')}</h3>
+                    <p style="color: #555; margin-top: 0;">
+                        {company_info.get('description', 'No company description available.')}
+                    </p>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <!-- CTA Section -->
+                <div class="action-center">
+                    <a href="{job_details.get('apply_url', '#')}" class="cta-button">APPLY NOW</a>
+                </div>
+                
+            </div>
+            
+            <!-- Footer Section -->
+            <div class="footer">
+                <div style="font-weight: 600; color: #555; margin-bottom: 5px;">DevHub Internship Platform</div>
+                <p style="margin-bottom: 15px;">Connecting talented developers with top opportunities</p>
+                
+                <div>
+                    <a href="mailto:{settings.DEFAULT_FROM_EMAIL}" style="color: #4285f4; text-decoration: none;">{settings.DEFAULT_FROM_EMAIL}</a>
+                </div>
+                
+                <div class="company-info">
+                    © {settings.CURRENT_YEAR} DevHub. All rights reserved.<br>
+                    Unsubscribe | Privacy Policy | Terms of Service
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    return html_content
+
+
+def send_email_notification(email_config, job_details, company_info, skills, recipient):
+    """
+    Send email notification about job opportunity
+    
+    Args:
+        email_config (dict): Email configuration details
+        job_details (dict): Job-related information
+        company_info (dict): Company-related information
+        skills (list): Required skills for the job
+        recipient (dict): Recipient information
+        
+    Returns:
+        bool: True if email sent successfully, False otherwise
+    """
+    try:
+        # Create the email message
+        message = MIMEMultipart()
+        message["From"] = email_config.get("sender", settings.DEFAULT_FROM_EMAIL)
+        message["To"] = recipient.get("email")
+        message["Subject"] = email_config.get("subject", f"Job Opportunity: {job_details.get('role')} at {company_info.get('name')}")
+        
+        # Generate and attach the HTML body
+        html_body = generate_html_email(job_details, company_info, skills, recipient)
+        message.attach(MIMEText(html_body, "html"))
+        
+        # Connect to email server and send
+        with smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT) as server:
+            server.starttls()  # Secure the connection
+            server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+            server.send_message(message)
+            
+        logger.info(f"Email sent successfully to {recipient.get('email')}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Failed to send email to {recipient.get('email')}: {str(e)}")
+        return False
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def send_job_notification(request):
+    """
+    Django view to send job notifications
+    
+    Request body format:
+    {
+        "email_config": {
+            "subject": "Custom email subject"
+        },
+        "job_details": {
+            "role": "Data Analysis",
+            "company": "Yash Technologies",
+            "location": "Bangalore",
+            "state": "Karnataka",
+            "salary_range": "₹3L - ₹6L",
+            "experience": "0-2 years",
+            "batch_years": "2023, 2024",
+            "job_type": "Fresher",
+            "employment_type": "Full Time",
+            "deadline": "May 20, 2025",
+            "apply_url": "https://example.com/apply"
+        },
+        "company_info": {
+            "name": "Yash Technologies",
+            "description": "Company description..."
+        },
+        "skills": ["Python", "SQL", "Langchain", "OpenAI"],
+        "recipients": [
+            {
+                "name": "John Doe",
+                "email": "john@example.com"
+            },
+            {
+                "name": "Jane Smith",
+                "email": "jane@example.com"
+            }
+        ]
+    }
+    """
+    try:
+        # Parse request body
+        data = json.loads(request.body)
+        
+        # Extract data
+        email_config = data.get("email_config", {})
+        job_details = data.get("job_details", {})
+        company_info = data.get("company_info", {})
+        skills = data.get("skills", [])
+        recipients = data.get("recipients", [])
+        
+        # Validate required fields
+        if not job_details or not company_info or not recipients:
+            return JsonResponse({"success": False, "message": "Missing required data"}, status=400)
+        
+        # Validate each recipient has an email
+        invalid_recipients = [r for r in recipients if not r.get("email")]
+        if invalid_recipients:
+            return JsonResponse({"success": False, "message": "Some recipients are missing email addresses"}, status=400)
+        
+        # Send emails to all recipients
+        results = []
+        for recipient in recipients:
+            success = send_email_notification(email_config, job_details, company_info, skills, recipient)
+            results.append({
+                "email": recipient.get("email"),
+                "success": success
+            })
+        
+        # Calculate success rate
+        success_count = sum(1 for r in results if r["success"])
+        
+        return JsonResponse({
+            "success": True, 
+            "message": f"Sent {success_count} of {len(recipients)} emails successfully",
+            "results": results
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({"success": False, "message": "Invalid JSON data"}, status=400)
+    except Exception as e:
+        logger.error(f"Error sending job notifications: {str(e)}")
+        return JsonResponse({"success": False, "message": str(e)}, status=500)

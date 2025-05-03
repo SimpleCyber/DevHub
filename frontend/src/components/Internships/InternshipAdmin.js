@@ -55,6 +55,11 @@ const InternshipAdmin = () => {
     }
   };
 
+
+  
+
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -71,7 +76,7 @@ const InternshipAdmin = () => {
         skills: formData.skills.split(',').map(skill => skill.trim()),
         responsibilities: formData.responsibilities.split(',').map(resp => resp.trim()),
       };
-
+  
       if (editId) {
         await updateDoc(doc(db, 'internships', editId), internshipData);
         alert('Internship updated successfully!');
@@ -82,7 +87,60 @@ const InternshipAdmin = () => {
         alert('Internship added successfully!');
         setInternships([...internships, { id: docRef.id, ...internshipData }]);
       }
-
+  
+      // ✅ Send notification
+      const deadline = new Date();
+      deadline.setDate(deadline.getDate() + 7);
+      const formattedDeadline = deadline.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+  
+      const notificationPayload = {
+        email_config: {
+          subject: `Exciting Opportunity: ${internshipData.jobRole} at ${internshipData.companyName}`
+        },
+        job_details: {
+          role: internshipData.jobRole,
+          location: internshipData.location,
+          state: internshipData.location.split(',')[1]?.trim() || "",
+          salary_range: internshipData.salaryRange,
+          experience: internshipData.experience,
+          batch_years: internshipData.batchYears,
+          job_type: internshipData.jobType,
+          employment_type: internshipData.employmentType,
+          deadline: formattedDeadline,
+          apply_url: internshipData.applyLink
+        },
+        company_info: {
+          name: internshipData.companyName,
+          description: internshipData.description || "Exciting opportunity at a great company!"
+        },
+        skills: internshipData.skills,
+        recipients: [
+          {
+            name: "Satyam",
+            email: "satyamyadav9uv@gmail.com"
+          }
+        ]
+      };
+  
+      try {
+        const response = await fetch('https://devhub1.vercel.app/api/send-job-notification/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(notificationPayload)
+        });
+  
+        if (!response.ok) throw new Error('Notification failed');
+        const result = await response.json();
+        console.log('Notification sent:', result);
+      } catch (notifyErr) {
+        console.error('Notification error:', notifyErr);
+      }
+  
+      // Reset form
       setFormData({
         companyName: '',
         jobRole: '',
@@ -104,6 +162,9 @@ const InternshipAdmin = () => {
       alert('Failed to submit internship');
     }
   };
+
+  
+  
 
   const handleDelete = async (id) => {
     try {
