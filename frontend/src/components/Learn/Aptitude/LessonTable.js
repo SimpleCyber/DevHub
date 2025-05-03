@@ -32,9 +32,9 @@ const LessonTable = ({ lessons, onToggleComplete }) => {
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
               YOUTUBE
             </th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+            {/* <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
               PRACTICE
-            </th>
+            </th> */}
             
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
               DIFFICULTY
@@ -75,7 +75,7 @@ const LessonTable = ({ lessons, onToggleComplete }) => {
                   </div>
                 )}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
+              {/* <td className="px-6 py-4 whitespace-nowrap">
                 {lesson.practice && (
                   <div className="flex justify-center">
                     <Code className="w-5 h-5 text-green-500 cursor-pointer hover:text-green-600" 
@@ -83,7 +83,7 @@ const LessonTable = ({ lessons, onToggleComplete }) => {
                     />
                   </div>
                 )}
-              </td>
+              </td> */}
               
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex justify-center">

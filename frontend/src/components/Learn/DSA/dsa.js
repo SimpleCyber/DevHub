@@ -11,28 +11,28 @@ const Dsa = ({ onGoBack }) => {
   const [lecture1Lessons, setLecture1Lessons] = useState([
     {
       title: "User Input / Output",
-      completed: false,
+      completed: true,
       youtube: "https://youtu.be/EAR7De6Goz4?si=ZIn7meMTrrXLbAkO",
-      practice: false,
+      practice: "https://www.codechef.com/problems/NEWYEAR",
       difficulty: "Easy",
       starred: false,
     },
     {
       title: "Patterns",
-      completed: false,
+      completed: true,
        
       youtube: "https://www.youtube.com/watch?v=tNm_NNSB3_w&list=PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz&index=3",
-      practice: false,
+      practice: "https://www.codechef.com/problems/PATTERN",
        
       difficulty: "Easy",
       starred: false,
     },
     {
       title: "C++ STL",
-      completed: false,
+      completed: true,
        
       youtube: "https://www.youtube.com/watch?v=RRVYpIET_RU",
-      practice: false,
+      practice: "https://leetcode.com/problems/minimum-domino-rotations-for-equal-row/description/?envType=daily-question&envId=2025-05-03",
        
       difficulty: "Easy",
       starred: false,
@@ -42,7 +42,7 @@ const Dsa = ({ onGoBack }) => {
       completed: false,
        
       youtube: "https://www.youtube.com/watch?v=1xNbjMdbjug",
-      practice: false,
+      practice: "https://www.codechef.com/problems/P1_175",
        
       difficulty: "Medium",
       starred: false,
@@ -55,7 +55,7 @@ const Dsa = ({ onGoBack }) => {
       practice: "https://leetcode.com/problems/valid-palindrome/",
        
       difficulty: "Hard",
-      starred: false,
+      starred: "https://leetcode.com/problems/minimum-domino-rotations-for-equal-row/description/?envType=daily-question&envId=2025-05-03",
     },
 
 
@@ -79,7 +79,7 @@ const Dsa = ({ onGoBack }) => {
   const [lecture2Lessons, setLecture2Lessons] = useState([
     {
       title: "Selection Sort",
-      completed: false,
+      completed: true,
        
       youtube: "https://www.youtube.com/watch?t=167&v=HGk_ypEuS24",
       practice: "https://leetcode.com/problems/rotate-list/description/",
@@ -89,7 +89,7 @@ const Dsa = ({ onGoBack }) => {
     },
     {
       title: "Bubble Sort",
-      completed: false,
+      completed: true,
        
       youtube: "https://www.youtube.com/watch?t=1061&v=HGk_ypEuS24",
       practice: "https://leetcode.com/problems/sort-list/description/",
@@ -133,9 +133,9 @@ const Dsa = ({ onGoBack }) => {
   ]);
 
   const [progressData, setProgressData] = useState({
-    current: 0,
-    total: 455,
-    percentage: 0,
+    current: 5,
+    total: 11,
+    percentage: 45,
   });
 
   // Calculate completed lessons
@@ -186,7 +186,7 @@ const Dsa = ({ onGoBack }) => {
           <div className="flex justify-between items-center gap-2 mb-4">
           
 
-            <h1 className="text-2xl font-bold text-gray-800">
+            <h1 className="text-2xl font-bold text-gray-600">
               Data Structures and Algorithms
             </h1>
 
@@ -224,9 +224,9 @@ const Dsa = ({ onGoBack }) => {
             totalSteps={31}
           >
             <LearningTopic
-              title="Lec 1: Learn the basics "
-              currentLesson={9}
-              totalLessons={9}
+              title="Lec 1: Syntax and Code Formations "
+              currentLesson={3}
+              totalLessons={6}
               completedLessons={completedLecture1Lessons}
             >
               <LessonTable

@@ -18,23 +18,23 @@ const Learn = () => {
       id: 'dsa',
       icon: <Book className="w-8 h-8 text-blue-500" />,
       title: "Data Structure and Algorithms",
-      progress: 26,
-      steps: 31,
+      progress: 45,
+      steps: 11,
       difficulty: "Medium"
     },
     {
       id: 'aptitude',
       icon: <Target className="w-8 h-8 text-green-500" />,
       title: "Aptitude",
-      progress: 10,
-      steps: 50,
+      progress: 21,
+      steps: 38,
       difficulty: "Medium"
     },
     {
       id: 'webdev',
       icon: <Code className="w-8 h-8 text-purple-500" />,
       title: "Web Development",
-      progress: 5,
+      progress: 0,
       steps: 75,
       difficulty: "Easy"
     }
@@ -58,7 +58,7 @@ const Learn = () => {
   }
 
   return (
-    <div className="min-h-screen  p-6 ml-64">
+    <div className="min-h-screen  p-6 ml-64 bg-blue-50">
       <Sidebar />
       <div className="container mx-auto">
         <div className="flex items-center mb-8">

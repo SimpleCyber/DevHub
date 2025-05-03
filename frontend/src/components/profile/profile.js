@@ -63,7 +63,7 @@ const Profile = () => {
           setSkillsInput(skills.join(", "));
         }
 
-        console.log("Loaded profile data with skills:", skills); // Debug log
+        console.log("Loaded profile data with skills:", skills); 
       }
     } catch (error) {
       console.error("Error loading profile data:", error);

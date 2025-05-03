@@ -5,7 +5,7 @@ const Internships = () => {
   return (
     <div className="flex bg-[#e9effe]">
       <Sidebar />
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto bg-blue-50">
         <InternshipList />
       </div>
     </div>
