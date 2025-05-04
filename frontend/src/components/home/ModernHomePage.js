@@ -5,14 +5,28 @@ import {
   Code2,
   FileText,
   ArrowRight,
+  LayoutDashboard,
+  BookOpenCheck,
+  BrainCog,
+  BriefcaseBusiness,
   Trophy,
   Users,
+  GithubIcon,
+  LinkedinIcon,
 } from "lucide-react";
 import "./ModernHomePage.css";
 import Header from "./Header";
 import Footer from "./Footer";
+import { useNavigate } from "react-router-dom";
+
+
 
 const ModernHomePage = () => {
+  const navigate = useNavigate();
+  const handleRedirect = () => {
+    navigate("/auth");
+  };
+
   return (
     <div className="page-container ">
       <div className="gradient-blob"></div>
@@ -38,7 +52,10 @@ const ModernHomePage = () => {
               personalized career guidance.
             </p>
             <div className="cta-group">
-              <button className="primary-cta glass-effect-dashbord">
+              <button
+                className="primary-cta glass-effect-dashbord"
+                onClick={handleRedirect}
+              >
                 Get Started <ArrowRight size={16} />
               </button>
               <div className="stats glass-effect-dashbord">
@@ -84,46 +101,56 @@ const ModernHomePage = () => {
         </section>
 
         <section id="features" className="features">
-          <h2>Platform Features</h2>
-          <div className="features-grid">
-            {[
-              {
-                icon: <Github size={24} />,
-                title: "GitHub Integration",
-                description:
-                  "Sync and showcase your repositories with real-time updates",
-              },
-              {
-                icon: <Code2 size={24} />,
-                title: "LeetCode Progress",
-                description: "Track your problem-solving journey and rankings",
-              },
-              {
-                icon: <Linkedin size={24} />,
-                title: "LinkedIn Sync",
-                description:
-                  "Keep your professional profile automatically updated",
-              },
-              {
-                icon: <FileText size={24} />,
-                title: "Smart Resume",
-                description:
-                  "AI-powered resume generator based on your activity",
-              },
-            ].map((feature, index) => (
-              <div key={index} className="feature-card glass-effect-dashbord">
-                <div className="feature-icon">{feature.icon}</div>
-                <h3>{feature.title}</h3>
-                <p>{feature.description}</p>
-                <div className="feature-progress">
-                  <div
-                    className="progress-bar"
-                    style={{ width: `${(index + 1) * 25}%` }}
-                  ></div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <h2 className="">Platform Features</h2>
+<div className="features-grid">
+  {[
+    {
+      icon: <LayoutDashboard size={24} />,
+      title: "Dashboard",
+      description:
+        "Showcase your work, track GitHub, LinkedIn, and LeetCode all shareable in one place.",
+      url: `https://devhub1.vercel.app/`,
+    },
+    {
+      icon: <BookOpenCheck size={24} />,
+      title: "Learn",
+      description:
+        "Distraction-free learning. Access curated courses directly on the platform.",
+      url: "https://devhub1.vercel.app/learn",
+    },
+    {
+      icon: <BrainCog size={24} />,
+      title: "Interview Practice",
+      description:
+        "Generate mock interviews using AI, get feedback, and track your preparation progress.",
+      url: "https://devhub1.vercel.app/interview",
+    },
+    {
+      icon: <BriefcaseBusiness size={24} />,
+      title: "Internships",
+      description:
+        "Get matched with top internships based on your skills and receive email alerts.",
+      url: "https://devhub1.vercel.app/internships",
+    },
+  ].map((feature, index) => (
+    <div
+      key={index}
+      className="feature-card glass-effect-dashbord cursor-pointer transition-transform hover:scale-[1.02]"
+      onClick={() => window.location.href = feature.url}
+    >
+      <div className="feature-icon mb-2">{feature.icon}</div>
+      <h3 className="font-bold text-gray-700 text-lg">{feature.title}</h3>
+      <p className="text-xs font-semibold text-gray-600">{feature.description}</p>
+      <div className="feature-progress mt-3">
+        <div
+          className="progress-bar bg-blue-500 h-1 rounded"
+          style={{ width: `${(index + 1) * 25}%` }}
+        ></div>
+      </div>
+    </div>
+  ))}
+</div>
+
         </section>
 
         <section id="analytics" className="analytics glass-effect-dashbord">
@@ -131,11 +158,11 @@ const ModernHomePage = () => {
           <div className="analytics-grid">
             <div className="analytics-card">
               <div className="analytics-header">
-                <h3>Job Readiness Score</h3>
+                <h3 className="font-bold text-gray-500">Selection Percentage</h3>
                 <div className="score">95%</div>
               </div>
-              <div className="progress-rings">
-                <div className="ring">
+              <div className="progress-ringss">
+                <div className="rings">
                   <svg viewBox="0 0 36 36">
                     <path
                       d="M18 2.0845
@@ -146,14 +173,13 @@ const ModernHomePage = () => {
                       strokeWidth="2"
                       strokeDasharray="100, 100"
                     />
-                    <text x="18" y="20.35" className="percentage">
-                      85%
-                    </text>
+                    
                   </svg>
+                  <GithubIcon className="HomeIcon " />
                   <span>GitHub</span>
                 </div>
 
-                <div className="ring">
+                <div className="rings">
                   <svg viewBox="0 0 36 36">
                     <path
                       d="M18 2.0845
@@ -164,14 +190,15 @@ const ModernHomePage = () => {
                       strokeWidth="2"
                       strokeDasharray="85, 100"
                     />
-                    <text x="18" y="20.35" className="percentage">
-                      75%
-                    </text>
+   
+                    
                   </svg>
+                  <Code2  className="HomeIcon text-green-600"/>
                   <span>LeetCode</span>
                 </div>
 
-                <div className="ring">
+
+                <div className="rings">
                   <svg viewBox="0 0 36 36">
                     <path
                       d="M18 2.0845
@@ -182,12 +209,14 @@ const ModernHomePage = () => {
                       strokeWidth="2"
                       strokeDasharray="90, 100"
                     />
-                    <text x="18" y="20.35" className="percentage">
-                      75%
-                    </text>
+
+                    
                   </svg>
+                  <LinkedinIcon className="HomeIcon text-blue-500"/>
                   <span>LinkedIn</span>
                 </div>
+
+
               </div>
             </div>
             <div className="recommendations">

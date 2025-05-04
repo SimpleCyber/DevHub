@@ -9,7 +9,7 @@
     --gradient-2-light: #2DD4BF;
     --gradient-3-light: #60A5FA;
     --github:grey;
-    --leetcode:rgb(214, 144, 14);
+    --leetcode: chocolate;
     --linkedin:rgb(4, 4, 183);
 
     
@@ -510,41 +510,49 @@
     color: var(--primary);
   }
   
-  .progress-rings {
+  .progress-ringss {
     display: flex;
     justify-content: space-around;
     margin-top: 2rem;
   }
   
-  .ring {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-  }
+  .rings {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.rings > * {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
   
-  .ring svg {
+  .rings svg {
     width: 100px;
     height: 100px;
     transform: rotate(-90deg);
   }
   
-  .ring path {
+  .rings path {
     fill: none;
     stroke-width: 2;
     stroke-linecap: round;
   }
   
-  .ring text {
-    transform: rotate(90deg);
-    fill: var(--text-primary);
+  .rings .HomeIcon {
+    transform: rotate(0deg);
+    width:45px;
     font-size: 8px;
     text-anchor: middle;
+    margin-left:27px;
   }
 
-  .ring span{
+
+  .rings span{
     font-weight: bold;
+    margin-left:20px;
+    margin-top:110px;
   }
   
   .todo-list {
