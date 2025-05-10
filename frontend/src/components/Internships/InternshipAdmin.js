@@ -36,7 +36,12 @@ const InternshipAdmin = () => {
           id: doc.id,
           ...doc.data()
         }));
-        setInternships(fetchedInternships);
+        // Sort by postDate in descending order (latest first)
+      const sortedInternships = fetchedInternships.sort((a, b) => 
+        new Date(b.postDate) - new Date(a.postDate)
+      );
+
+        setInternships(sortedInternships);
       } catch (error) {
         console.error('Error fetching internships: ', error);
       }

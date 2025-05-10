@@ -63,7 +63,7 @@ const AuthPages = () => {
         // Save profile data with default name "user"
         await setDoc(profileRef, {
           email: user.email,
-          name: "user",
+          name: user.email.split("@")[0],
         });
       }
   

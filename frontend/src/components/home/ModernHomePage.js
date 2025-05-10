@@ -3,7 +3,6 @@ import {
   Github,
   Linkedin,
   Code2,
-  FileText,
   ArrowRight,
   LayoutDashboard,
   BookOpenCheck,
@@ -18,7 +17,7 @@ import "./ModernHomePage.css";
 import Header from "./Header";
 import Footer from "./Footer";
 import { useNavigate } from "react-router-dom";
-
+import WhatsAppJoinButton from "../ui/WhatsAppJoinButton";
 
 
 const ModernHomePage = () => {
@@ -46,11 +45,13 @@ const ModernHomePage = () => {
                   <Github className="github" size={24} />
                 </span>
               </div>
+              
             </h1>
             <p className="hero-subtitle glass-effect-dashbord">
               One platform to showcase all your developer achievements and get
               personalized career guidance.
             </p>
+            
             <div className="cta-group">
               <button
                 className="primary-cta glass-effect-dashbord"
@@ -74,7 +75,10 @@ const ModernHomePage = () => {
                   </div>
                 </div>
               </div>
+              
             </div>
+                     
+
           </div>
           <div className="hero-visual glass-effect-dashbord">
             <div className="code-preview">
@@ -97,8 +101,12 @@ const ModernHomePage = () => {
                 </code>
               </pre>
             </div>
+            
           </div>
+          
         </section>
+
+         <WhatsAppJoinButton />
 
         <section id="features" className="features">
           <h2 className="">Platform Features</h2>
@@ -152,6 +160,8 @@ const ModernHomePage = () => {
 </div>
 
         </section>
+
+        
 
         <section id="analytics" className="analytics glass-effect-dashbord">
           <h2>Your Developer Analytics</h2>

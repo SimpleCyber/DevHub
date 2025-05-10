@@ -50,20 +50,42 @@ const Profile = () => {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
+        
+        // Extract platform-specific usernames from the new structure
+        const platforms = ['github', 'linkedin', 'leetcode'];
+        const extractedUsernames = {};
+        
+        platforms.forEach(platform => {
+          // Check if username exists in the new data structure
+          if (data[platform]?.username) {
+            extractedUsernames[platform] = data[platform].username;
+          } else if (typeof data[platform] === 'string') {
+            // Support for legacy format - direct string
+            extractedUsernames[platform] = data[platform];
+          }
+        });
+        
         // Ensure skills is always an array
         const skills = Array.isArray(data.skills) ? data.skills : [];
 
-        // Clone the data and explicitly set skills as an array
-        const updatedData = { ...data, skills };
+        // Merge the extracted usernames with the form data
+        const updatedData = { 
+          ...data, 
+          skills,
+          github: extractedUsernames.github || data.github || "",
+          linkedin: extractedUsernames.linkedin || data.linkedin || "",
+          leetcode: extractedUsernames.leetcode || data.leetcode || ""
+        };
 
-        setFormData((prev) => ({ ...prev, ...updatedData }));
+        setFormData(prev => ({ ...prev, ...updatedData }));
 
         // Set the skills input field with the joined skills
         if (skills.length > 0) {
           setSkillsInput(skills.join(", "));
         }
 
-        console.log("Loaded profile data with skills:", skills); 
+        console.log("Loaded profile data with skills:", skills);
+        console.log("Loaded platform usernames:", extractedUsernames);
       }
     } catch (error) {
       console.error("Error loading profile data:", error);
@@ -87,20 +109,36 @@ const Profile = () => {
         .map((skill) => skill.trim())
         .filter((skill) => skill !== "");
 
-      // Create a data object with the processed skills array
+      // Create platform objects with usernames in the new structure
+      const platforms = ['github', 'linkedin', 'leetcode'];
+      const platformObjects = {};
+      
+      platforms.forEach(platform => {
+        if (formData[platform]) {
+          // Store username in new structure
+          platformObjects[platform] = {
+            username: formData[platform],
+            timestamp: Date.now()
+          };
+        }
+      });
+
+      // Create a data object with the processed skills array and platform usernames
       const dataToSave = {
         ...formData,
         skills: skillsArray,
+        ...platformObjects // Add platform objects to the data
       };
 
-      console.log("Saving profile with skills:", dataToSave.skills); // Debug log
+      console.log("Saving profile with skills:", dataToSave.skills);
+      console.log("Saving platform usernames:", platformObjects);
 
       await setDoc(doc(db, "profiles", auth.currentUser.uid), dataToSave);
 
       // Update formData with the new skills array
       setFormData((prev) => ({
         ...prev,
-        skills: skillsArray,
+        skills: skillsArray
       }));
 
       setMessage("Profile saved successfully!");

@@ -3,18 +3,10 @@ import axios from "axios";
 import { auth } from "../firebase";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
-// API endpoint configuration
-// const API_URL = "http://127.0.0.1:8000/api/";
 const API_URL = "https://devhub-k9dg.onrender.com/api/";
 
-// Cache duration in milliseconds (24 hours - for GitHub and LeetCode)
 const DAILY_CACHE_DURATION = 24 * 60 * 60 * 1000;
 
-/**
- * Custom hook to fetch platform data with improved caching
- * @param {string} uid - User ID (optional, defaults to current user)
- * @returns {Object} Platform data and loading state
- */
 const useFetchPlatformData = (uid) => {
   const [platformData, setPlatformData] = useState({
     linkedin: null,
@@ -26,24 +18,20 @@ const useFetchPlatformData = (uid) => {
   
   const db = getFirestore();
 
-  // Check if daily cache is stale (for GitHub and LeetCode)
   const isDailyCacheStale = (timestamp, platform) => {
     if (!timestamp) return true;
-    if (platform === 'linkedin') return false; // LinkedIn data never stale, fetch only once
+    if (platform === 'linkedin') return false; 
     return Date.now() - timestamp > DAILY_CACHE_DURATION;
   };
 
-  // Check if a platform has ever been fetched for this user
   const hasBeenFetchedBefore = (firestoreData, platform) => {
     return firestoreData[platform] && firestoreData[platform].data;
   };
 
-  // Get the current user ID
   const getUserId = () => {
     return uid || (auth.currentUser ? auth.currentUser.uid : null);
   };
 
-  // Fetch data from Firestore
   const fetchFromFirestore = async () => {
     const userId = getUserId();
     if (!userId) {
@@ -51,7 +39,7 @@ const useFetchPlatformData = (uid) => {
       return {};
     }
 
-    console.log("Fetching profile data from Firestore for user:", userId);
+
     try {
       const userRef = doc(db, "profiles", userId);
       const docSnap = await getDoc(userRef);
@@ -68,8 +56,7 @@ const useFetchPlatformData = (uid) => {
     }
   };
 
-  // Save data to Firestore
-  const saveToFirestore = async (platform, data) => {
+  const saveToFirestore = async (platform, data, username) => {
     const userId = getUserId();
     if (!userId) return;
     
@@ -80,6 +67,7 @@ const useFetchPlatformData = (uid) => {
         [platform]: {
           data: data,
           timestamp: Date.now(),
+          username: username,
         },
       }, { merge: true });
       console.log(`${platform} data saved successfully`);
@@ -107,7 +95,7 @@ const useFetchPlatformData = (uid) => {
     try {
       const freshData = await fetchFromAPI(platform, username);
       if (freshData) {
-        saveToFirestore(platform, freshData);
+        saveToFirestore(platform, freshData, username); // Pass username to save function
         console.log(`${platform} data updated in background`);
       }
     } catch (error) {
@@ -142,7 +130,7 @@ const useFetchPlatformData = (uid) => {
           ...prev,
           [platform]: freshData
         }));
-        saveToFirestore(platform, freshData);
+        saveToFirestore(platform, freshData, username); // Pass username to save function
       }
     } else if (platform !== 'linkedin' && isStale) {
       // For GitHub and LeetCode, update in background if stale
@@ -165,12 +153,24 @@ const useFetchPlatformData = (uid) => {
         }
       });
       
-      // Extract usernames
-      const extractedUsernames = {
-        linkedin: firestoreData.linkedin?.username || null,
-        github: firestoreData.github?.username || null,
-        leetcode: firestoreData.leetcode?.username || null
-      };
+      // Extract usernames from Firestore data
+      const extractedUsernames = {};
+      
+      // Check each platform for username
+      ['linkedin', 'github', 'leetcode'].forEach(platform => {
+        // Try to find username at either root level or inside platform object
+        if (firestoreData[platform]?.username) {
+          extractedUsernames[platform] = firestoreData[platform].username;
+        } else if (typeof firestoreData[platform] === 'string') {
+          // Legacy format - username directly as string (from old code)
+          extractedUsernames[platform] = firestoreData[platform];
+        } else if (firestoreData[platform]?.data?.username) {
+          // Check if username is inside the data object
+          extractedUsernames[platform] = firestoreData[platform].data.username;
+        } else {
+          extractedUsernames[platform] = null;
+        }
+      });
       
       setUsernames(extractedUsernames);
       setIsLoading(false);
@@ -184,7 +184,11 @@ const useFetchPlatformData = (uid) => {
     if (!usernames) return;
     
     const fetchAllPlatformData = async () => {
+      // Set loading again when starting new fetches
+      setIsLoading(true);
+      
       console.log("Starting to fetch platform data according to rules");
+      console.log("Current usernames:", usernames);
       
       const firestoreData = await fetchFromFirestore();
       
@@ -198,15 +202,20 @@ const useFetchPlatformData = (uid) => {
       });
       
       await Promise.all(fetchPromises);
+      
+      // Mark loading as complete after all fetches
+      setIsLoading(false);
     };
 
     fetchAllPlatformData();
   }, [usernames]);
 
+  // Return both platform data and usernames
   return {
     linkedinData: platformData.linkedin,
     githubData: platformData.github,
     leetcodeData: platformData.leetcode,
+    usernames, // Add usernames to return object
     isLoading
   };
 };

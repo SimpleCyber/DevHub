@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 
-
+import WhatsAppJoinButton from "../ui/WhatsAppJoinButton";
 
 const InternshipList = () => {
 
@@ -402,13 +402,14 @@ const InternshipList = () => {
     <div className="min-h-screen bg-blue-50 p-6 ml-64">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <div className="flex flex-col">
-            <h1 className="text-2xl font-bold text-gray-800">
-              {selectedInternship
-                ? "Internship Details"
-                : `${filteredInternships.length} internships found`}
-            </h1>
-          </div>
+          <div className="flex justify-between items-center w-full">
+  <h1 className="text-2xl font-bold text-gray-800">
+    {selectedInternship
+      ? "Internship Details"
+      : `${filteredInternships.length} internships found`}
+  </h1>
+  <WhatsAppJoinButton />
+</div>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
@@ -433,7 +434,7 @@ const InternshipList = () => {
                     >
                       <option value="">All Tpes</option>
                       <option value="Internship">Internship</option>
-                      <option value="Job">Job</option>
+                      <option value="Fresher">Fresher</option>
                       <option value="Contract">Contract</option>
                     </select>
                   </div>
