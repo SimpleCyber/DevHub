@@ -107,9 +107,11 @@ const useFetchPlatformData = (uid) => {
   const fetchPlatformData = async (platform, username, firestoreData) => {
     // First, always get and display Firebase data if available
     const cachedInfo = firestoreData[platform] || {};
-    
+    const timestamp = cachedInfo.timestamp;
+    const istDate = new Date(timestamp).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+
     if (cachedInfo.data) {
-      console.log(`Using cached ${platform} data from Firebase`);
+      console.log(`Using cached ${platform} data from Firebase`,istDate);
       setPlatformData(prev => ({
         ...prev,
         [platform]: cachedInfo.data
