@@ -89,13 +89,12 @@ const useFetchPlatformData = (uid) => {
     }
   };
 
-  // Background update function - updates data without affecting state immediately
   const backgroundUpdate = async (platform, username) => {
     console.log(`Background updating ${platform} data`);
     try {
       const freshData = await fetchFromAPI(platform, username);
       if (freshData) {
-        saveToFirestore(platform, freshData, username); // Pass username to save function
+        saveToFirestore(platform, freshData, username); 
         console.log(`${platform} data updated in background`);
       }
     } catch (error) {
@@ -121,9 +120,7 @@ const useFetchPlatformData = (uid) => {
     // Check if we need to fetch from API based on platform-specific rules
     const isStale = isDailyCacheStale(cachedInfo.timestamp, platform);
     const neverFetchedBefore = !hasBeenFetchedBefore(firestoreData, platform);
-    
-    // For LinkedIn: Fetch only if never fetched before
-    // For GitHub/LeetCode: Fetch in background if stale
+
     if (platform === 'linkedin' && neverFetchedBefore) {
       console.log(`Fetching LinkedIn data for the first time`);
       const freshData = await fetchFromAPI(platform, username);
@@ -132,10 +129,9 @@ const useFetchPlatformData = (uid) => {
           ...prev,
           [platform]: freshData
         }));
-        saveToFirestore(platform, freshData, username); // Pass username to save function
+        saveToFirestore(platform, freshData, username); 
       }
     } else if (platform !== 'linkedin' && isStale) {
-      // For GitHub and LeetCode, update in background if stale
       backgroundUpdate(platform, username);
     }
   };

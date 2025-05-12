@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import DemoCredentialsBox from "./DemoCredentialsBox";
+// import DemoCredentialsBox from "./DemoCredentialsBox";
 
 
 import "../dashboard/dashboard.css"
@@ -254,7 +254,7 @@ const AuthPages = () => {
         )}
       </div>
     </div>
-    <DemoCredentialsBox />
+    {/* <DemoCredentialsBox /> */}
     </div>
   );
 };
