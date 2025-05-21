@@ -67,7 +67,7 @@ const AuthPages = () => {
         });
       }
   
-      navigate("/", { state: { email: user.email } }); // Navigate with email
+      navigate("/interview", { state: { email: user.email } }); // Navigate with email
     } catch (error) {
       alert(`Error: ${error.message}`);
     } finally {

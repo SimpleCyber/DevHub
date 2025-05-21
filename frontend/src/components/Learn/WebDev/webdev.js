@@ -1,11 +1,9 @@
 import React from "react";
 import { X } from "lucide-react";
-import { Sidebar } from "../../sidebar/sidebar";
 
 const WebDev = ({ onGoBack }) => {
   return (
-    <div className="min-h-screen bg-gray-100 p-6 ml-64">
-      <Sidebar />
+    <div className="min-h-screen bg-gray-100 p-6">
       <div className="container mx-auto">
         <div className="flex justify-between items-center gap-2 mb-4">
           <h1 className="text-2xl font-bold text-gray-800">

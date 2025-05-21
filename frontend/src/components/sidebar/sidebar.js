@@ -4,10 +4,10 @@ import {
   ClipboardPenLine,
   User,
   ChevronLeft,
+  ChevronRight,
   LayoutDashboard,
   Sparkles,
   Loader,
-  ListCheck,
   BookOpenCheck,
   MessageSquareText,
 } from "lucide-react";
@@ -93,8 +93,15 @@ export function Sidebar() {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const saved = localStorage.getItem("sidebar-open");
+    setIsOpen(saved === "true");
+  }, []);
+
   const toggleSidebar = () => {
-    setIsOpen(!isOpen);
+    const newState = !isOpen;
+    setIsOpen(newState);
+    localStorage.setItem("sidebar-open", newState.toString());
   };
 
   const navItems = [
@@ -107,12 +114,11 @@ export function Sidebar() {
     { icon: BookOpenCheck, text: "Learn", path: "/learn" },
     // { icon: ListCheck, text: "Friends", path: "/friends" },
 
-    { 
+    {
       icon: ClipboardPenLine,
-       text: "Interview Practice",
-       path: userData ? `/interview` : "/auth"      
+      text: "Interview Practice",
+      path: userData ? `/interview` : "/auth",
     },
-
 
     { icon: MessageSquareText, text: "Internships", path: "/internships" },
     { icon: User, text: "Profile", path: "/profile" },
@@ -127,7 +133,7 @@ export function Sidebar() {
             <span className={isOpen ? "logo-text" : "hidden"}>DevHub</span>
           </div>
 
-          {/* <button
+          <button
             className="sidebar-toggle"
             onClick={toggleSidebar}
             aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
@@ -135,9 +141,9 @@ export function Sidebar() {
             {isOpen ? (
               <ChevronLeft size={24} />
             ) : (
-              <Sparkles className="logo-icon" size={24} />
+              <ChevronRight className="logo-icon" size={24} />
             )}
-          </button> */}
+          </button>
         </div>
 
         <nav className="sidebar-nav">

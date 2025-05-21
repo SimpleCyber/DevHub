@@ -179,8 +179,7 @@ const Dsa = ({ onGoBack }) => {
   };
 
   return (
-    <div className="flex h-screen bg-[#e9effe] ml-64">
-      <Sidebar />
+    <div className="flex h-screen bg-[#e9effe]">
       <div className="flex-1 overflow-auto">
         <div className="p-6">
           <div className="flex justify-between items-center gap-2 mb-4">

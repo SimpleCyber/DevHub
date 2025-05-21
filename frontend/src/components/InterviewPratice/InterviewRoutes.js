@@ -40,7 +40,7 @@ function InterviewRoutes() {
   return (
     <ThemeProvider defaultTheme="light" className="bg-blue-50">
       <UserProvider>
-        <div className="font-sans flex">
+        <div className="flex">
           <Sidebar switchComponent={switchComponent} />
           <div className="main-content flex-grow bg-[#e9effe]">
             <Toaster />

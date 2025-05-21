@@ -1,6 +1,4 @@
-  body {
-    min-height: 100vh;
-  }
+
 
   .straight{
     display: flex;
@@ -21,7 +19,6 @@
     display: grid;
     gap: 2rem;
     margin: 0 auto;
-    margin-left: 16rem;
   }
   
   .main-content {

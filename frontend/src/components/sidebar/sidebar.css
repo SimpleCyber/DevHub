@@ -1,15 +1,14 @@
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
   background-color: #111827;
   color: white;
   transition: width 0.3s;
   overflow: hidden;
-  z-index: 9;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
 }
-
 .sidebar.open {
   width: 16rem;
 }

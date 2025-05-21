@@ -8,7 +8,6 @@ import { Toaster } from "sonner";
 import ModernHomePage from './components/home/ModernHomePage'; 
 import AuthPages from './components/auth/AuthPages'; 
 import Profile from "./components/profile/profile";
-import "./components/home/ModernHomePage.css"
 import Dashboard from "./components/dashboard/dashboard";
 import InterviewRoutes from "./components/InterviewPratice/InterviewRoutes";
 import Learn from "./components/Learn/learn";

@@ -60,16 +60,19 @@ const Header = () => {
           <span>DevHub</span>
         </div>
         <div className="nav-links">
-        <a href="#user" onClick={handleRedirectDashboard}>Dashboard</a>
-          <a href="#user"   onClick={handleRedirectInterview}  className='feature'>Interview</a>
-          <a href="/internships" className='feature'>Internship</a>
+          
+        <a href="#user" onClick={handleRedirectDashboard} className='feature'>Dashboard</a>
+        <a href="/internships" className='feature'>Internship</a>
+        <a href="/interview"   onClick={handleRedirectInterview}  className='feature'>Interview</a>
+          
           <button 
-            className="theme-toggle glass-effect-dashbord"
+            className="theme-toggle glass-effect-dashbord feature"
             onClick={() => setDarkMode(!darkMode)}
+
           >
             {darkMode ? <Sun size={20} style={{ color: "white", cursor: "pointer" }} /> : <Moon size={20} style={{ cursor: "pointer" }} />}
           </button>
-          <button className="connect-btn glass-effect-dashbord" onClick={handleRedirect}>
+          <button className="connect-btn glass-effect-dashbord " onClick={handleRedirect} >
             Connect <ArrowRight size={16} />
           </button>
         </div>

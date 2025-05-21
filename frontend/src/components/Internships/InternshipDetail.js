@@ -13,7 +13,6 @@ import {
   Clock,
   X,
 } from "lucide-react";
-import { Sidebar } from "../sidebar/sidebar";
 
 import { toast } from "sonner"; // Make sure to import toast from sonner
 const InternshipDetail = () => {
@@ -104,8 +103,7 @@ const InternshipDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 ml-64">
-      <Sidebar />
+    <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-full mx-auto">
         <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
           {/* Header */}
