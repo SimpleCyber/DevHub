@@ -15,6 +15,7 @@ import Friend from "./components/Friends/friend";
 import Internships  from "./components/Internships/internships";
 import InternshipAdmin from "./components/Internships/InternshipAdmin";
 import InternshipDetail from "./components/Internships/InternshipDetail";
+import InternshipsDetail2 from "./components/Internships/Internshipdetail2";
 
 
 function App() {
@@ -41,7 +42,9 @@ function App() {
 
         <Route path="/admin" element={<InternshipAdmin />} />
 
-        <Route path="/internship/:id" element={<InternshipDetail />} />
+
+        <Route path="/internship/:id" element={<InternshipsDetail2 />} />
+
 
         
         

@@ -10,11 +10,12 @@ import {
   ExternalLink,
   Bookmark,
   Share2,
-  Clock,
+  Clock,  
   X,
 } from "lucide-react";
 
-import { toast } from "sonner"; // Make sure to import toast from sonner
+
+import { toast } from "sonner"; 
 const InternshipDetail = () => {
   const [internship, setInternship] = useState(null);
   const [loading, setLoading] = useState(true);
