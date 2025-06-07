@@ -318,6 +318,7 @@ const DataCollector = () => {
                   id="linkedin"
                   name="linkedin"
                   value={formData.linkedin}
+                  placeholder="username"
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   className="main-profile-form-input"
@@ -330,6 +331,7 @@ const DataCollector = () => {
                   type="text"
                   id="github"
                   name="github"
+                  placeholder="username"
                   value={formData.github}
                   onChange={handleInputChange}
                   disabled={!isEditing}
@@ -343,6 +345,7 @@ const DataCollector = () => {
                   type="text"
                   id="leetcode"
                   name="leetcode"
+                  placeholder="username"
                   value={formData.leetcode}
                   onChange={handleInputChange}
                   disabled={!isEditing}
@@ -422,6 +425,7 @@ const DataCollector = () => {
                       type="text"
                       name="url"
                       value={project.url}
+                      placeholder="https://example.com"
                       onChange={(e) => handleProjectChange(index, e)}
                       disabled={!isEditing}
                       className="main-profile-form-input"
