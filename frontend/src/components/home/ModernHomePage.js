@@ -22,7 +22,7 @@ import WhatsAppJoinButton from "../ui/WhatsAppJoinButton";
 const ModernHomePage = () => {
   const navigate = useNavigate();
   const handleRedirect = () => {
-    navigate("/internships");
+    navigate("/auth");
   };
 
   return (
@@ -56,7 +56,7 @@ const ModernHomePage = () => {
   className="primary-cta glass-effect-dashbord bg-gradient-to-r from-red-600 to-red-400 hover:from-red-700 hover:to-red-400"
   onClick={handleRedirect}
 >
-                Internships <ArrowRight size={16} />
+                Get Started <ArrowRight size={16} />
               </button>
               <div className="stats glass-effect-dashbord">
                 <div className="stat">
