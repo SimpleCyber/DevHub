@@ -67,7 +67,7 @@ const AuthPages = () => {
         });
       }
   
-      navigate("/interview", { state: { email: user.email } }); // Navigate with email
+      navigate("/profile", { state: { email: user.email } }); 
     } catch (error) {
       alert(`Error: ${error.message}`);
     } finally {
@@ -88,7 +88,7 @@ const AuthPages = () => {
           formData.email,
           formData.password
         );
-        navigate("/"); 
+       navigate(`/dashboard/${result.user.uid}`);
       } else {
 
         const result = await createUserWithEmailAndPassword(

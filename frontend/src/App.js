@@ -2,6 +2,10 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner"; 
+import ProtectedRoute from './ProtectedRoute';
+import { UserProvider } from './components/context/UserContext';
+
+
 
 
 // Components
@@ -19,18 +23,43 @@ import InternshipsDetail2 from "./components/Internships/Internshipdetail2";
 
 function App() {
   return (
+    <UserProvider>
     <Router>
       <Routes>
         <Route path="/" element={<ModernHomePage />} />
 
         <Route path="/auth" element={<AuthPages />} />
 
-        <Route path="/profile" element={<Profile />} />
+
+
+        {/* <Route path="/profile" element={<Profile />} />
 
         <Route path="/dashboard/:uid" element={<Dashboard />} />
 
 
-        <Route path="/interview" element={ <InterviewRoutes />} />
+        <Route path="/interview" element={ <InterviewRoutes />} /> */}
+
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/dashboard/:uid" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/interview" element={
+          <ProtectedRoute>
+            <InterviewRoutes />
+          </ProtectedRoute>
+        } />
+
+
+
+
         
 
         <Route path="/learn" element={<Learn />} />
@@ -54,6 +83,7 @@ function App() {
       <Toaster richColors position="top-right" />
 
     </Router>
+    </UserProvider>
   );
 }
 
