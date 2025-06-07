@@ -6,7 +6,7 @@ const ProtectedRoute = ({ children }) => {
   const { user, isLoading } = useUser();
 
   if (isLoading) {
-    return <div>Loading...</div>; // Add a loading spinner here
+    return <div>Loading...</div>; 
   }
 
   if (!user) {

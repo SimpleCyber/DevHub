@@ -177,13 +177,13 @@ const DataCollector = () => {
   };
 
   const addNewProject = () => {
-    if (formData.projects.length < 3) {
+    if (formData.projects.length < 10) {
       setFormData((prev) => ({
         ...prev,
         projects: [...prev.projects, { name: "", url: "", date: "" }],
       }));
     } else {
-      setMessage("You can only add up to 3 projects");
+      setMessage("You can only add up to 10 projects");
     }
   };
 
@@ -450,7 +450,7 @@ const DataCollector = () => {
                 </div>
               ))}
             </div>
-            {isEditing && formData.projects.length < 3 && (
+            {isEditing && formData.projects.length < 10 && (
               <button
                 type="button"
                 className="main-profile-add-project-button"

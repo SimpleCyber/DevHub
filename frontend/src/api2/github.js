@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { MapPin, Mail, Users, GitFork, Book, GitCommit, Star, User } from 'lucide-react';
-import './github.css';
 
 // Language colors as a constant
 const LANGUAGE_COLORS = {
@@ -33,7 +32,7 @@ const GitHubCard = ({ data }) => {
         public_repos: profile.public_repos || 0,
       },
       top_repositories: top_repositories
-        .filter(repo => repo && repo.name) // Filter out invalid repos
+        .filter(repo => repo && repo.name)
         .map(repo => ({
           name: repo.name,
           html_url: repo.html_url || '#',
@@ -44,79 +43,91 @@ const GitHubCard = ({ data }) => {
     };
   }, [data]);
 
-  // Loading state
-  if (!data) {
-    return <div className="github-card loading">Loading GitHub data...</div>;
-  }
-
-  // Error state
-  if (!processedData) {
-    return <div className="github-card error">Unable to load GitHub data</div>;
-  }
-
-  const { profile, top_repositories } = processedData;
-
   // Get language color with error handling
   const getLanguageColor = (language) => {
     if (!language) return '#8b949e';
     return LANGUAGE_COLORS[language] || '#8b949e';
   };
 
+  if (!data) {
+    return (
+      <div className="flex justify-center items-center h-32">
+        <div className="border-4 border-gray-200 border-t-blue-500 rounded-full w-10 h-10 animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!processedData) {
+    return (
+      <div className="bg-red-50 text-red-600 p-4 rounded-lg">
+        Unable to load GitHub data
+      </div>
+    );
+  }
+
+  const { profile, top_repositories } = processedData;
+
   return (
-    <>
-      <h2 className="full-name">GitHub</h2>
-      <div className="github-card">
-        <div className="profile-container">
+    <div>
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">GitHub</h2>
+      
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Profile Section */}
+        <div className="w-full md:w-1/3 flex flex-col items-center md:items-start">
           <img 
             src={profile.avatar}
             alt={profile.full_name}
-            className="avatar"
+            className="w-24 h-24 rounded-full object-cover mb-4"
             onError={(e) => {
               e.target.onerror = null;
               e.target.src = 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png';
             }}
           />
-          <div className="profile-details">
-            <div className="info-items">
-              <div className="info-item">
-                <Mail size={16} />
-                <span title={profile.email}>{profile.email}</span>
-              </div>
-              
-              <div className="info-item">
-                <MapPin size={16} />
-                <span title={profile.location}>{profile.location}</span>
-              </div>
-              
-              <div className="info-item">
-                <Users size={16} />
-                <span>{profile.followers.toLocaleString()} followers</span>
-              </div>
+          
+          <div className="w-full space-y-3">
+            <div className="flex items-center text-gray-600">
+              <Mail className="w-4 h-4 mr-2" />
+              <span className="truncate" title={profile.email}>{profile.email}</span>
+            </div>
+            
+            <div className="flex items-center text-gray-600">
+              <MapPin className="w-4 h-4 mr-2" />
+              <span>{profile.location}</span>
+            </div>
+            
+            <div className="flex items-center text-gray-600">
+              <Users className="w-4 h-4 mr-2" />
+              <span>{profile.followers.toLocaleString()} followers</span>
+            </div>
 
-              <div className="info-item">
-                <User size={16} />
-                <span>{profile.following.toLocaleString()} following</span>
-              </div>
-              
-              <div className="info-item">
-                <Book size={16} />
-                <span>{profile.public_repos.toLocaleString()} Public Repo</span>
-              </div>
+            <div className="flex items-center text-gray-600">
+              <User className="w-4 h-4 mr-2" />
+              <span>{profile.following.toLocaleString()} following</span>
+            </div>
+            
+            <div className="flex items-center text-gray-600">
+              <Book className="w-4 h-4 mr-2" />
+              <span>{profile.public_repos.toLocaleString()} Public Repos</span>
             </div>
           </div>
         </div>
 
-        <div className="repositories-section">
-          <h3>Top Repositories</h3>
-          <div className="repo-list">
+        {/* Repositories Section */}
+        <div className="w-full md:w-2/3">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">Top Repositories</h3>
+          
+          <div className="space-y-3">
             {top_repositories.length > 0 ? (
               top_repositories.map((repo, index) => (
-                <div key={`${repo.name}-${index}`} className="repo-item">
-                  <div className="repo-header">
-                    <Book size={16} className="repo-icon" />
+                <div 
+                  key={`${repo.name}-${index}`} 
+                  className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <div className="flex items-center mb-2">
+                    <Book className="w-4 h-4 text-gray-500 mr-2" />
                     <a 
                       href={repo.html_url}
-                      className="repo-name"
+                      className="text-blue-600 font-medium hover:underline truncate"
                       target="_blank"
                       rel="noopener noreferrer"
                       title={repo.name}
@@ -124,27 +135,28 @@ const GitHubCard = ({ data }) => {
                       {repo.name}
                     </a>
                   </div>
-                  <div className="repo-meta">
+                  
+                  <div className="flex items-center text-xs text-gray-500">
                     {repo.language && (
                       <>
                         <span 
-                          className="language-dot" 
+                          className="w-2 h-2 rounded-full mr-1" 
                           style={{ backgroundColor: getLanguageColor(repo.language) }}
                         />
-                        <span className="language-name">{repo.language}</span>
+                        <span className="mr-3">{repo.language}</span>
                       </>
                     )}
-                    <GitCommit size={16} className="commit-icon" />
+                    <GitCommit className="w-3 h-3 mr-1" />
                   </div>
                 </div>
               ))
             ) : (
-              <div className="no-repos">No repositories available</div>
+              <div className="text-gray-500 text-center py-4">No repositories available</div>
             )}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
