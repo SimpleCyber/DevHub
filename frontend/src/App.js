@@ -19,6 +19,7 @@ import Friend from "./components/Friends/friend";
 import Internships  from "./components/Internships/internships";
 import InternshipAdmin from "./components/Internships/InternshipAdmin";
 import InternshipsDetail2 from "./components/Internships/Internshipdetail2";
+import Home from "./components/InterviewPratice/Home";
 
 
 function App() {
@@ -30,14 +31,6 @@ function App() {
 
         <Route path="/auth" element={<AuthPages />} />
 
-
-
-        {/* <Route path="/profile" element={<Profile />} />
-
-        <Route path="/dashboard/:uid" element={<Dashboard />} />
-
-
-        <Route path="/interview" element={ <InterviewRoutes />} /> */}
 
         <Route path="/profile" element={
           <ProtectedRoute>
@@ -69,6 +62,7 @@ function App() {
         <Route path="/internships" element={<Internships />} />  
 
         <Route path="/admin" element={<InternshipAdmin />} />
+         <Route path="/interviewHome" element={<Home />} />
 
 
         <Route path="/internship/:id" element={<InternshipsDetail2 />} />
