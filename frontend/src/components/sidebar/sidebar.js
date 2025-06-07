@@ -37,7 +37,7 @@ const SidebarItem = ({ icon: Icon, text, active, onClick, isMobile, collapsed })
   </li>
 );
 
-const ProfileSection = ({ userData, loading, isMobile, collapsed }) => {
+const ProfileSection = ({ userData, loading, isMobile, collapsed, onProfileClick, showEmail, onLogout }) => {
   if (collapsed && !isMobile) {
     return (
       <div className="p-4 border-t border-gray-700">
@@ -46,7 +46,8 @@ const ProfileSection = ({ userData, loading, isMobile, collapsed }) => {
             <img
               src={userData?.photoURL || "https://github.com/shadcn.png"}
               alt="Profile"
-              className="w-10 h-10 rounded-full"
+              className="w-10 h-10 rounded-full cursor-pointer"
+              onClick={onProfileClick}
               onError={(e) => {
                 e.currentTarget.src = "https://github.com/shadcn.png";
               }}
@@ -59,30 +60,53 @@ const ProfileSection = ({ userData, loading, isMobile, collapsed }) => {
   }
   
   return (
-    <div className={`p-4 border-t border-gray-700 ${isMobile ? 'mt-auto' : ''}`}>
+    <div 
+      className={`p-4 border-t border-gray-700 ${isMobile ? 'mt-auto' : ''} cursor-pointer`}
+      onClick={onProfileClick}
+    >
       {loading ? (
         <div className="flex justify-center">
           <Loader className="animate-spin w-6 h-6 text-gray-400" />
         </div>
       ) : (
-        <div className="flex items-center">
-          <div className="relative">
-            <img
-              src={userData?.photoURL || "https://github.com/shadcn.png"}
-              alt="Profile"
-              className="w-10 h-10 rounded-full"
-              onError={(e) => {
-                e.currentTarget.src = "https://github.com/shadcn.png";
+        <div className="flex flex-col">
+          <div className="flex items-center">
+            <div className="relative">
+              <img
+                src={userData?.photoURL || "https://github.com/shadcn.png"}
+                alt="Profile"
+                className="w-10 h-10 rounded-full"
+                onError={(e) => {
+                  e.currentTarget.src = "https://github.com/shadcn.png";
+                }}
+              />
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></span>
+            </div>
+            <div className="ml-3 min-w-0">
+              <h3 className="font-semibold text-white truncate">
+                {userData?.name || "User"}
+              </h3>
+              <p className="text-xs text-green-400">Online</p>
+            </div>
+          </div>
+          
+          {showEmail && userData?.email && (
+            <div className="mt-2 text-sm text-gray-300 truncate">
+              {userData.email}
+            </div>
+          )}
+          
+          {showEmail && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onLogout();
               }}
-            />
-            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></span>
-          </div>
-          <div className="ml-3 min-w-0">
-            <h3 className="font-semibold text-white truncate">
-              {userData?.name || "User"}
-            </h3>
-            <p className="text-xs text-green-400">Online</p>
-          </div>
+              className="mt-3 w-full py-1.5 px-3 text-sm bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
+            >
+              Logout
+            </button>
+          )}
         </div>
       )}
     </div>
@@ -94,8 +118,23 @@ export function Sidebar() {
   const [isMobile, setIsMobile] = useState(false);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showProfileDetails, setShowProfileDetails] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      setUserData(null);
+      navigate("/");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
+  const toggleProfileDetails = () => {
+    setShowProfileDetails(!showProfileDetails);
+  };
 
   useEffect(() => {
     const checkMobile = () => {
@@ -298,6 +337,9 @@ export function Sidebar() {
             loading={loading} 
             isMobile={isMobile}
             collapsed={!isOpen && !isMobile}
+            onProfileClick={toggleProfileDetails}
+            showEmail={showProfileDetails}
+            onLogout={handleLogout}
           />
         </aside>
 
