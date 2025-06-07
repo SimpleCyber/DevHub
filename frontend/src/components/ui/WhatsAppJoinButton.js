@@ -31,7 +31,8 @@ export default function WhatsAppJoinButton() {
         onClick={handleClick}
       >
         <MessageCircle size={20} className="fill-white stroke-white" />
-        <span>Join WhatsApp Community</span>
+        <span className="hidden sm:inline">Join WhatsApp Community</span>
+        <span className="sm:hidden">Community</span>
       </button>
       
       {isClicked && (
