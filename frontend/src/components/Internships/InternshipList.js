@@ -614,7 +614,7 @@ const renderInternshipCard = (internship) => (
   
   return (
     <div className="min-h-screen bg-blue-50 p-3 sm:p-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto mt-16 sm:mt-0">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800">

@@ -10,42 +10,80 @@ import {
   Loader,
   BookOpenCheck,
   MessageSquareText,
+  Menu,
+  X,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "./sidebar.css";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { auth } from "../../firebase";
 
-const SidebarItem = ({ icon: Icon, text, active, onClick }) => (
-  <li className={`nav-item ${active ? "active" : ""}`} onClick={onClick}>
-    <Icon className="nav-icon" />
-    <span className="nav-text">{text}</span>
+const SidebarItem = ({ icon: Icon, text, active, onClick, isMobile, collapsed }) => (
+  <li 
+    className={`
+      flex items-center p-3 mx-2 my-1 rounded-lg cursor-pointer transition-all duration-200
+      ${active 
+        ? 'bg-gray-700 text-white' 
+        : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+      }
+      ${isMobile ? 'justify-start' : ''}
+      ${collapsed && !isMobile ? 'justify-center' : ''}
+    `} 
+    onClick={onClick}
+  >
+    <Icon className="w-5 h-5 flex-shrink-0" />
+    {(!collapsed || isMobile) && (
+      <span className="ml-3 font-medium">{text}</span>
+    )}
   </li>
 );
 
-const ProfileSection = ({ userData, isOpen, loading }) => {
-  if (!isOpen) return null;
-
+const ProfileSection = ({ userData, loading, isMobile, collapsed }) => {
+  if (collapsed && !isMobile) {
+    return (
+      <div className="p-4 border-t border-gray-700">
+        <div className="flex justify-center">
+          <div className="relative">
+            <img
+              src={userData?.photoURL || "https://github.com/shadcn.png"}
+              alt="Profile"
+              className="w-10 h-10 rounded-full"
+              onError={(e) => {
+                e.currentTarget.src = "https://github.com/shadcn.png";
+              }}
+            />
+            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   return (
-    <div className="profile-info-sidebar">
+    <div className={`p-4 border-t border-gray-700 ${isMobile ? 'mt-auto' : ''}`}>
       {loading ? (
-        <div className="loading-state">
-          <Loader className="animate-spin" />
+        <div className="flex justify-center">
+          <Loader className="animate-spin w-6 h-6 text-gray-400" />
         </div>
       ) : (
-        <>
-          <img
-            src={"https://github.com/shadcn.png"}
-            alt="Profile"
-            className="profile-image-sidebar"
-            onError={(e) => {
-              e.currentTarget.src = "https://github.com/shadcn.png";
-            }}
-          />
-          <div className="profile-details-sidebar">
-            <h3 className="profile-name">{userData?.name || "User"}</h3>
+        <div className="flex items-center">
+          <div className="relative">
+            <img
+              src={userData?.photoURL || "https://github.com/shadcn.png"}
+              alt="Profile"
+              className="w-10 h-10 rounded-full"
+              onError={(e) => {
+                e.currentTarget.src = "https://github.com/shadcn.png";
+              }}
+            />
+            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></span>
           </div>
-        </>
+          <div className="ml-3 min-w-0">
+            <h3 className="font-semibold text-white truncate">
+              {userData?.name || "User"}
+            </h3>
+            <p className="text-xs text-green-400">Online</p>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -53,10 +91,27 @@ const ProfileSection = ({ userData, isOpen, loading }) => {
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setIsOpen(true);
+      } else {
+        setIsOpen(false);
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -82,7 +137,6 @@ export function Sidebar() {
 
     fetchUserData();
 
-    // Listen for auth state changes
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (!user) {
         setUserData(null);
@@ -95,13 +149,17 @@ export function Sidebar() {
 
   useEffect(() => {
     const saved = localStorage.getItem("sidebar-open");
-    setIsOpen(saved === "true");
-  }, []);
+    if (saved && !isMobile) {
+      setIsOpen(saved === "true");
+    }
+  }, [isMobile]);
 
   const toggleSidebar = () => {
     const newState = !isOpen;
     setIsOpen(newState);
-    localStorage.setItem("sidebar-open", newState.toString());
+    if (!isMobile) {
+      localStorage.setItem("sidebar-open", newState.toString());
+    }
   };
 
   const navItems = [
@@ -112,66 +170,144 @@ export function Sidebar() {
       path: userData ? `/dashboard/${auth.currentUser?.uid}` : "/auth",
     },
     { icon: BookOpenCheck, text: "Learn", path: "/learn" },
-    // { icon: ListCheck, text: "Friends", path: "/friends" },
-
     {
       icon: ClipboardPenLine,
       text: "Interview Practice",
       path: userData ? `/interview` : "/auth",
     },
-
     { icon: MessageSquareText, text: "Internships", path: "/internships" },
     { icon: User, text: "Profile", path: "/profile" },
   ];
 
   return (
-    <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
-      <div className="s-bar">
-        <div className="sidebar-header">
-          <div className="logo">
-            <Sparkles className="logo-icon" />
-            <span className={isOpen ? "logo-text" : "hidden"}>DevHub</span>
+    <>
+      {/* Mobile Overlay */}
+      {isMobile && isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-40 md:hidden"
+          onClick={toggleSidebar}
+        />
+      )}
+
+      {/* Enhanced Mobile Header */}
+      {isMobile && (
+        <header className="bg-gray-800 text-white p-3 flex items-center justify-between md:hidden fixed top-0 left-0 right-0 z-50 shadow-lg border-b border-gray-700">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleSidebar}
+              className="p-2 rounded-lg hover:bg-gray-700 transition-colors"
+              aria-label="Toggle menu"
+            >
+              {isOpen ? (
+                <X size={22} className="text-purple-400" />
+              ) : (
+                <Menu size={22} className="text-purple-400" />
+              )}
+            </button>
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-400 animate-pulse" />
+              <span className="text-lg font-bold text-purple-400">DevHub</span>
+            </div>
           </div>
-
-          <button
-            className="sidebar-toggle"
-            onClick={toggleSidebar}
-            aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
-          >
-            {isOpen ? (
-              <ChevronLeft size={24} />
-            ) : (
-              <ChevronRight className="logo-icon" size={24} />
-            )}
-          </button>
-        </div>
-
-        <nav className="sidebar-nav">
-          <ul className="nav-list">
-            {navItems.map((item, index) => {
-              const isActive =
-                item.path === "/"
-                  ? location.pathname === "/"
-                  : location.pathname.startsWith(item.path);
-
-              return (
-                <SidebarItem
-                  key={index}
-                  icon={item.icon}
-                  text={item.text}
-                  active={isActive}
-                  onClick={() => {
-                    if (loading && item.text === "Dashboard") return;
-                    navigate(item.path);
-                  }}
+          {userData && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-green-400 hidden xs:inline">Online</span>
+              <div className="relative">
+                <img
+                  src={userData?.photoURL || "https://github.com/shadcn.png"}
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full border border-gray-600"
                 />
-              );
-            })}
-          </ul>
-        </nav>
-      </div>
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border border-gray-800"></span>
+              </div>
+            </div>
+          )}
+        </header>
+      )}
 
-      <ProfileSection userData={userData} isOpen={isOpen} loading={loading} />
-    </div>
+      <div className="flex">
+        {/* Sidebar */}
+        <aside className={`
+          bg-gray-900 text-white transition-all duration-300 flex flex-col
+          ${isMobile 
+            ? `fixed top-0 left-0 h-full z-50 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} w-64 shadow-xl`
+            : `fixed top-0 left-0 h-screen ${isOpen ? 'w-64' : 'w-16'}`
+          }
+        `}>
+          {/* Desktop Header */}
+          {!isMobile && (
+            <div className="flex justify-between items-center p-4">
+              {isOpen ? (
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-6 h-6 text-purple-400 animate-pulse flex-shrink-0" />
+                  <span className="text-xl font-bold text-purple-400">DevHub</span>
+                </div>
+              ) : (
+                <Sparkles className="w-6 h-6 text-purple-400 animate-pulse flex-shrink-0 mx-auto" />
+              )}
+              
+              <button
+                onClick={toggleSidebar}
+                className="p-2 rounded-lg hover:bg-gray-700 transition-all duration-200 text-gray-400 hover:text-white"
+                aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
+              >
+                {isOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+              </button>
+            </div>
+          )}
+
+          {/* Mobile Header inside sidebar */}
+          {isMobile && isOpen && (
+            <div className="flex items-center gap-2 p-4 mt-2">
+              <Sparkles className="w-6 h-6 text-purple-400 animate-pulse" />
+              <span className="text-xl font-bold text-purple-400">DevHub</span>
+            </div>
+          )}
+
+          {/* Navigation */}
+          <nav className="flex-1 py-4 overflow-y-auto">
+            <ul className="space-y-1">
+              {navItems.map((item, index) => {
+                const isActive =
+                  item.path === "/"
+                    ? location.pathname === "/"
+                    : location.pathname.startsWith(item.path);
+
+                return (
+                  <SidebarItem
+                    key={index}
+                    icon={item.icon}
+                    text={item.text}
+                    active={isActive}
+                    onClick={() => {
+                      if (loading && item.text === "Dashboard") return;
+                      navigate(item.path);
+                      if (isMobile) setIsOpen(false);
+                    }}
+                    isMobile={isMobile}
+                    collapsed={!isOpen && !isMobile}
+                  />
+                );
+              })}
+            </ul>
+          </nav>
+
+          {/* Profile Section */}
+          <ProfileSection 
+            userData={userData} 
+            loading={loading} 
+            isMobile={isMobile}
+            collapsed={!isOpen && !isMobile}
+          />
+        </aside>
+
+        {/* Main Content */}
+        <main className={`flex-1 overflow-auto bg-gray-800 ${isMobile ? 'pt-14' : ''} ${
+          !isMobile ? (isOpen ? 'ml-64' : 'ml-16') : ''
+        }`}>
+          {/* Your page content will be rendered here */}
+        </main>
+      </div>
+    </>
   );
 }

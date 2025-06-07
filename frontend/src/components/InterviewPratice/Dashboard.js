@@ -1,7 +1,7 @@
 'use client'
 const Dashboard = () => {
   return (
-    <div className="m-0 p-0 overflow-hidden bg-blue-50">
+<div className="m-0 p-0 overflow-hidden bg-blue-50 mt-10 sm:mt-0">
       
       <iframe 
         src="https://devhub-interview-bg.vercel.app/" 
