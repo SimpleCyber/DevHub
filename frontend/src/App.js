@@ -39,9 +39,7 @@ function App() {
         } />
         
         <Route path="/dashboard/:uid" element={
-          <ProtectedRoute>
             <Dashboard />
-          </ProtectedRoute>
         } />
 
         <Route path="/interview" element={
