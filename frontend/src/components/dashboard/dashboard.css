@@ -12,6 +12,15 @@
     background-color: #e9effe;
   }
 
+  .cursor-pointer {
+  cursor: pointer;
+}
+
+.icon-bg:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+  transition: all 0.2s ease-in-out;
+}
 
 
   .dashboard-container {

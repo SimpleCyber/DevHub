@@ -27,6 +27,7 @@ const MetricCard = ({
   color,
   details,
   loading,
+  link,
 }) => (
   <div className="card">
     {loading ? (
@@ -37,7 +38,28 @@ const MetricCard = ({
       <>
         <div className="card-header">
           <h3 className="card-title">{title}</h3>
-          <div className={`icon-bg ${color}`}>
+          <div 
+            className={`icon-bg ${color} cursor-pointer`} 
+            onClick={() => {
+              if (link) {
+                let url;
+                switch (title) {
+                  case 'GitHub':
+                    url = `https://github.com/${link}`;
+                    break;
+                  case 'Leetcode':
+                    url = `https://leetcode.com/${link}`;
+                    break;
+                  case 'LinkedIn':
+                    url = `https://www.linkedin.com/in/${link}`;
+                    break;
+                  default:
+                    return;
+                }
+                window.open(url, '_blank');
+              }
+            }}
+          >
             <Icon />
           </div>
         </div>
@@ -125,6 +147,7 @@ export default function UserData() {
           },
         ],
         loading: !githubData,
+        link : githubData?.profile?.username,
       },
       {
         icon: Code2,
@@ -147,6 +170,7 @@ export default function UserData() {
           },
         ],
         loading: !leetcodeData,
+        link: leetcodeData?.matchedUser?.username,
       },
       {
         icon: Linkedin,
@@ -167,6 +191,7 @@ export default function UserData() {
           },
         ],
         loading: !linkedinData,
+        link: linkedinData?.Username,
       },
       {
         icon: Link2,

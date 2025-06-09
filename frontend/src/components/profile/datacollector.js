@@ -12,7 +12,6 @@ const DataCollector = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // State to hold the skills input string separately from the skills array
   const [skillsInput, setSkillsInput] = useState("");
 
   const [formData, setFormData] = useState({
@@ -32,7 +31,6 @@ const DataCollector = () => {
     loadProfileData();
   }, []);
 
-  // Update skillsInput when formData.skills changes (e.g., on initial load)
   useEffect(() => {
     if (Array.isArray(formData.skills) && formData.skills.length > 0) {
       setSkillsInput(formData.skills.join(", "));
@@ -82,9 +80,6 @@ const DataCollector = () => {
         if (skills.length > 0) {
           setSkillsInput(skills.join(", "));
         }
-
-        console.log("Loaded profile data with skills:", skills);
-        console.log("Loaded platform usernames:", extractedUsernames);
       }
     } catch (error) {
       console.error("Error loading profile data:", error);
