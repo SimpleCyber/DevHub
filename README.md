@@ -1,8 +1,7 @@
 # DevHub – All-in-One Skilling Ecosystem 🚀
 
-> 🧠 Team Name: **SimpleCyber**  
-> 👨‍💻 Team Leader: **Satyam Yadav**  
-> 📚 Domain: **Skilling**  
+
+<img width="1899" height="908" alt="image" src="https://github.com/user-attachments/assets/75570c57-9532-4d02-9538-12045336b62f" />
 
 ---
 
