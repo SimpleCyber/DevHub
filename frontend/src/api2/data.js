@@ -17,6 +17,11 @@ const useFetchPlatformData = (uid) => {
     github: null,
     leetcode: null,
   });
+  const [timestamps, setTimestamps] = useState({
+    linkedin: null,
+    github: null,
+    leetcode: null,
+  });
   const [usernames, setUsernames] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
@@ -113,33 +118,47 @@ const useFetchPlatformData = (uid) => {
     }
   };
 
-  const fetchPlatformData = async (platform, username) => {
+  const fetchPlatformData = async (
+    platform,
+    username,
+    forceRefresh = false,
+  ) => {
     if (!username) return;
 
     // Check Local Storage first
     const localKey = `dashboard_platform_data_${platform}_${username}`;
-    const localData = localStorage.getItem(localKey);
     let cachedData = null;
 
-    if (localData) {
-      try {
-        cachedData = JSON.parse(localData);
-      } catch (e) {
-        console.error("Error parsing local cached data", e);
-      }
-    }
+    if (!forceRefresh) {
+      const localData = localStorage.getItem(localKey);
 
-    // If no local data, check Firestore
-    if (!cachedData) {
-      const firestoreData = await fetchFromFirestore();
-      cachedData = firestoreData[platform];
+      if (localData) {
+        try {
+          cachedData = JSON.parse(localData);
+        } catch (e) {
+          console.error("Error parsing local cached data", e);
+        }
+      }
+
+      // If no local data, check Firestore
+      if (!cachedData) {
+        const firestoreData = await fetchFromFirestore();
+        cachedData = firestoreData[platform];
+      }
     }
 
     logCacheStatus(platform, username, cachedData?.timestamp);
 
-    if (cachedData?.data && !isCacheStale(cachedData.timestamp, platform)) {
+    if (
+      !forceRefresh &&
+      cachedData?.data &&
+      !isCacheStale(cachedData.timestamp, platform)
+    ) {
       setPlatformData((prev) => ({ ...prev, [platform]: cachedData.data }));
+      setTimestamps((prev) => ({ ...prev, [platform]: cachedData.timestamp }));
+
       // Sync to local storage if it came from Firestore
+      const localData = localStorage.getItem(localKey);
       if (!localData) {
         localStorage.setItem(localKey, JSON.stringify(cachedData));
       }
@@ -150,21 +169,25 @@ const useFetchPlatformData = (uid) => {
     const freshData = await fetchFromAPI(platform, username);
 
     if (freshData) {
+      const timestamp = Date.now();
       const dataToSave = {
         data: freshData,
-        timestamp: Date.now(),
+        timestamp: timestamp,
         username: username,
       };
 
       setPlatformData((prev) => ({ ...prev, [platform]: freshData }));
+      setTimestamps((prev) => ({ ...prev, [platform]: timestamp }));
 
       // Save to both storages
       localStorage.setItem(localKey, JSON.stringify(dataToSave));
       await saveToFirestore(platform, freshData, username);
 
-      logCacheStatus(platform, username, Date.now());
+      logCacheStatus(platform, username, timestamp);
     } else if (cachedData?.data) {
+      // Fallback to cache if fresh fetch fails
       setPlatformData((prev) => ({ ...prev, [platform]: cachedData.data }));
+      setTimestamps((prev) => ({ ...prev, [platform]: cachedData.timestamp }));
     }
 
     setIsLoading(false);
@@ -178,16 +201,23 @@ const useFetchPlatformData = (uid) => {
 
       const initialUsernames = {};
       const initialData = { linkedin: null, github: null, leetcode: null };
+      const initialTimestamps = {
+        linkedin: null,
+        github: null,
+        leetcode: null,
+      };
 
       ["linkedin", "github", "leetcode"].forEach((platform) => {
         if (firestoreData[platform]) {
           initialUsernames[platform] = firestoreData[platform].username;
           initialData[platform] = firestoreData[platform].data;
+          initialTimestamps[platform] = firestoreData[platform].timestamp;
         }
       });
 
       setUsernames(initialUsernames);
       setPlatformData(initialData);
+      setTimestamps(initialTimestamps);
       setIsLoading(false);
     };
 
@@ -211,12 +241,21 @@ const useFetchPlatformData = (uid) => {
     fetchData();
   }, [usernames]);
 
+  const forceRefresh = async (platform) => {
+    const username = usernames[platform];
+    if (username) {
+      await fetchPlatformData(platform, username, true);
+    }
+  };
+
   return {
     linkedinData: platformData.linkedin,
     githubData: platformData.github,
     leetcodeData: platformData.leetcode,
+    timestamps,
     usernames,
     isLoading,
+    forceRefresh,
   };
 };
 

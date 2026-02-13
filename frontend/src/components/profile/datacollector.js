@@ -4,6 +4,8 @@ import { auth } from "../../firebase";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
 import "./profile.css";
+import useFetchPlatformData from "../../api2/data";
+import { RefreshCw } from "lucide-react";
 
 const DataCollector = () => {
   const location = useLocation();
@@ -26,6 +28,11 @@ const DataCollector = () => {
     projects: [{ name: "", url: "", date: "" }],
     skills: [],
   });
+
+  const { timestamps, forceRefresh } = useFetchPlatformData(
+    auth.currentUser?.uid,
+  );
+  const [refreshingPlatform, setRefreshingPlatform] = useState(null);
 
   useEffect(() => {
     loadProfileData();
@@ -97,6 +104,9 @@ const DataCollector = () => {
     setLoading(true);
     const db = getFirestore();
     try {
+      const platforms = ["github", "linkedin", "leetcode"];
+      const platformObjects = {};
+
       // Process skills from the skillsInput string before saving
       const skillsArray = skillsInput
         .split(",")
@@ -107,9 +117,6 @@ const DataCollector = () => {
       const docRef = doc(db, "profiles", auth.currentUser.uid);
       const docSnap = await getDoc(docRef);
       const currentData = docSnap.exists() ? docSnap.data() : {};
-
-      const platforms = ["github", "linkedin", "leetcode"];
-      const platformObjects = {};
 
       platforms.forEach((platform) => {
         if (formData[platform]) {
@@ -143,6 +150,14 @@ const DataCollector = () => {
           }
         }
       });
+
+      // Keep existing timestamps if username hasn't changed
+      // This logic is partially handled by the fact that we're reading currentData
+      // but let's make sure we don't accidentally overwrite timestamps with Date.now()
+      // when we don't intend to. The previous logic I wrote handles this correctly:
+      // if (newUsername !== oldUsername) { timestamp = Date.now() } else { keep existing }
+
+      // Create a data object with the processed skills array and platform usernames
 
       // Create a data object with the processed skills array and platform usernames
       const dataToSave = {
@@ -236,6 +251,49 @@ const DataCollector = () => {
     };
 
     reader.readAsDataURL(file);
+  };
+
+  const handleRefreshClick = async (platform, e) => {
+    e.preventDefault(); // Prevent form submission
+    if (!formData[platform]) return;
+
+    setRefreshingPlatform(platform);
+    try {
+      await forceRefresh(platform);
+      setMessage(`${platform} data refreshed!`);
+    } catch (error) {
+      console.error("Refresh failed:", error);
+      setMessage(`Failed to refresh ${platform}`);
+    } finally {
+      setRefreshingPlatform(null);
+    }
+  };
+
+  const renderPlatformStatus = (platform) => {
+    const timestamp = timestamps[platform];
+    if (!timestamp) return null;
+
+    const lastUpdated = new Date(timestamp).toLocaleString();
+
+    // Calculate stale time (assuming 24h for github/leetcode, 30 days for linkedin)
+    // This logic duplicates data.js slightly but needed for UI display
+    // Ideally import from data.js if exported
+    const now = Date.now();
+    const diff = now - timestamp;
+    const isStale =
+      diff >
+      (platform === "linkedin"
+        ? 30 * 24 * 60 * 60 * 1000
+        : 24 * 60 * 60 * 1000);
+
+    return (
+      <div className="text-xs text-gray-500 mt-1 flex justify-between items-center">
+        <span>Last updated: {lastUpdated}</span>
+        <span className={isStale ? "text-red-500" : "text-green-500"}>
+          {isStale ? "Data is Stale" : "Data is Fresh"}
+        </span>
+      </div>
+    );
   };
 
   return (
@@ -333,44 +391,78 @@ const DataCollector = () => {
 
               <div className="main-profile-form-group">
                 <label htmlFor="linkedin">LinkedIn</label>
-                <input
-                  type="text"
-                  id="linkedin"
-                  name="linkedin"
-                  value={formData.linkedin}
-                  placeholder="username"
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  className="main-profile-form-input"
-                />
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    id="linkedin"
+                    name="linkedin"
+                    value={formData.linkedin}
+                    placeholder="username"
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    className="main-profile-form-input"
+                  />
+                </div>
               </div>
 
               <div className="main-profile-form-group">
                 <label htmlFor="github">GitHub</label>
-                <input
-                  type="text"
-                  id="github"
-                  name="github"
-                  placeholder="username"
-                  value={formData.github}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  className="main-profile-form-input"
-                />
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    id="github"
+                    name="github"
+                    placeholder="username"
+                    value={formData.github}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    className="main-profile-form-input flex-1"
+                  />
+                  <button
+                    onClick={(e) => handleRefreshClick("github", e)}
+                    disabled={
+                      !formData.github || refreshingPlatform === "github"
+                    }
+                    className="ml-2 p-2 text-gray-500 hover:text-blue-500 disabled:opacity-50"
+                    title="Reload GitHub Data"
+                    type="button"
+                  >
+                    <RefreshCw
+                      className={`w-4 h-4 ${refreshingPlatform === "github" ? "animate-spin" : ""}`}
+                    />
+                  </button>
+                </div>
+                {renderPlatformStatus("github")}
               </div>
 
               <div className="main-profile-form-group">
                 <label htmlFor="leetcode">LeetCode</label>
-                <input
-                  type="text"
-                  id="leetcode"
-                  name="leetcode"
-                  placeholder="username"
-                  value={formData.leetcode}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  className="main-profile-form-input"
-                />
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    id="leetcode"
+                    name="leetcode"
+                    placeholder="username"
+                    value={formData.leetcode}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    className="main-profile-form-input flex-1"
+                  />
+                  <button
+                    onClick={(e) => handleRefreshClick("leetcode", e)}
+                    disabled={
+                      !formData.leetcode || refreshingPlatform === "leetcode"
+                    }
+                    className="ml-2 p-2 text-gray-500 hover:text-blue-500 disabled:opacity-50"
+                    title="Reload LeetCode Data"
+                    type="button"
+                  >
+                    <RefreshCw
+                      className={`w-4 h-4 ${refreshingPlatform === "leetcode" ? "animate-spin" : ""}`}
+                    />
+                  </button>
+                </div>
+                {renderPlatformStatus("leetcode")}
               </div>
 
               <div className="main-profile-form-group">
