@@ -1,16 +1,17 @@
 // maijorproject.js
 import React, { useState, useEffect } from "react";
-import { Calendar } from 'lucide-react';
+import { Calendar } from "lucide-react";
 import { auth } from "../firebase";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import "./maijorproject.css"
+import "./maijorproject.css";
 
 const MajorProjectItem = ({ name, date, link, isActive }) => {
   return (
     <div className={`project-card ${isActive ? "active" : ""}`}>
       <div className="project-header">
         <h2 className="project-title">
-        Projects : <a href={link} target="_blank" rel="noopener noreferrer">
+          Projects :{" "}
+          <a href={link} target="_blank" rel="noopener noreferrer">
             {name}
           </a>
         </h2>
@@ -32,36 +33,61 @@ const MajorProjectItem = ({ name, date, link, isActive }) => {
   );
 };
 
-export const MajorProject = ({ userId }) => {
+export const MajorProject = ({ userId, projects: propProjects }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState(propProjects || []);
 
   useEffect(() => {
+    if (propProjects && propProjects.length > 0) {
+      setProjects(propProjects);
+      return;
+    }
+
     const fetchProjects = async () => {
       // Determine which userId to use
-      const uidToUse = userId || (auth.currentUser ? auth.currentUser.uid : null);
-      
+      const uidToUse =
+        userId || (auth.currentUser ? auth.currentUser.uid : null);
+
       if (!uidToUse) return;
-  
+
+      const storageKey = `dashboard_user_data_${uidToUse}`;
+      const cachedData = localStorage.getItem(storageKey);
+
+      if (cachedData) {
+        try {
+          const parsedData = JSON.parse(cachedData);
+          if (parsedData.projects && parsedData.projects.length > 0) {
+            setProjects(parsedData.projects);
+            // We can return here if we trust the cache, or continue to fetch for updates
+            // For now, let's trust cache if it exists, similar to UserData
+            return;
+          }
+        } catch (e) {
+          console.error("Error parsing cached project data", e);
+        }
+      }
+
       const db = getFirestore();
       const docRef = doc(db, "profiles", uidToUse);
-  
+
       try {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
           if (data.projects && data.projects.length > 0) {
             setProjects(data.projects);
+            // Optional: Update local storage if we fetched fresh data
+            localStorage.setItem(storageKey, JSON.stringify(data));
           }
         }
       } catch (err) {
         console.error("Failed to fetch projects data", err);
       }
     };
-  
+
     fetchProjects();
-  }, [userId]); // Add userId to dependency array
-  
+  }, [userId, propProjects]); // Add userId and propProjects to dependency array
+
   const nextProject = () => {
     setCurrentIndex((prev) => (prev + 1) % projects.length);
   };

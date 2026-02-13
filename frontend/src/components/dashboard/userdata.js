@@ -38,25 +38,25 @@ const MetricCard = ({
       <>
         <div className="card-header">
           <h3 className="card-title">{title}</h3>
-          <div 
-            className={`icon-bg ${color} cursor-pointer`} 
+          <div
+            className={`icon-bg ${color} cursor-pointer`}
             onClick={() => {
               if (link) {
                 let url;
                 switch (title) {
-                  case 'GitHub':
+                  case "GitHub":
                     url = `https://github.com/${link}`;
                     break;
-                  case 'Leetcode':
+                  case "Leetcode":
                     url = `https://leetcode.com/${link}`;
                     break;
-                  case 'LinkedIn':
+                  case "LinkedIn":
                     url = `https://www.linkedin.com/in/${link}`;
                     break;
                   default:
                     return;
                 }
-                window.open(url, '_blank');
+                window.open(url, "_blank");
               }
             }}
           >
@@ -108,13 +108,28 @@ export default function UserData() {
     const fetchUserData = async () => {
       if (!uid) return; // uid comes from URL
 
+      const storageKey = `dashboard_user_data_${uid}`;
+      const cachedData = localStorage.getItem(storageKey);
+
+      if (cachedData) {
+        try {
+          const parsedData = JSON.parse(cachedData);
+          setUserData(parsedData);
+          setLoading(false);
+        } catch (e) {
+          console.error("Error parsing cached data", e);
+        }
+      }
+
       try {
         const db = getFirestore();
         const docRef = doc(db, "profiles", uid);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setUserData(docSnap.data());
+          const data = docSnap.data();
+          setUserData(data);
+          localStorage.setItem(storageKey, JSON.stringify(data));
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -124,7 +139,7 @@ export default function UserData() {
     };
 
     fetchUserData();
-  }, []);
+  }, [uid]);
 
   const getMetrics = () => {
     return [
@@ -147,7 +162,7 @@ export default function UserData() {
           },
         ],
         loading: !githubData,
-        link : githubData?.profile?.username,
+        link: githubData?.profile?.username,
       },
       {
         icon: Code2,
@@ -226,45 +241,45 @@ export default function UserData() {
   }, [components.length]);
 
   return (
-      <div className="dashboard-container bg-[#e9effe]">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h1 className="text-2xl font-bold mb-7">
-              Hello! {userData?.name || "User"}
-            </h1>
-            <p className="subtitle">Welcome back! Check your progress here</p>
-          </div>
-          <div className="relative">
-            <button
-              onClick={handleShareProfile}
-              className="p-2 rounded-full bg-blue-500 text-white  hover:bg-blue-700 "
-              title="Share Profile"
-            >
-              <Share2 size={20} />
-            </button>
-            {showCopiedMessage && (
-              <div className="absolute right-0 mt-2 px-3 py-1  bg-gray-800 text-white text-sm rounded shadow-lg w-max">
-                URL copied!
-              </div>
-            )}
-          </div>
+    <div className="dashboard-container bg-[#e9effe]">
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h1 className="text-2xl font-bold mb-7">
+            Hello! {userData?.name || "User"}
+          </h1>
+          <p className="subtitle">Welcome back! Check your progress here</p>
         </div>
-
-        <div className="metrics-grid">
-          {getMetrics().map((metric, index) => (
-            <MetricCard key={index} {...metric} />
-          ))}
-        </div>
-
-        <div className="projects-grid">
-          <div className={`card ${isVisible ? "fade-in" : "fade-out"}`}>
-            {components[currentIndex]}
-          </div>
-
-          <div className="card">
-            <MajorProject userId={uid} />
-          </div>
+        <div className="relative">
+          <button
+            onClick={handleShareProfile}
+            className="p-2 rounded-full bg-blue-500 text-white  hover:bg-blue-700 "
+            title="Share Profile"
+          >
+            <Share2 size={20} />
+          </button>
+          {showCopiedMessage && (
+            <div className="absolute right-0 mt-2 px-3 py-1  bg-gray-800 text-white text-sm rounded shadow-lg w-max">
+              URL copied!
+            </div>
+          )}
         </div>
       </div>
+
+      <div className="metrics-grid">
+        {getMetrics().map((metric, index) => (
+          <MetricCard key={index} {...metric} />
+        ))}
+      </div>
+
+      <div className="projects-grid">
+        <div className={`card ${isVisible ? "fade-in" : "fade-out"}`}>
+          {components[currentIndex]}
+        </div>
+
+        <div className="card">
+          <MajorProject userId={uid} projects={userData?.projects} />
+        </div>
+      </div>
+    </div>
   );
 }

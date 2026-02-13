@@ -212,19 +212,32 @@ def fetch_github_data(request, username):
 
 
 def fetch_linkedin_data(request, username):
-    url = "https://linkedin-api8.p.rapidapi.com/get-profile-data-by-url"
+    url = "https://fresh-linkedin-profile-data.p.rapidapi.com/enrich-lead"
 
     # 🌿🌿🌿 Determine whether input is a URL or username
     if username.startswith("http"):
-        querystring = {"url": username}  # Use URL if it starts with "http"
+        linkedin_url = username
     else:
-        querystring = {
-            "url": f"https://www.linkedin.com/in/{username}"
-        }  # Construct URL if it's a username
+        linkedin_url = f"https://www.linkedin.com/in/{username}/"
+
+    querystring = {
+        "linkedin_url": linkedin_url,
+        "include_skills": "true",
+        "include_certifications": "false",
+        "include_publications": "false",
+        "include_honors": "false",
+        "include_volunteers": "false",
+        "include_projects": "false",
+        "include_patents": "false",
+        "include_courses": "false",
+        "include_organizations": "false",
+        "include_profile_status": "false",
+        "include_company_public_url": "false"
+    }
 
     headers = {
-        "x-rapidapi-key": LINKEDIN_API_KEY,
-        "x-rapidapi-host": "linkedin-api8.p.rapidapi.com",
+        "x-rapidapi-key": "63e87f7f8bmsh602fffeb8cef799p15e30ejsn889cc10bbe2b",
+        "x-rapidapi-host": "fresh-linkedin-profile-data.p.rapidapi.com",
     }
 
     # 🌿🌿🌿 Perform API request
@@ -239,63 +252,67 @@ def fetch_linkedin_data(request, username):
     # 🌿🌿🌿 Handle response status codes
     if response.status_code == 200:
         try:
-            data = response.json()
+            api_data = response.json()
+            data = api_data.get('data') # API returns wrapped data
+            if not data:
+                return JsonResponse({"error": "No data found in API response"}, status=404)
+                
         except ValueError:
             return JsonResponse(
                 {"error": "Invalid JSON response received from API"}, status=500
             )
 
-        # summ = data.get("summary")
-        # summary_prompt = (
-        #     f"Summarize the following text into bio max 25-30 words tech enthusiastic and add emojis accordingly \n\n{summ}"
-        #     )
-        # model = genai.GenerativeModel(model_name="gemini-1.5-pro")
-        # response = model.generate_content([summary_prompt])
-        # if response and hasattr(response, "text"):
-        #     summarized_text = response.text
-
-        # 🌿🌿🌿 Extract required data
+        # 🌿🌿🌿 Extract required data & Map to schema
+        
+        # Helper to join location parts
+        location_parts = [data.get('city'), data.get('country')]
+        location = ", ".join(filter(None, location_parts)) or 'Remote'
+        
+        # Parse skills - handle if string or list
+        raw_skills = data.get('skills', [])
+        skills_list = []
+        if isinstance(raw_skills, list):
+             skills_list = [{"Name": s.get('name') if isinstance(s, dict) else s, "PassedSkillAssessment": False} for s in raw_skills]
+        elif isinstance(raw_skills, str):
+             if raw_skills.strip():
+                 skills_list = [{"Name": raw_skills, "PassedSkillAssessment": False}]
+        
         result = {
-            "Username": data.get("username"),
-            "ProfilePicture": data.get("profilePicture"),
+            "Username": data.get("full_name") or username,
+            "ProfilePicture": data.get("profile_image_url") or "",
             "Bio": data.get("summary"),
             "Headline": data.get("headline"),
-            "Location": data.get("geo", {}).get("full"),
+            "Location": location,
             "Education": [
                 {
-                    "SchoolName": edu.get("schoolName"),
+                    "SchoolName": edu.get("school"),
                     "Degree": edu.get("degree"),
-                    "FieldOfStudy": edu.get("fieldOfStudy"),
-                    "Grade": edu.get("grade"),
-                    "StartYear": edu.get("start", {}).get("year"),
-                    "StartMonth": edu.get("start", {}).get("month"),
-                    "EndYear": edu.get("end", {}).get("year"),
-                    "EndMonth": edu.get("end", {}).get("month"),
-                    "URL": edu.get("url"),
+                    "FieldOfStudy": edu.get("field_of_study"),
+                    "Grade": None, # Not provided by this API usually
+                    "StartYear": edu.get("start_year"),
+                    "StartMonth": edu.get("start_month"),
+                    "EndYear": edu.get("end_year"),
+                    "EndMonth": edu.get("end_month"),
+                    "URL": edu.get("school_linkedin_url"),
                 }
-                for edu in data.get("educations", [])[:1] 
+                for edu in data.get("educations", [])
             ],
             "Position": [
                 {
-                    "CompanyName": pos.get("companyName"),
-                    "employmentType": pos.get("employmentType"),
-                    "Industry": pos.get("companyIndustry"),
+                    "CompanyName": pos.get("company"),
+                    "employmentType": pos.get("title"), # Mapping title roughly
+                    "Industry": None,
                     "Location": pos.get("location"),
-                    "StartYear": pos.get("start", {}).get("year"),
-                    "StartMonth": pos.get("start", {}).get("month"),
-                    "EndYear": pos.get("end", {}).get("year"),
-                    "EndMonth": pos.get("end", {}).get("month"),
-                    "CompanyLogo": pos.get("companyLogo"),
+                    "StartYear": pos.get("start_year"),
+                    "StartMonth": pos.get("start_month"),
+                    "EndYear": pos.get("end_year"),
+                    "EndMonth": pos.get("end_month"),
+                    "CompanyLogo": pos.get("company_logo_url"),
+                    "Description": pos.get("description"),
                 }
-                for pos in data.get("position", [])[:1] 
+                for pos in data.get("experiences", [])
             ],
-            "Skills": [
-                {
-                    "Name": skill.get("name"),
-                    "PassedSkillAssessment": skill.get("passedSkillAssessment"),
-                }
-                for skill in data.get("skills", [])[:5] 
-            ]
+            "Skills": skills_list
         }
 
         return JsonResponse(result, safe=False)
