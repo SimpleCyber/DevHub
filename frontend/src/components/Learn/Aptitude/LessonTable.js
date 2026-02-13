@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Youtube, Code, Star, Check } from "lucide-react";
+import { Youtube, Star, Check } from "lucide-react";
 import YouTubeModal from "../YouTubeModal";
 
 const LessonTable = ({ lessons, onToggleComplete }) => {
@@ -10,9 +10,6 @@ const LessonTable = ({ lessons, onToggleComplete }) => {
   const handleYoutubeClick = (videoUrl) => {
     setSelectedVideoUrl(videoUrl);
     setIsModalOpen(true);
-  };
-  const handlePraticeClick = (practiceUrl) => {
-    window.open(practiceUrl, "_blank", "noopener,noreferrer");
   };
 
   const closeModal = () => {
@@ -96,8 +93,8 @@ const LessonTable = ({ lessons, onToggleComplete }) => {
                       lesson.difficulty === "Easy"
                         ? "bg-green-100 text-green-800"
                         : lesson.difficulty === "Medium"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-red-100 text-red-800"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-red-100 text-red-800"
                     }`}
                   >
                     {lesson.difficulty}

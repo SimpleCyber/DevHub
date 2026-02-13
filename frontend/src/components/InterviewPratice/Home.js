@@ -1,15 +1,15 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { useEffect } from "react"
-import { Mic, Brain, BarChart3 } from "lucide-react"
-import { auth } from "../../firebase"
+import { useEffect } from "react";
+import { Mic, Brain, BarChart3 } from "lucide-react";
+import { auth } from "../../firebase";
 
 function Home({ switchComponent }) {
   useEffect(() => {
     if (auth.currentUser) {
-      switchComponent("dashboard")
-      console.log(auth.currentUser.uid)
+      switchComponent("dashboard");
+      console.log(auth.currentUser.uid);
     }
-  }, [])
+  }, [switchComponent]);
 
   return (
     <div>
@@ -18,7 +18,7 @@ function Home({ switchComponent }) {
           <a
             href="#"
             className="inline-flex justify-between items-center py-1 px-1 pr-4 mb-7 text-sm text-gray-700 bg-gray-100 rounded-full dark:bg-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
-            role="alert" 
+            role="alert"
           >
             <span className="text-xs bg-primary rounded-full text-white px-4 py-1.5 mr-3">
               New
@@ -26,7 +26,6 @@ function Home({ switchComponent }) {
             <span className="text-sm font-medium">
               AI Interview Coach - All new features
             </span>
-            
             <svg
               className="ml-2 w-5 h-5"
               fill="currentColor"
@@ -49,7 +48,7 @@ function Home({ switchComponent }) {
           </p>
           <div className="flex flex-col mb-8 lg:mb-16 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
             <button
-              onClick={() => switchComponent('dashboard')}
+              onClick={() => switchComponent("dashboard")}
               className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-gray rounded-lg bg-primary hover:bg-primary focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900"
             >
               Get Started
@@ -96,10 +95,10 @@ function Home({ switchComponent }) {
          hover:border-pink-500/10 hover:shadow-pink-500/10"
             href="#"
           >
-            <Mic   className="h-8 w-8" />
+            <Mic className="h-8 w-8" />
 
             <h2 className="mt-4 text-xl font-bold text-black">
-            Record Your Interview
+              Record Your Interview
             </h2>
 
             <p className="mt-1 text-sm text-gray-600">
@@ -112,7 +111,7 @@ function Home({ switchComponent }) {
             className="block rounded-xl border bg-white border-gray-200 p-8 shadow-xl transition hover:border-pink-500/10 hover:shadow-pink-500/10"
             href="#"
           >
-            <Brain  className="h-8 w-8" />
+            <Brain className="h-8 w-8" />
 
             <h2 className="mt-4 text-xl font-bold text-black">
               Practice your answers with AI
@@ -128,7 +127,7 @@ function Home({ switchComponent }) {
             className="block rounded-xl border bg-white border-gray-200 p-8 shadow-xl transition hover:border-pink-500/10 hover:shadow-pink-500/10"
             href="#"
           >
-            <BarChart3  className="h-8 w-8" />
+            <BarChart3 className="h-8 w-8" />
 
             <h2 className="mt-4 text-xl font-bold text-black">
               Get AI feedback
@@ -143,7 +142,7 @@ function Home({ switchComponent }) {
 
         <div className="mt-12 text-center">
           <button
-            onClick={() => switchComponent('dashboard')}
+            onClick={() => switchComponent("dashboard")}
             className="inline-block rounded bg-pink-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-pink-700 focus:outline-none focus:ring focus:ring-yellow-400"
           >
             Get Started Today
