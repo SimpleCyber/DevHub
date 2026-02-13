@@ -47,34 +47,34 @@ const DataCollector = () => {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
-        
+
         // Extract platform-specific usernames from the new structure
-        const platforms = ['github', 'linkedin', 'leetcode'];
+        const platforms = ["github", "linkedin", "leetcode"];
         const extractedUsernames = {};
-        
-        platforms.forEach(platform => {
+
+        platforms.forEach((platform) => {
           // Check if username exists in the new data structure
           if (data[platform]?.username) {
             extractedUsernames[platform] = data[platform].username;
-          } else if (typeof data[platform] === 'string') {
+          } else if (typeof data[platform] === "string") {
             // Support for legacy format - direct string
             extractedUsernames[platform] = data[platform];
           }
         });
-        
+
         // Ensure skills is always an array
         const skills = Array.isArray(data.skills) ? data.skills : [];
 
         // Merge the extracted usernames with the form data
-        const updatedData = { 
-          ...data, 
+        const updatedData = {
+          ...data,
           skills,
           github: extractedUsernames.github || data.github || "",
           linkedin: extractedUsernames.linkedin || data.linkedin || "",
-          leetcode: extractedUsernames.leetcode || data.leetcode || ""
+          leetcode: extractedUsernames.leetcode || data.leetcode || "",
         };
 
-        setFormData(prev => ({ ...prev, ...updatedData }));
+        setFormData((prev) => ({ ...prev, ...updatedData }));
 
         // Set the skills input field with the joined skills
         if (skills.length > 0) {
@@ -103,17 +103,44 @@ const DataCollector = () => {
         .map((skill) => skill.trim())
         .filter((skill) => skill !== "");
 
-      // Create platform objects with usernames in the new structure
-      const platforms = ['github', 'linkedin', 'leetcode'];
+      // Fetch current data to compare and preserve cache if username hasn't changed
+      const docRef = doc(db, "profiles", auth.currentUser.uid);
+      const docSnap = await getDoc(docRef);
+      const currentData = docSnap.exists() ? docSnap.data() : {};
+
+      const platforms = ["github", "linkedin", "leetcode"];
       const platformObjects = {};
-      
-      platforms.forEach(platform => {
+
+      platforms.forEach((platform) => {
         if (formData[platform]) {
-          // Store username in new structure
-          platformObjects[platform] = {
-            username: formData[platform],
-            timestamp: Date.now()
-          };
+          const newUsername = formData[platform];
+          // Retrieve old data for this platform
+          const currentPlatformObj = currentData[platform];
+          // Handle legacy string format or missing data
+          const oldUsername =
+            currentPlatformObj?.username ||
+            (typeof currentPlatformObj === "string" ? currentPlatformObj : "");
+
+          if (newUsername !== oldUsername) {
+            // Username changed: Update username, set new timestamp, clear data
+            platformObjects[platform] = {
+              username: newUsername,
+              timestamp: Date.now(),
+              data: null,
+            };
+          } else {
+            // Username same: Preserve existing object (including data and timestamp)
+            // If it was a legacy string, we must upgrade it now
+            if (typeof currentPlatformObj === "string") {
+              platformObjects[platform] = {
+                username: newUsername,
+                timestamp: Date.now(),
+                data: null,
+              };
+            } else {
+              platformObjects[platform] = currentPlatformObj;
+            }
+          }
         }
       });
 
@@ -121,7 +148,7 @@ const DataCollector = () => {
       const dataToSave = {
         ...formData,
         skills: skillsArray,
-        ...platformObjects // Add platform objects to the data
+        ...platformObjects, // Add platform objects to the data
       };
 
       console.log("Saving profile with skills:", dataToSave.skills);
@@ -132,7 +159,7 @@ const DataCollector = () => {
       // Update formData with the new skills array
       setFormData((prev) => ({
         ...prev,
-        skills: skillsArray
+        skills: skillsArray,
       }));
 
       setMessage("Profile saved successfully!");
@@ -213,15 +240,13 @@ const DataCollector = () => {
 
   return (
     <div>
-       
       <div className="gradient-blob"></div>
       <div className="gradient-blob2"></div>
 
       <h1 className="text-2xl font-bold text-gray-600 mt-5 ml-[1rem]">
-          Profile Information
+        Profile Information
       </h1>
       <div className="main-profile-page-container glass-effect">
-        
         <div className="main-profile-toast-container">
           {message && (
             <div
