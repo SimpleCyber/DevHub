@@ -65,18 +65,30 @@ const LinkedInProfile = ({ demoData }) => {
                 Skills
               </h3>
               <div className="flex flex-wrap gap-2">
-                {demoData.Skills.slice(0, 5).map((skill, index) => (
-                  <div
-                    key={index}
-                    className={`px-3 py-1 rounded-full text-sm ${
-                      skill.PassedSkillAssessment
-                        ? "bg-green-50 text-green-600"
-                        : "bg-blue-50 text-blue-600"
-                    }`}
-                  >
-                    {skill.Name}
-                  </div>
-                ))}
+                {demoData.Skills.reduce((acc, skill) => {
+                  const names = skill.Name
+                    ? skill.Name.split(/[|,;]/)
+                        .map((s) => s.trim())
+                        .filter(Boolean)
+                    : [];
+                  return [
+                    ...acc,
+                    ...names.map((name) => ({ ...skill, Name: name })),
+                  ];
+                }, [])
+                  .slice(0, 5)
+                  .map((skill, index) => (
+                    <div
+                      key={index}
+                      className={`px-3 py-1 rounded-full text-sm ${
+                        skill.PassedSkillAssessment
+                          ? "bg-green-50 text-green-600"
+                          : "bg-blue-50 text-blue-600"
+                      }`}
+                    >
+                      {skill.Name}
+                    </div>
+                  ))}
               </div>
             </div>
           )}
@@ -92,16 +104,24 @@ const LinkedInProfile = ({ demoData }) => {
                 Experience
               </h3>
               <div className="space-y-4">
-                {demoData.Position.map((position, index) => (
+                {demoData.Position.slice(0, 2).map((position, index) => (
                   <div
                     key={index}
                     className="flex gap-4 p-4 bg-gray-50 rounded-lg"
                   >
-                    <img
-                      src={position.CompanyLogo}
-                      alt={position.CompanyName}
-                      className="w-12 h-12 rounded-md object-contain"
-                    />
+                    {position.CompanyLogo ? (
+                      <img
+                        src={position.CompanyLogo}
+                        alt={position.CompanyName}
+                        className="w-12 h-12 rounded-md object-contain"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-md bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xl flex-shrink-0">
+                        {position.CompanyName
+                          ? position.CompanyName.charAt(0)
+                          : "C"}
+                      </div>
+                    )}
                     <div className="flex-1">
                       <h4 className="font-medium text-gray-900">
                         {position.CompanyName}
@@ -132,7 +152,7 @@ const LinkedInProfile = ({ demoData }) => {
                 Education
               </h3>
               <div className="space-y-4">
-                {demoData.Education.map((edu, index) => (
+                {demoData.Education.slice(0, 1).map((edu, index) => (
                   <div key={index} className="p-4 bg-gray-50 rounded-lg">
                     <div className="flex justify-between">
                       <div>

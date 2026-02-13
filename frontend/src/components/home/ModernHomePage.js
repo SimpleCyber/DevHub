@@ -46,10 +46,9 @@ const ModernHomePage = () => {
               </div>
             </h1>
             <p className="hero-subtitle glass-effect-dashbord">
-              DevHub is the ultimate platform to showcase your developer
-              achievements from GitHub, LinkedIn, and LeetCode in one unified
-              profile. Get personalized AI-driven career guidance and discover
-              top internship opportunities tailored to your skill set.
+              DevHub is the ultimate platform to showcase your skills,
+              pratice Interview & apply for jobs
+
             </p>
 
             <div className="cta-group">
@@ -103,7 +102,7 @@ const ModernHomePage = () => {
 
         <WhatsAppJoinButton />
 
-        <section className="about-devhub glass-effect-dashbord mx-4 my-12 p-8 rounded-xl">
+        {/* <section className="about-devhub glass-effect-dashbord mx-4 my-12 p-8 rounded-xl">
           <h2 className="text-3xl font-bold mb-6 text-center">About DevHub</h2>
           <div className="flex flex-col md:flex-row gap-8 items-center">
             <div className="flex-1 text-gray-700 leading-relaxed">
@@ -139,7 +138,7 @@ const ModernHomePage = () => {
               />
             </div>
           </div>
-        </section>
+        </section> */}
 
         <section id="features" className="features">
           <h2 className="">Explore Platform Features</h2>

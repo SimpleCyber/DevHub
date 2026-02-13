@@ -15,6 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import json
 import logging
+import re
 
 
 
@@ -282,11 +283,9 @@ def fetch_linkedin_data(request, username):
              skills_list = [{"Name": s.get('name') if isinstance(s, dict) else s, "PassedSkillAssessment": False} for s in raw_skills]
         elif isinstance(raw_skills, str):
              if raw_skills.strip():
-                 # Split by comma if it's a comma-separated string
-                 if "," in raw_skills:
-                     skills_list = [{"Name": s.strip(), "PassedSkillAssessment": False} for s in raw_skills.split(",")]
-                 else:
-                     skills_list = [{"Name": raw_skills.strip(), "PassedSkillAssessment": False}]
+                 # Split by comma or pipe
+                 parts = [s.strip() for s in re.split(r'[|,]', raw_skills) if s.strip()]
+                 skills_list = [{"Name": s, "PassedSkillAssessment": False} for s in parts]
         
         result = {
             "Username": data.get("full_name") or username,
