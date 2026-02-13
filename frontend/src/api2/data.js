@@ -85,6 +85,7 @@ const useFetchPlatformData = (uid) => {
     } catch (error) {
       return {};
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [db, uid]);
 
   const saveToFirestore = async (platform, data, username) => {
@@ -195,6 +196,7 @@ const useFetchPlatformData = (uid) => {
 
       setIsLoading(false);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [fetchFromFirestore, isCacheStale, saveToFirestore],
   );
 
@@ -246,7 +248,7 @@ const useFetchPlatformData = (uid) => {
     fetchData();
   }, [usernames, fetchPlatformData]);
 
-  const forceRefresh = async (platform) => {
+  const handleForceRefresh = async (platform) => {
     const username = usernames[platform];
     if (username) {
       await fetchPlatformData(platform, username, true);
@@ -260,7 +262,7 @@ const useFetchPlatformData = (uid) => {
     timestamps,
     usernames,
     isLoading,
-    forceRefresh,
+    forceRefresh: handleForceRefresh,
   };
 };
 

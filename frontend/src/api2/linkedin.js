@@ -65,7 +65,7 @@ const LinkedInProfile = ({ demoData }) => {
                 Skills
               </h3>
               <div className="flex flex-wrap gap-2">
-                {demoData.Skills.slice(1, 5).map((skill, index) => (
+                {demoData.Skills.slice(0, 5).map((skill, index) => (
                   <div
                     key={index}
                     className={`px-3 py-1 rounded-full text-sm ${

@@ -400,9 +400,23 @@ const DataCollector = () => {
                     placeholder="username"
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    className="main-profile-form-input"
+                    className="main-profile-form-input flex-1"
                   />
+                  <button
+                    onClick={(e) => handleRefreshClick("linkedin", e)}
+                    disabled={
+                      !formData.linkedin || refreshingPlatform === "linkedin"
+                    }
+                    className="ml-2 p-2 text-gray-500 hover:text-blue-500 disabled:opacity-50"
+                    title="Reload LinkedIn Data"
+                    type="button"
+                  >
+                    <RefreshCw
+                      className={`w-4 h-4 ${refreshingPlatform === "linkedin" ? "animate-spin" : ""}`}
+                    />
+                  </button>
                 </div>
+                {renderPlatformStatus("linkedin")}
               </div>
 
               <div className="main-profile-form-group">
