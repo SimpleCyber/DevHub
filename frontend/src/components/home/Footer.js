@@ -1,6 +1,6 @@
-import React from 'react';
-import { Sparkles, Mail } from 'lucide-react';
-import './ModernHomePage.css';
+import React from "react";
+import { Sparkles, Mail } from "lucide-react";
+import "./ModernHomePage.css";
 
 const Footer = () => (
   <footer className="glass-effect-dashbord">
@@ -17,7 +17,7 @@ const Footer = () => (
           <h4>Quick Links</h4>
           <a href="/">Home</a>
           <a href="/interview">Interview</a>
-          <a href="/internship">Internships</a>
+          <a href="/internships">Internships</a>
         </div>
         <div>
           <h4>Contact</h4>

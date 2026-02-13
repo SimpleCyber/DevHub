@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { auth } from "../firebase";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
@@ -74,7 +74,7 @@ const useFetchPlatformData = (uid) => {
     return uid || (auth.currentUser ? auth.currentUser.uid : null);
   };
 
-  const fetchFromFirestore = async () => {
+  const fetchFromFirestore = useCallback(async () => {
     const userId = getUserId();
     if (!userId) return {};
 
@@ -85,7 +85,7 @@ const useFetchPlatformData = (uid) => {
     } catch (error) {
       return {};
     }
-  };
+  }, [db, uid]);
 
   const saveToFirestore = async (platform, data, username) => {
     const userId = getUserId();
@@ -118,80 +118,85 @@ const useFetchPlatformData = (uid) => {
     }
   };
 
-  const fetchPlatformData = async (
-    platform,
-    username,
-    forceRefresh = false,
-  ) => {
-    if (!username) return;
+  const fetchPlatformData = useCallback(
+    async (platform, username, forceRefresh = false) => {
+      if (!username) return;
 
-    // Check Local Storage first
-    const localKey = `dashboard_platform_data_${platform}_${username}`;
-    let cachedData = null;
+      // Check Local Storage first
+      const localKey = `dashboard_platform_data_${platform}_${username}`;
+      let cachedData = null;
 
-    if (!forceRefresh) {
-      const localData = localStorage.getItem(localKey);
+      if (!forceRefresh) {
+        const localData = localStorage.getItem(localKey);
 
-      if (localData) {
-        try {
-          cachedData = JSON.parse(localData);
-        } catch (e) {
-          console.error("Error parsing local cached data", e);
+        if (localData) {
+          try {
+            cachedData = JSON.parse(localData);
+          } catch (e) {
+            console.error("Error parsing local cached data", e);
+          }
+        }
+
+        // If no local data, check Firestore
+        if (!cachedData) {
+          const firestoreData = await fetchFromFirestore();
+          cachedData = firestoreData[platform];
         }
       }
 
-      // If no local data, check Firestore
-      if (!cachedData) {
-        const firestoreData = await fetchFromFirestore();
-        cachedData = firestoreData[platform];
+      logCacheStatus(platform, username, cachedData?.timestamp);
+
+      if (
+        !forceRefresh &&
+        cachedData?.data &&
+        !isCacheStale(cachedData.timestamp, platform)
+      ) {
+        setPlatformData((prev) => ({ ...prev, [platform]: cachedData.data }));
+        setTimestamps((prev) => ({
+          ...prev,
+          [platform]: cachedData.timestamp,
+        }));
+
+        // Sync to local storage if it came from Firestore
+        const localData = localStorage.getItem(localKey);
+        if (!localData) {
+          localStorage.setItem(localKey, JSON.stringify(cachedData));
+        }
+        return;
       }
-    }
 
-    logCacheStatus(platform, username, cachedData?.timestamp);
+      setIsLoading(true);
+      const freshData = await fetchFromAPI(platform, username);
 
-    if (
-      !forceRefresh &&
-      cachedData?.data &&
-      !isCacheStale(cachedData.timestamp, platform)
-    ) {
-      setPlatformData((prev) => ({ ...prev, [platform]: cachedData.data }));
-      setTimestamps((prev) => ({ ...prev, [platform]: cachedData.timestamp }));
+      if (freshData) {
+        const timestamp = Date.now();
+        const dataToSave = {
+          data: freshData,
+          timestamp: timestamp,
+          username: username,
+        };
 
-      // Sync to local storage if it came from Firestore
-      const localData = localStorage.getItem(localKey);
-      if (!localData) {
-        localStorage.setItem(localKey, JSON.stringify(cachedData));
+        setPlatformData((prev) => ({ ...prev, [platform]: freshData }));
+        setTimestamps((prev) => ({ ...prev, [platform]: timestamp }));
+
+        // Save to both storages
+        localStorage.setItem(localKey, JSON.stringify(dataToSave));
+        await saveToFirestore(platform, freshData, username);
+
+        logCacheStatus(platform, username, timestamp);
+      } else if (cachedData?.data) {
+        // Fallback to cache if fresh fetch fails
+        setPlatformData((prev) => ({ ...prev, [platform]: cachedData.data }));
+        setTimestamps((prev) => ({
+          ...prev,
+          [platform]: cachedData.timestamp,
+        }));
       }
-      return;
-    }
 
-    setIsLoading(true);
-    const freshData = await fetchFromAPI(platform, username);
-
-    if (freshData) {
-      const timestamp = Date.now();
-      const dataToSave = {
-        data: freshData,
-        timestamp: timestamp,
-        username: username,
-      };
-
-      setPlatformData((prev) => ({ ...prev, [platform]: freshData }));
-      setTimestamps((prev) => ({ ...prev, [platform]: timestamp }));
-
-      // Save to both storages
-      localStorage.setItem(localKey, JSON.stringify(dataToSave));
-      await saveToFirestore(platform, freshData, username);
-
-      logCacheStatus(platform, username, timestamp);
-    } else if (cachedData?.data) {
-      // Fallback to cache if fresh fetch fails
-      setPlatformData((prev) => ({ ...prev, [platform]: cachedData.data }));
-      setTimestamps((prev) => ({ ...prev, [platform]: cachedData.timestamp }));
-    }
-
-    setIsLoading(false);
-  };
+      setIsLoading(false);
+    },
+    [fetchFromFirestore, isCacheStale, saveToFirestore],
+  );
 
   // Initialize data
   useEffect(() => {
@@ -222,7 +227,7 @@ const useFetchPlatformData = (uid) => {
     };
 
     initializeData();
-  }, [uid]);
+  }, [uid, fetchFromFirestore]);
 
   // Fetch data when usernames change
   useEffect(() => {
@@ -239,7 +244,7 @@ const useFetchPlatformData = (uid) => {
     };
 
     fetchData();
-  }, [usernames]);
+  }, [usernames, fetchPlatformData]);
 
   const forceRefresh = async (platform) => {
     const username = usernames[platform];

@@ -1,4 +1,4 @@
-import { Sidebar } from "../sidebar/sidebar"
+import { Sidebar } from "../sidebar/sidebar";
 import LearnCollector from "./LearnCollector";
 
 const Learn = () => {
@@ -9,7 +9,7 @@ const Learn = () => {
         <LearnCollector />
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Learn;

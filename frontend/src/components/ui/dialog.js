@@ -3,7 +3,7 @@ import { cn } from "../utils/cn";
 
 const Dialog = ({ children, open, onOpenChange }) => {
   if (!open) return null;
-  
+
   const handleBackdropClick = () => {
     if (onOpenChange) {
       onOpenChange(false);
@@ -14,9 +14,7 @@ const Dialog = ({ children, open, onOpenChange }) => {
     <>
       <DialogOverlay onClick={handleBackdropClick} />
       <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div className="">
-          {children}
-        </div>
+        <div className="">{children}</div>
       </div>
     </>
   );
@@ -24,7 +22,7 @@ const Dialog = ({ children, open, onOpenChange }) => {
 
 const DialogOverlay = ({ onClick }) => {
   return (
-    <div 
+    <div
       className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
       onClick={onClick}
     />
@@ -48,7 +46,7 @@ const DialogHeader = ({ className, ...props }) => {
     <div
       className={cn(
         "flex flex-col space-y-1.5 text-center sm:text-left",
-        className
+        className,
       )}
       {...props}
     />
@@ -60,7 +58,7 @@ const DialogTitle = ({ className, ...props }) => {
     <h3
       className={cn(
         "text-lg font-semibold leading-none tracking-tight",
-        className
+        className,
       )}
       {...props}
     />

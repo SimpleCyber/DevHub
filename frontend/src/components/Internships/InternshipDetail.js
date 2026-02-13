@@ -10,10 +10,10 @@ import {
   ExternalLink,
   Bookmark,
   Share2,
-  Clock,  
+  Clock,
   X,
 } from "lucide-react";
-import { toast } from "sonner"; 
+import { toast } from "sonner";
 
 const InternshipDetail = () => {
   const [internship, setInternship] = useState(null);
@@ -154,7 +154,9 @@ const InternshipDetail = () => {
                       <Briefcase className="w-4 h-4 md:w-5 md:h-5" />
                     </div>
                     <div className="flex flex-col">
-                      <div className="text-xs md:text-sm text-gray-500">Salary Range</div>
+                      <div className="text-xs md:text-sm text-gray-500">
+                        Salary Range
+                      </div>
                       <div className="text-sm md:text-base font-medium">
                         {internship.salaryRange}
                       </div>
@@ -166,8 +168,12 @@ const InternshipDetail = () => {
                       <Briefcase className="w-4 h-4 md:w-5 md:h-5" />
                     </div>
                     <div className="flex flex-col">
-                      <div className="text-xs md:text-sm text-gray-500">Experience</div>
-                      <div className="text-sm md:text-base font-medium">{internship.experience}</div>
+                      <div className="text-xs md:text-sm text-gray-500">
+                        Experience
+                      </div>
+                      <div className="text-sm md:text-base font-medium">
+                        {internship.experience}
+                      </div>
                     </div>
                   </div>
 
@@ -176,8 +182,12 @@ const InternshipDetail = () => {
                       <Calendar className="w-4 h-4 md:w-5 md:h-5" />
                     </div>
                     <div className="flex flex-col">
-                      <div className="text-xs md:text-sm text-gray-500">Batch Years</div>
-                      <div className="text-sm md:text-base font-medium">{internship.batchYears}</div>
+                      <div className="text-xs md:text-sm text-gray-500">
+                        Batch Years
+                      </div>
+                      <div className="text-sm md:text-base font-medium">
+                        {internship.batchYears}
+                      </div>
                     </div>
                   </div>
 
@@ -186,7 +196,9 @@ const InternshipDetail = () => {
                       <Clock className="w-4 h-4 md:w-5 md:h-5" />
                     </div>
                     <div className="flex flex-col">
-                      <div className="text-xs md:text-sm text-gray-500">Job Type</div>
+                      <div className="text-xs md:text-sm text-gray-500">
+                        Job Type
+                      </div>
                       <div className="text-sm md:text-base font-medium">
                         {internship.jobType || "Internship"}
                       </div>
@@ -279,7 +291,9 @@ const InternshipDetail = () => {
                     <div className="flex items-start">
                       <Building className="w-4 h-4 md:w-5 md:h-5 text-gray-500 mr-2 md:mr-3 mt-0.5 md:mt-1" />
                       <div>
-                        <div className="text-xs md:text-sm text-gray-500">Company</div>
+                        <div className="text-xs md:text-sm text-gray-500">
+                          Company
+                        </div>
                         <div className="text-sm md:text-base font-medium">
                           {internship.companyName}
                         </div>
@@ -289,15 +303,21 @@ const InternshipDetail = () => {
                     <div className="flex items-start">
                       <MapPin className="w-4 h-4 md:w-5 md:h-5 text-gray-500 mr-2 md:mr-3 mt-0.5 md:mt-1" />
                       <div>
-                        <div className="text-xs md:text-sm text-gray-500">Location</div>
-                        <div className="text-sm md:text-base font-medium">{internship.location}</div>
+                        <div className="text-xs md:text-sm text-gray-500">
+                          Location
+                        </div>
+                        <div className="text-sm md:text-base font-medium">
+                          {internship.location}
+                        </div>
                       </div>
                     </div>
 
                     <div className="flex items-start">
                       <Briefcase className="w-4 h-4 md:w-5 md:h-5 text-gray-500 mr-2 md:mr-3 mt-0.5 md:mt-1" />
                       <div>
-                        <div className="text-xs md:text-sm text-gray-500">Experience</div>
+                        <div className="text-xs md:text-sm text-gray-500">
+                          Experience
+                        </div>
                         <div className="text-sm md:text-base font-medium">
                           {internship.experience}
                         </div>
@@ -307,7 +327,9 @@ const InternshipDetail = () => {
                     <div className="flex items-start">
                       <Calendar className="w-4 h-4 md:w-5 md:h-5 text-gray-500 mr-2 md:mr-3 mt-0.5 md:mt-1" />
                       <div>
-                        <div className="text-xs md:text-sm text-gray-500">Posted On</div>
+                        <div className="text-xs md:text-sm text-gray-500">
+                          Posted On
+                        </div>
                         <div className="text-sm md:text-base font-medium">
                           {new Date(internship.postDate).toLocaleDateString()}
                         </div>

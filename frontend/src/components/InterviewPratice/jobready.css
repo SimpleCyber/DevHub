@@ -2,29 +2,28 @@
 @import "tailwindcss/utilities";
 @import "tailwindcss/base";
 
-
 .font-sans {
-    padding-left: 16rem; /* Width of open sidebar */
-    transition: padding-left 0.3s;
-    min-height: 100vh;
-    width: 100%;
-  }
-  
-  .sidebar-closed .font-sans {
-    padding-left: 4rem; /* Width of closed sidebar */
-  }
-  
-  .main-content {
-    padding: 2rem;
-  }
+  padding-left: 16rem; /* Width of open sidebar */
+  transition: padding-left 0.3s;
+  min-height: 100vh;
+  width: 100%;
+}
 
-  .hide-scrollbar {
-    overflow-y: auto; /* Ensures vertical scrolling */
-    overflow-x: hidden; /* Hides horizontal scrollbar */
-    scrollbar-width: none; /* Hides scrollbar in Firefox */
-    -ms-overflow-style: none; /* Hides scrollbar in Edge */
-  }
-  
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none; /* Hides scrollbar in Chrome, Safari, and Opera */
-  }
+.sidebar-closed .font-sans {
+  padding-left: 4rem; /* Width of closed sidebar */
+}
+
+.main-content {
+  padding: 2rem;
+}
+
+.hide-scrollbar {
+  overflow-y: auto; /* Ensures vertical scrolling */
+  overflow-x: hidden; /* Hides horizontal scrollbar */
+  scrollbar-width: none; /* Hides scrollbar in Firefox */
+  -ms-overflow-style: none; /* Hides scrollbar in Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Hides scrollbar in Chrome, Safari, and Opera */
+}

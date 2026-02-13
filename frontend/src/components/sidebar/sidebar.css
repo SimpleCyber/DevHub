@@ -30,11 +30,11 @@
   flex-direction: row;
 }
 
-.closed .profile-info-sidebar .profile-details-sidebar{
+.closed .profile-info-sidebar .profile-details-sidebar {
   display: none;
 }
 
-.closed .logo{
+.closed .logo {
   display: none;
 }
 
@@ -49,9 +49,8 @@
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 9999px;
-  margin-left:1rem ;
-  margin-bottom: .5rem;
-
+  margin-left: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .profile-details {
@@ -83,7 +82,6 @@
 .sidebar-toggle:hover {
   color: white;
 }
-
 
 .nav-list {
   list-style-type: none;
@@ -165,7 +163,6 @@
   width: 100%;
   margin-left: 1rem;
   padding: 1rem;
-
 }
 
 .sidebar.closed .profile-details {
@@ -178,7 +175,6 @@
   flex-direction: column;
 }
 
-
 .logo {
   display: flex;
   align-items: center;
@@ -190,16 +186,22 @@
 
 .logo-icon {
   animation: sparkle 2s ease-in-out infinite;
-   color: #9050ff;
-   margin-right: .2rem;
-   
+  color: #9050ff;
+  margin-right: 0.2rem;
 }
 
-.closed .logo-icon{
-  margin-left: -.3rem;
+.closed .logo-icon {
+  margin-left: -0.3rem;
 }
 
 @keyframes sparkle {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.2); opacity: 0.8; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
 }

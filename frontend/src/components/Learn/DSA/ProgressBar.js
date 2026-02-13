@@ -1,5 +1,5 @@
-"use client"
-import { Shuffle } from "lucide-react"
+"use client";
+import { Shuffle } from "lucide-react";
 
 const ProgressBar = ({ current, total, percentage, onShowRevision }) => {
   return (
@@ -11,7 +11,9 @@ const ProgressBar = ({ current, total, percentage, onShowRevision }) => {
             {current}/{total}
           </span>
         </div>
-        <div className="text-purple-500 font-medium">{percentage}% complete</div>
+        <div className="text-purple-500 font-medium">
+          {percentage}% complete
+        </div>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-2.5">
         <div
@@ -20,14 +22,16 @@ const ProgressBar = ({ current, total, percentage, onShowRevision }) => {
         ></div>
       </div>
       <div className="flex justify-end mt-2">
-        <button onClick={onShowRevision} className="flex items-center text-gray-600 hover:text-gray-800">
+        <button
+          onClick={onShowRevision}
+          className="flex items-center text-gray-600 hover:text-gray-800"
+        >
           <Shuffle className="w-4 h-4 mr-1" />
           <span className="text-sm">Show Revision</span>
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProgressBar
-
+export default ProgressBar;

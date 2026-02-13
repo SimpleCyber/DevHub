@@ -1,4 +1,4 @@
-import { Sidebar } from "../sidebar/sidebar"
+import { Sidebar } from "../sidebar/sidebar";
 import DataCollector from "./datacollector";
 
 const Profile = () => {
@@ -9,7 +9,7 @@ const Profile = () => {
         <DataCollector />
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Profile;

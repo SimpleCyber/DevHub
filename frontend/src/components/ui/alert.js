@@ -1,32 +1,37 @@
 // alert.js
-import React from 'react';
-import { AlertCircle, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
-import './alert.css';
+import React from "react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  XCircle,
+  AlertTriangle,
+} from "lucide-react";
+import "./alert.css";
 
 const getIcon = (variant) => {
   switch (variant) {
-    case 'success':
+    case "success":
       return <CheckCircle2 className="alert-icon" />;
-    case 'error':
+    case "error":
       return <XCircle className="alert-icon" />;
-    case 'warning':
+    case "warning":
       return <AlertTriangle className="alert-icon" />;
     default:
       return <AlertCircle className="alert-icon" />;
   }
 };
-export const AlertDescription = ({ className = '', ...props }) => (
+export const AlertDescription = ({ className = "", ...props }) => (
   <div className={`alert-description ${className}`} {...props} />
 );
 
-export const Alert = ({ 
-  children, 
-  variant = 'default',
+export const Alert = ({
+  children,
+  variant = "default",
   title,
   description,
-  className = '',
+  className = "",
   onClose,
-  ...props 
+  ...props
 }) => {
   return (
     <div
@@ -38,7 +43,9 @@ export const Alert = ({
         {getIcon(variant)}
         <div className="alert-text">
           {title && <div className="alert-title">{title}</div>}
-          {description && <div className="alert-description">{description}</div>}
+          {description && (
+            <div className="alert-description">{description}</div>
+          )}
           {children}
         </div>
       </div>

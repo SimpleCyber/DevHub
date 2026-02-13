@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const InterviewHeader = () => {
   return (
@@ -18,7 +18,7 @@ const InterviewHeader = () => {
             Start an Interview
           </button>
         </div>
-        
+
         {/* Right side with robot and badges */}
         <div className="relative">
           {/* CSS Badge */}
@@ -27,12 +27,11 @@ const InterviewHeader = () => {
               <span className="font-bold">CSS</span>
             </div>
           </div>
-          
-          
+
           {/* Robot image */}
-          <img 
-            src="/robot.png" 
-            alt="AI Interview Robot" 
+          <img
+            src="/robot.png"
+            alt="AI Interview Robot"
             className="w-64 h-auto z-0 max-sm:hidden"
           />
         </div>

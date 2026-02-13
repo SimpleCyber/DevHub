@@ -33,7 +33,7 @@ const LinkedInProfile = ({ demoData }) => {
   return (
     <div>
       <h2 className="text-2xl font-bold text-gray-900 mb-4">LinkedIn</h2>
-      
+
       <div className="flex flex-col md:flex-row gap-6">
         {/* Left Column - Profile Info */}
         <div className="w-full md:w-1/3">
@@ -43,13 +43,13 @@ const LinkedInProfile = ({ demoData }) => {
               alt="Profile"
               className="w-24 h-24 rounded-full object-cover mb-4"
             />
-            
+
             <div className="w-full space-y-3">
               <div className="flex items-center text-gray-600">
                 <User className="w-4 h-4 mr-2" />
                 <span className="font-medium">{demoData.Username}</span>
               </div>
-              
+
               <div className="flex items-center text-gray-600">
                 <MapPin className="w-4 h-4 mr-2" />
                 <span>{demoData.Location}</span>
@@ -58,29 +58,28 @@ const LinkedInProfile = ({ demoData }) => {
           </div>
 
           {/* Skills Section */}
-        {demoData.Skills && demoData.Skills.length > 0 && (
-          <div className="mt-6">
-            <h3 className="flex items-center text-lg font-semibold text-gray-800 mb-3">
-              <Award className="w-5 h-5 mr-2" />
-              Skills
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {demoData.Skills.slice(1, 5).map((skill, index) => (
-                <div
-                  key={index}
-                  className={`px-3 py-1 rounded-full text-sm ${
-                    skill.PassedSkillAssessment
-                      ? "bg-green-50 text-green-600"
-                      : "bg-blue-50 text-blue-600"
-                  }`}
-                >
-                  {skill.Name}
-                </div>
-              ))}
+          {demoData.Skills && demoData.Skills.length > 0 && (
+            <div className="mt-6">
+              <h3 className="flex items-center text-lg font-semibold text-gray-800 mb-3">
+                <Award className="w-5 h-5 mr-2" />
+                Skills
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {demoData.Skills.slice(1, 5).map((skill, index) => (
+                  <div
+                    key={index}
+                    className={`px-3 py-1 rounded-full text-sm ${
+                      skill.PassedSkillAssessment
+                        ? "bg-green-50 text-green-600"
+                        : "bg-blue-50 text-blue-600"
+                    }`}
+                  >
+                    {skill.Name}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-
+          )}
         </div>
 
         {/* Right Column - Experience and Education */}
@@ -94,14 +93,19 @@ const LinkedInProfile = ({ demoData }) => {
               </h3>
               <div className="space-y-4">
                 {demoData.Position.map((position, index) => (
-                  <div key={index} className="flex gap-4 p-4 bg-gray-50 rounded-lg">
+                  <div
+                    key={index}
+                    className="flex gap-4 p-4 bg-gray-50 rounded-lg"
+                  >
                     <img
                       src={position.CompanyLogo}
                       alt={position.CompanyName}
                       className="w-12 h-12 rounded-md object-contain"
                     />
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">{position.CompanyName}</h4>
+                      <h4 className="font-medium text-gray-900">
+                        {position.CompanyName}
+                      </h4>
                       <div className="flex items-center text-sm text-gray-600 mt-1">
                         <Workflow className="w-4 h-4 mr-2" />
                         <span>{position.employmentType}</span>
@@ -109,8 +113,8 @@ const LinkedInProfile = ({ demoData }) => {
                       <div className="flex items-center text-sm text-gray-500 mt-1">
                         <Calendar className="w-4 h-4 mr-2" />
                         <span>
-                          {formatDate(position.StartYear, position.StartMonth)} -{" "}
-                          {formatDate(position.EndYear, position.EndMonth)}
+                          {formatDate(position.StartYear, position.StartMonth)}{" "}
+                          - {formatDate(position.EndYear, position.EndMonth)}
                         </span>
                       </div>
                     </div>
@@ -132,7 +136,9 @@ const LinkedInProfile = ({ demoData }) => {
                   <div key={index} className="p-4 bg-gray-50 rounded-lg">
                     <div className="flex justify-between">
                       <div>
-                        <h4 className="font-medium text-gray-900">{edu.SchoolName}</h4>
+                        <h4 className="font-medium text-gray-900">
+                          {edu.SchoolName}
+                        </h4>
                         <div className="flex items-center text-sm text-gray-600 mt-1">
                           <Book className="w-4 h-4 mr-2" />
                           <span>{edu.FieldOfStudy}</span>

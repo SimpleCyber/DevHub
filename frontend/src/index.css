@@ -2,43 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 @layer components {
   .dashboard-card {
     @apply bg-white rounded-xl shadow-sm p-6;
   }
-  
+
   .card-header {
     @apply flex justify-between items-center mb-4;
   }
-  
+
   .card-title {
     @apply text-xl font-bold;
   }
-  
+
   .icon-bg {
     @apply p-2 rounded-full;
   }
-  
+
   .icon-bg.orange {
     @apply bg-orange-500;
   }
-  
+
   .icon-bg.yellow {
     @apply bg-yellow-500;
   }
-  
+
   .icon-bg.blue {
     @apply bg-blue-500;
   }
-  
+
   .icon-bg.green {
     @apply bg-green-500;
   }
 }
-
-
 
 @layer base {
   :root {
@@ -112,11 +108,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-
-
-
-
-
-
-

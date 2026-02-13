@@ -1,32 +1,31 @@
 // InterviewRoutes.js
-import { Toaster } from "../ui/sonner"
-import { UserProvider } from "../context/UserContext"
-import { ThemeProvider } from "./ThemeProvider"
-import { Sidebar } from "../sidebar/sidebar"
-import { useState } from "react"
-import "./jobready.css"
+import { Toaster } from "../ui/sonner";
+import { UserProvider } from "../context/UserContext";
+import { ThemeProvider } from "./ThemeProvider";
+import { Sidebar } from "../sidebar/sidebar";
+import { useState } from "react";
+import "./jobready.css";
 
-import Home from "./Home"
-import Dashboard from "./Dashboard"
-
+import Home from "./Home";
+import Dashboard from "./Dashboard";
 
 function InterviewRoutes() {
-  const [activeComponent, setActiveComponent] = useState("home")
+  const [activeComponent, setActiveComponent] = useState("home");
 
   const switchComponent = (componentName, interviewId = null) => {
-    setActiveComponent(componentName)
-  }
+    setActiveComponent(componentName);
+  };
 
   const renderActiveComponent = () => {
     switch (activeComponent) {
       case "home":
-        return <Home switchComponent={switchComponent} />
+        return <Home switchComponent={switchComponent} />;
       case "dashboard":
-        return <Dashboard switchComponent={switchComponent} />
+        return <Dashboard switchComponent={switchComponent} />;
       default:
-        return <Home switchComponent={switchComponent} />
+        return <Home switchComponent={switchComponent} />;
     }
-  }
+  };
 
   return (
     <ThemeProvider defaultTheme="light" className="bg-blue-50">
@@ -40,7 +39,7 @@ function InterviewRoutes() {
         </div>
       </UserProvider>
     </ThemeProvider>
-  )
+  );
 }
 
-export default InterviewRoutes
+export default InterviewRoutes;

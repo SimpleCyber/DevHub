@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { ChevronUp, ChevronDown } from "lucide-react"
+import { useState } from "react";
+import { ChevronUp, ChevronDown } from "lucide-react";
 
 const LearningStep = ({ title, currentStep, totalSteps, children }) => {
-  const [isExpanded, setIsExpanded] = useState(true)
+  const [isExpanded, setIsExpanded] = useState(true);
 
   return (
     <div className="bg-white rounded-lg shadow-sm mb-4 overflow-hidden">
@@ -15,16 +15,22 @@ const LearningStep = ({ title, currentStep, totalSteps, children }) => {
             <span className="text-sm text-gray-500 mr-4">
               {currentStep} / {totalSteps}
             </span>
-            <button onClick={() => setIsExpanded(!isExpanded)} className="text-gray-500 hover:text-gray-700">
-              {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              {isExpanded ? (
+                <ChevronUp className="w-5 h-5" />
+              ) : (
+                <ChevronDown className="w-5 h-5" />
+              )}
             </button>
           </div>
         </div>
       </div>
       {isExpanded && <div className="p-4">{children}</div>}
     </div>
-  )
-}
+  );
+};
 
-export default LearningStep
-
+export default LearningStep;

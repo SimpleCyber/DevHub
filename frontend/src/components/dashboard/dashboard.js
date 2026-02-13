@@ -1,4 +1,4 @@
-import { Sidebar } from "../sidebar/sidebar"
+import { Sidebar } from "../sidebar/sidebar";
 import UserData from "./userdata";
 
 const Internships = () => {
@@ -9,7 +9,7 @@ const Internships = () => {
         <UserData />
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Internships;

@@ -1,5 +1,5 @@
-import { Sidebar } from "../sidebar/sidebar"
-import InternshipList from "./InternshipList"
+import { Sidebar } from "../sidebar/sidebar";
+import InternshipList from "./InternshipList";
 
 const Internships = () => {
   return (
@@ -9,7 +9,7 @@ const Internships = () => {
         <InternshipList />
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Internships;

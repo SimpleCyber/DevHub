@@ -6,9 +6,7 @@ const WebDev = ({ onGoBack }) => {
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="container mx-auto">
         <div className="flex justify-between items-center gap-2 mb-4">
-          <h1 className="text-2xl font-bold text-gray-800">
-            Web Development
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-800">Web Development</h1>
 
           <button
             onClick={onGoBack}

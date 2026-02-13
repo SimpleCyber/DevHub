@@ -12,7 +12,7 @@ async function testLinkedIn(username) {
         include_publications: "false",
         include_honors: "false",
         include_volunteers: "false",
-        include_projects: "false",a
+        include_projects: "false",
         include_patents: "false",
         include_courses: "false",
         include_organizations: "false",

@@ -17,17 +17,25 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { auth } from "../../firebase";
 
-const SidebarItem = ({ icon: Icon, text, active, onClick, isMobile, collapsed }) => (
-  <li 
+const SidebarItem = ({
+  icon: Icon,
+  text,
+  active,
+  onClick,
+  isMobile,
+  collapsed,
+}) => (
+  <li
     className={`
       flex items-center p-3 mx-2 my-1 rounded-lg cursor-pointer transition-all duration-200
-      ${active 
-        ? 'bg-gray-700 text-white' 
-        : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+      ${
+        active
+          ? "bg-gray-700 text-white"
+          : "text-gray-400 hover:bg-gray-700 hover:text-white"
       }
-      ${isMobile ? 'justify-start' : ''}
-      ${collapsed && !isMobile ? 'justify-center' : ''}
-    `} 
+      ${isMobile ? "justify-start" : ""}
+      ${collapsed && !isMobile ? "justify-center" : ""}
+    `}
     onClick={onClick}
   >
     <Icon className="w-5 h-5 flex-shrink-0" />
@@ -37,7 +45,15 @@ const SidebarItem = ({ icon: Icon, text, active, onClick, isMobile, collapsed })
   </li>
 );
 
-const ProfileSection = ({ userData, loading, isMobile, collapsed, onProfileClick, showEmail, onLogout }) => {
+const ProfileSection = ({
+  userData,
+  loading,
+  isMobile,
+  collapsed,
+  onProfileClick,
+  showEmail,
+  onLogout,
+}) => {
   if (collapsed && !isMobile) {
     return (
       <div className="p-4 border-t border-gray-700">
@@ -58,10 +74,10 @@ const ProfileSection = ({ userData, loading, isMobile, collapsed, onProfileClick
       </div>
     );
   }
-  
+
   return (
-    <div 
-      className={`p-4 border-t border-gray-700 ${isMobile ? 'mt-auto' : ''} cursor-pointer`}
+    <div
+      className={`p-4 border-t border-gray-700 ${isMobile ? "mt-auto" : ""} cursor-pointer`}
       onClick={onProfileClick}
     >
       {loading ? (
@@ -89,13 +105,13 @@ const ProfileSection = ({ userData, loading, isMobile, collapsed, onProfileClick
               <p className="text-xs text-green-400">Online</p>
             </div>
           </div>
-          
+
           {showEmail && userData?.email && (
             <div className="mt-2 text-sm text-gray-300 truncate">
               {userData.email}
             </div>
           )}
-          
+
           {showEmail && (
             <button
               onClick={(e) => {
@@ -148,8 +164,8 @@ export function Sidebar() {
     };
 
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   useEffect(() => {
@@ -222,7 +238,7 @@ export function Sidebar() {
     <>
       {/* Mobile Overlay */}
       {isMobile && isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-40 md:hidden"
           onClick={toggleSidebar}
         />
@@ -250,7 +266,9 @@ export function Sidebar() {
           </div>
           {userData && (
             <div className="flex items-center gap-2">
-              <span className="text-xs text-green-400 hidden xs:inline">Online</span>
+              <span className="text-xs text-green-400 hidden xs:inline">
+                Online
+              </span>
               <div className="relative">
                 <img
                   src={userData?.photoURL || "https://github.com/shadcn.png"}
@@ -266,31 +284,40 @@ export function Sidebar() {
 
       <div className="flex">
         {/* Sidebar */}
-        <aside className={`
+        <aside
+          className={`
           bg-gray-900 text-white transition-all duration-300 flex flex-col
-          ${isMobile 
-            ? `fixed top-0 left-0 h-full z-50 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} w-64 shadow-xl`
-            : `fixed top-0 left-0 h-screen ${isOpen ? 'w-64' : 'w-16'}`
+          ${
+            isMobile
+              ? `fixed top-0 left-0 h-full z-50 transform ${isOpen ? "translate-x-0" : "-translate-x-full"} w-64 shadow-xl`
+              : `fixed top-0 left-0 h-screen ${isOpen ? "w-64" : "w-16"}`
           }
-        `}>
+        `}
+        >
           {/* Desktop Header */}
           {!isMobile && (
             <div className="flex justify-between items-center p-4">
               {isOpen ? (
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-6 h-6 text-purple-400 animate-pulse flex-shrink-0" />
-                  <span className="text-xl font-bold text-purple-400">DevHub</span>
+                  <span className="text-xl font-bold text-purple-400">
+                    DevHub
+                  </span>
                 </div>
               ) : (
                 <Sparkles className="w-6 h-6 text-purple-400 animate-pulse flex-shrink-0 mx-auto" />
               )}
-              
+
               <button
                 onClick={toggleSidebar}
                 className="p-2 rounded-lg hover:bg-gray-700 transition-all duration-200 text-gray-400 hover:text-white"
                 aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
               >
-                {isOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+                {isOpen ? (
+                  <ChevronLeft size={20} />
+                ) : (
+                  <ChevronRight size={20} />
+                )}
               </button>
             </div>
           )}
@@ -332,9 +359,9 @@ export function Sidebar() {
           </nav>
 
           {/* Profile Section */}
-          <ProfileSection 
-            userData={userData} 
-            loading={loading} 
+          <ProfileSection
+            userData={userData}
+            loading={loading}
             isMobile={isMobile}
             collapsed={!isOpen && !isMobile}
             onProfileClick={toggleProfileDetails}
@@ -344,9 +371,11 @@ export function Sidebar() {
         </aside>
 
         {/* Main Content */}
-        <main className={`flex-1 overflow-auto bg-gray-800 ${isMobile ? 'pt-14' : ''} ${
-          !isMobile ? (isOpen ? 'ml-64' : 'ml-16') : ''
-        }`}>
+        <main
+          className={`flex-1 overflow-auto bg-gray-800 ${isMobile ? "pt-14" : ""} ${
+            !isMobile ? (isOpen ? "ml-64" : "ml-16") : ""
+          }`}
+        >
           {/* Your page content will be rendered here */}
         </main>
       </div>

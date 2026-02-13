@@ -16,7 +16,7 @@ import {
 import "./ModernHomePage.css";
 import Header from "./Header";
 import Footer from "./Footer";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import WhatsAppJoinButton from "../ui/WhatsAppJoinButton";
 
 const ModernHomePage = () => {
@@ -46,16 +46,17 @@ const ModernHomePage = () => {
               </div>
             </h1>
             <p className="hero-subtitle glass-effect-dashbord">
-              One platform to showcase all your developer achievements and get
-              personalized career guidance.
+              DevHub is the ultimate platform to showcase your developer
+              achievements from GitHub, LinkedIn, and LeetCode in one unified
+              profile. Get personalized AI-driven career guidance and discover
+              top internship opportunities tailored to your skill set.
             </p>
 
             <div className="cta-group">
-              
-<button
-  className="primary-cta glass-effect-dashbord bg-gradient-to-r from-red-600 to-red-400 hover:from-red-700 hover:to-red-400"
-  onClick={handleRedirect}
->
+              <button
+                className="primary-cta glass-effect-dashbord bg-gradient-to-r from-red-600 to-red-400 hover:from-red-700 hover:to-red-400"
+                onClick={handleRedirect}
+              >
                 Get Started <ArrowRight size={16} />
               </button>
               <div className="stats glass-effect-dashbord">
@@ -102,43 +103,81 @@ const ModernHomePage = () => {
 
         <WhatsAppJoinButton />
 
+        <section className="about-devhub glass-effect-dashbord mx-4 my-12 p-8 rounded-xl">
+          <h2 className="text-3xl font-bold mb-6 text-center">About DevHub</h2>
+          <div className="flex flex-col md:flex-row gap-8 items-center">
+            <div className="flex-1 text-gray-700 leading-relaxed">
+              <p className="mb-4">
+                DevHub was created with a single mission: to empower developers
+                to tell their story beyond just a traditional resume. In today's
+                competitive landscape, your contributions on platforms like
+                GitHub, your professional networking on LinkedIn, and your
+                problem-solving prowess on LeetCode are what truly define your
+                capabilities.
+              </p>
+              <p className="mb-4">
+                Our platform aggregates these disparate data points into a
+                beautiful, shareable dashboard that gives recruiters a holistic
+                view of your skills. But we don't stop there. Using advanced AI
+                analysis, we provide you with actionable insights into your job
+                readiness and suggest tailored learning paths to help you bridge
+                any skill gaps.
+              </p>
+              <p>
+                Whether you're looking for your first internship or aiming for a
+                senior role at a top tech company, DevHub provides the tools,
+                the community, and the insights you need to succeed in your
+                career journey. Join thousands of developers who are already
+                using DevHub to elevate their professional presence.
+              </p>
+            </div>
+            <div className="flex-1 flex justify-center">
+              <img
+                src="/robot.png"
+                alt="DevHub AI Career Assistant"
+                className="max-w-sm rounded-lg shadow-2xl"
+              />
+            </div>
+          </div>
+        </section>
+
         <section id="features" className="features">
-          <h2 className="">Platform Features</h2>
+          <h2 className="">Explore Platform Features</h2>
           <div className="features-grid">
             {[
               {
                 icon: <LayoutDashboard size={24} />,
-                title: "Dashboard",
+                title: "Unified Dashboard",
                 description:
-                  "Showcase your work, track GitHub, LinkedIn, and LeetCode all shareable in one place.",
-                url: `https://devhub1.vercel.app/`,
+                  "Showcase your work and track your developer progress across GitHub, LinkedIn, and LeetCode in one shareable link.",
+                path: "/",
               },
               {
                 icon: <BookOpenCheck size={24} />,
-                title: "Learn",
+                title: "Distraction-Free Learning",
                 description:
-                  "Distraction-free learning. Access curated courses directly on the platform.",
-                url: "https://devhub1.vercel.app/learn",
+                  "Elevate your skills with curated courses and resources directly on DevHub, designed for focused career growth.",
+                path: "/learn",
               },
               {
                 icon: <BrainCog size={24} />,
-                title: "Interview Practice",
+                title: "AI Interview Practice",
                 description:
-                  "Generate mock interviews using AI, get feedback, and track your preparation progress.",
-                url: "https://devhub1.vercel.app/interview",
+                  "Prepare for technical interviews with AI-generated mock sessions, personalized feedback, and performance tracking.",
+                path: "/interview",
               },
               {
                 icon: <BriefcaseBusiness size={24} />,
-                title: "Internships",
+                title: "Internship Matching",
                 description:
-                  "Get matched with top internships based on your skills and receive email alerts.",
-                url: "https://devhub1.vercel.app/internships",
+                  "Connect with top-tier internship opportunities that match your verified skills and receive instant email alerts.",
+                path: "/internships",
               },
             ].map((feature, index) => (
-              <div
+              <Link
                 key={index}
-                className="feature-card glass-effect-dashbord cursor-pointer transition-transform hover:scale-[1.02]"
-                onClick={() => (window.location.href = feature.url)}
+                to={feature.path}
+                className="feature-card glass-effect-dashbord cursor-pointer transition-transform hover:scale-[1.02] no-underline"
               >
                 <div className="feature-icon mb-2">{feature.icon}</div>
                 <h3 className="font-bold text-gray-700 text-lg">
@@ -153,7 +192,7 @@ const ModernHomePage = () => {
                     style={{ width: `${(index + 1) * 25}%` }}
                   ></div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
