@@ -244,17 +244,24 @@ def fetch_linkedin_data(request, username):
     try:
         response = requests.get(url, headers=headers, params=querystring)
     except requests.RequestException as e:
+        print(f"[LINKEDIN DEBUG] Request failed: {e}")
         return JsonResponse(
             {"error": f"An error occurred while making the request: {str(e)}"},
             status=500,
         )
 
     # 🌿🌿🌿 Handle response status codes
+    print(f"[LINKEDIN DEBUG] RapidAPI Status Code: {response.status_code}")
+    print(f"[LINKEDIN DEBUG] RapidAPI Raw Response (first 2000 chars): {response.text[:2000]}")
+    
     if response.status_code == 200:
         try:
             api_data = response.json()
+            print(f"[LINKEDIN DEBUG] api_data keys: {list(api_data.keys()) if isinstance(api_data, dict) else type(api_data)}")
             data = api_data.get('data') # API returns wrapped data
+            print(f"[LINKEDIN DEBUG] Extracted 'data' field: {type(data)}, is None: {data is None}, is empty: {not data}")
             if not data:
+                print(f"[LINKEDIN DEBUG] ❌ No 'data' found. Full api_data: {str(api_data)[:1000]}")
                 return JsonResponse({"error": "No data found in API response"}, status=404)
                 
         except ValueError:
@@ -319,8 +326,10 @@ def fetch_linkedin_data(request, username):
             "Skills": skills_list
         }
 
+        print(f"[LINKEDIN DEBUG] ✅ Final mapped result: Username={result.get('Username')}, Skills={len(result.get('Skills', []))}, Positions={len(result.get('Position', []))}, Education={len(result.get('Education', []))}")
         return JsonResponse(result, safe=False)
     else:
+        print(f"[LINKEDIN DEBUG] ❌ Non-200 status: {response.status_code}, body: {response.text[:500]}")
         return JsonResponse(
             {
                 "error": f"Failed to fetch data. Status code: {response.status_code}, Response: {response.text}"
