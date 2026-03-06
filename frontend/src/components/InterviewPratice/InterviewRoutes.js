@@ -30,12 +30,10 @@ function InterviewRoutes() {
   return (
     <ThemeProvider defaultTheme="light" className="bg-blue-50">
       <UserProvider>
-        <div className="flex">
-          <Sidebar switchComponent={switchComponent} />
-          <div className="main-content flex-grow bg-[#e9effe]">
-            <Toaster />
-            {renderActiveComponent()}
-          </div>
+        <Sidebar switchComponent={switchComponent} />
+        <div className="main-content ml-16 md:ml-64 flex-grow bg-[#e9effe] min-h-screen">
+          <Toaster />
+          {renderActiveComponent()}
         </div>
       </UserProvider>
     </ThemeProvider>

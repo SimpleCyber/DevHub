@@ -1,11 +1,17 @@
 import { Sidebar } from "../sidebar/sidebar";
+import { useSidebar } from "../context/SidebarContext";
 import DataCollector from "./datacollector";
 
 const Profile = () => {
+  const { isOpen } = useSidebar();
+
   return (
-    <div className="flex bg-[#e9effe]">
+    <div className="bg-[#e9effe] min-h-screen">
       <Sidebar />
-      <div className="flex-1 overflow-auto bg-blue-50">
+      <div
+        className="overflow-auto bg-blue-50 transition-all duration-300"
+        style={{ marginLeft: isOpen ? "256px" : "64px" }}
+      >
         <DataCollector />
       </div>
     </div>

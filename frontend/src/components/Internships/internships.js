@@ -1,11 +1,17 @@
 import { Sidebar } from "../sidebar/sidebar";
+import { useSidebar } from "../context/SidebarContext";
 import InternshipList from "./InternshipList";
 
 const Internships = () => {
+  const { isOpen } = useSidebar();
+
   return (
-    <div className="flex bg-[#e9effe]">
+    <div className="bg-[#e9effe] min-h-screen">
       <Sidebar />
-      <div className="flex-1 overflow-auto bg-blue-50">
+      <div
+        className="overflow-auto bg-blue-50 min-h-screen transition-all duration-300"
+        style={{ marginLeft: isOpen ? "256px" : "64px" }}
+      >
         <InternshipList />
       </div>
     </div>

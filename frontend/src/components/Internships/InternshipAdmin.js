@@ -60,7 +60,7 @@ const InternshipAdmin = () => {
   const handleLogin = (e) => {
     e.preventDefault();
     if (
-      adminCredentials.username === process.env.REACT_APP_ADMIN &&
+      adminCredentials.username === process.env.adminCredentials.username &&
       adminCredentials.password === process.env.REACT_APP_ADMIN_PASSWORD
     ) {
       setIsAdmin(true);
