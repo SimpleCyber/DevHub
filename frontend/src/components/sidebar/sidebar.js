@@ -224,7 +224,6 @@ export function Sidebar() {
       path: userData ? `/interview` : "/auth",
     },
     { icon: MessageSquareText, text: "Internships", path: "/internships" },
-    { icon: Users, text: "Friends", path: "/friends" },
     { icon: User, text: "Profile", path: "/profile" },
   ];
 

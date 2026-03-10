@@ -13,7 +13,6 @@ import Profile from "./components/profile/profile";
 import Dashboard from "./components/dashboard/dashboard";
 import InterviewRoutes from "./components/InterviewPratice/InterviewRoutes";
 import Learn from "./components/Learn/learn";
-// import Friend from "./components/Friends/friend";
 import Internships from "./components/Internships/internships";
 import InternshipAdmin from "./components/Internships/InternshipAdmin";
 import InternshipsDetail2 from "./components/Internships/Internshipdetail2";
@@ -45,7 +44,6 @@ function App() {
               }
             />
             <Route path="/learn" element={<Learn />} />
-            {/* <Route path="/friends" element={<Friend />} /> */}
             <Route path="/internships" element={<Internships />} />
             <Route path="/admin" element={<InternshipAdmin />} />
             <Route path="/interviewHome" element={<Home />} />
