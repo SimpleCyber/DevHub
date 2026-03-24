@@ -27,8 +27,22 @@ function App() {
       <SidebarProvider>
         <Router>
           <Routes>
-            <Route path="/" element={<PublicRoute><ModernHomePage /></PublicRoute>} />
-            <Route path="/auth" element={<PublicRoute><AuthPages /></PublicRoute>} />
+            <Route
+              path="/"
+              element={
+                <PublicRoute>
+                  <ModernHomePage />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/auth"
+              element={
+                <PublicRoute>
+                  <AuthPages />
+                </PublicRoute>
+              }
+            />
             <Route
               path="/onboarding"
               element={

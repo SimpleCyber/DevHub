@@ -6,9 +6,12 @@ import {
   getDocs,
   doc,
   getDoc,
+  updateDoc,
+  deleteDoc,
   query,
   where,
 } from "firebase/firestore";
+
 const db = getFirestore();
 
 // Mock Interview storage
@@ -22,7 +25,7 @@ export const mockInterviewStorage = {
   // Get all mock interviews
   getAll: async () => {
     const querySnapshot = await getDocs(collection(db, "mockInterviews"));
-    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    return querySnapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
   },
 
   // Get a mock interview by ID
@@ -48,7 +51,7 @@ export const userAnswerStorage = {
       where("mockIdRef", "==", mockId),
     );
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    return querySnapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
   },
 };
 
@@ -56,39 +59,60 @@ export const userAnswerStorage = {
 export const careerPathStorage = {
   // Create a new career path
   create: async (userId, pathData) => {
-    const docRef = await addDoc(collection(db, "careerPaths"), {
-      userId,
-      ...pathData,
-      createdAt: new Date().toISOString(),
-    });
-    return { id: docRef.id, ...pathData };
+    try {
+      const docRef = await addDoc(collection(db, "careerPaths"), {
+        userId,
+        ...pathData,
+        createdAt: new Date().toISOString(),
+      });
+      return { id: docRef.id, ...pathData };
+    } catch (error) {
+      console.error("Error creating career path:", error);
+      throw error;
+    }
   },
 
   // Get all career paths for a specific user
   getByUserId: async (userId) => {
-    const q = query(
-      collection(db, "careerPaths"),
-      where("userId", "==", userId)
-    );
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    try {
+      const q = query(
+        collection(db, "careerPaths"),
+        where("userId", "==", userId),
+      );
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      }));
+    } catch (error) {
+      console.error("Error getting career paths:", error);
+      throw error;
+    }
   },
 
   // Update an existing career path
   update: async (pathId, updateData) => {
-    const { doc, updateDoc } = await import("firebase/firestore");
-    const docRef = doc(db, "careerPaths", pathId);
-    await updateDoc(docRef, { ...updateData, updatedAt: new Date().toISOString() });
+    try {
+      const docRef = doc(db, "careerPaths", pathId);
+      await updateDoc(docRef, {
+        ...updateData,
+        updatedAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("Error updating career path:", error);
+      throw error;
+    }
   },
 
   // Delete a career path
   delete: async (pathId) => {
-    const { doc, deleteDoc } = await import("firebase/firestore");
-    const docRef = doc(db, "careerPaths", pathId);
-    await deleteDoc(docRef);
+    try {
+      const docRef = doc(db, "careerPaths", pathId);
+      await deleteDoc(docRef);
+    } catch (error) {
+      console.error("Error deleting career path:", error);
+      throw error;
+    }
   },
 };
 

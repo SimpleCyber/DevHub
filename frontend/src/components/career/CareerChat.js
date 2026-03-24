@@ -1,15 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Loader2 } from 'lucide-react';
-import { chatWithGemini } from '../../services/gemini';
+import React, { useState, useRef, useEffect } from "react";
+import { Send, Bot, User, Loader2 } from "lucide-react";
+import { chatWithGemini } from "../../services/gemini";
 
 const CareerChat = ({ messages, onSendMessage, loading: externalLoading }) => {
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
   const [internalLoading, setInternalLoading] = useState(false);
   const loading = externalLoading || internalLoading;
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const CareerChat = ({ messages, onSendMessage, loading: externalLoading }) => {
     if (!input.trim() || loading) return;
 
     const userText = input.trim();
-    setInput('');
+    setInput("");
     onSendMessage(userText);
   };
 
@@ -33,7 +33,9 @@ const CareerChat = ({ messages, onSendMessage, loading: externalLoading }) => {
           <Bot className="w-5 h-5 text-blue-600" />
         </div>
         <div>
-          <h2 className="font-bold text-lg leading-tight text-gray-800">AI Career Guide</h2>
+          <h2 className="font-bold text-lg leading-tight text-gray-800">
+            AI Career Guide
+          </h2>
           <p className="text-xs text-green-500 font-medium">Online</p>
         </div>
       </div>
@@ -41,27 +43,30 @@ const CareerChat = ({ messages, onSendMessage, loading: externalLoading }) => {
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar scroll-smooth">
         {messages.map((msg, idx) => {
-          const isUser = msg.role === 'user';
+          const isUser = msg.role === "user";
           return (
-            <div key={idx} className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
+            <div
+              key={idx}
+              className={`flex gap-3 ${isUser ? "justify-end" : "justify-start"}`}
+            >
               {!isUser && (
                 <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100">
                   <Bot className="w-4 h-4 text-blue-600" />
                 </div>
               )}
-              
-              <div 
+
+              <div
                 className={`max-w-[85%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed shadow-sm ${
-                  isUser 
-                    ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-tr-sm' 
-                    : 'bg-gray-50 text-gray-700 rounded-tl-sm border border-gray-100'
+                  isUser
+                    ? "bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-tr-sm"
+                    : "bg-gray-50 text-gray-700 rounded-tl-sm border border-gray-100"
                 }`}
               >
                 {/* Parse newlines properly */}
-                {msg.parts[0].text.split('\n').map((line, i) => (
+                {msg.parts[0].text.split("\n").map((line, i) => (
                   <span key={i}>
                     {line}
-                    <br/>
+                    <br />
                   </span>
                 ))}
               </div>
@@ -74,7 +79,7 @@ const CareerChat = ({ messages, onSendMessage, loading: externalLoading }) => {
             </div>
           );
         })}
-        
+
         {loading && (
           <div className="flex gap-3 justify-start animate-fade-in">
             <div className="w-8 h-8 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center flex-shrink-0">
@@ -82,9 +87,18 @@ const CareerChat = ({ messages, onSendMessage, loading: externalLoading }) => {
             </div>
             <div className="bg-gray-50 border border-gray-100 rounded-2xl rounded-tl-sm px-5 py-4 flex items-center shadow-sm">
               <div className="flex gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                <span className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                <span className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                <span
+                  className="w-2 h-2 rounded-full bg-blue-400 animate-bounce"
+                  style={{ animationDelay: "0ms" }}
+                ></span>
+                <span
+                  className="w-2 h-2 rounded-full bg-blue-400 animate-bounce"
+                  style={{ animationDelay: "150ms" }}
+                ></span>
+                <span
+                  className="w-2 h-2 rounded-full bg-blue-400 animate-bounce"
+                  style={{ animationDelay: "300ms" }}
+                ></span>
               </div>
             </div>
           </div>
@@ -99,7 +113,7 @@ const CareerChat = ({ messages, onSendMessage, loading: externalLoading }) => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+              if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 handleSend(e);
               }
@@ -117,7 +131,9 @@ const CareerChat = ({ messages, onSendMessage, loading: externalLoading }) => {
           </button>
         </form>
         <div className="text-center mt-2">
-          <span className="text-[10px] text-gray-400">Press Enter to send, Shift+Enter for new line</span>
+          <span className="text-[10px] text-gray-400">
+            Press Enter to send, Shift+Enter for new line
+          </span>
         </div>
       </div>
     </div>

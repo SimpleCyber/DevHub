@@ -46,9 +46,8 @@ const ModernHomePage = () => {
               </div>
             </h1>
             <p className="hero-subtitle glass-effect-dashbord">
-              DevHub is the ultimate platform to showcase your skills,
-              pratice Interview & apply for jobs
-
+              DevHub is the ultimate platform to showcase your skills, pratice
+              Interview & apply for jobs
             </p>
 
             <div className="cta-group">

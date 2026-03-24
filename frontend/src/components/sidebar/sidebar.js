@@ -212,7 +212,7 @@ export function Sidebar() {
   }, [isMobile, setIsOpen]);
 
   const navItems = [
-    { icon: Home, text: "Home", path: "/" },
+    // { icon: Home, text: "Home", path: "/" },
     {
       icon: LayoutDashboard,
       text: "Dashboard",

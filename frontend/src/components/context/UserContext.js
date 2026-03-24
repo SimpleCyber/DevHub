@@ -15,7 +15,7 @@ export const UserProvider = ({ children }) => {
 
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      
+
       if (currentUser) {
         setIsLoading(true);
         const docRef = doc(db, "profiles", currentUser.uid);

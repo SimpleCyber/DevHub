@@ -1,12 +1,41 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const API_KEY = process.env.REACT_APP_GEMINI_API_KEY ;
+const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 
-if (!API_KEY || API_KEY.startsWith('YOUR_')) {
-  console.warn("Gemini API Key is missing or invalid. Please check your .env file.");
+if (!API_KEY || API_KEY.startsWith("YOUR_")) {
+  console.warn(
+    "Gemini API Key is missing or invalid. Please check your .env file.",
+  );
 }
 
 const genAI = new GoogleGenerativeAI(API_KEY);
+
+/**
+ * Retries a function with exponential backoff on rate limit errors.
+ */
+const withRetry = async (fn, maxRetries = 3) => {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      const isRateLimit =
+        error?.status === 429 ||
+        error?.message?.includes("429") ||
+        error?.message?.includes("RESOURCE_EXHAUSTED") ||
+        error?.message?.includes("retryDelay");
+
+      if (isRateLimit && attempt < maxRetries) {
+        const delay = Math.pow(2, attempt) * 2000 + Math.random() * 1000;
+        console.warn(
+          `Rate limited. Retrying in ${Math.round(delay / 1000)}s... (attempt ${attempt + 1}/${maxRetries})`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
+      }
+      throw error;
+    }
+  }
+};
 
 /**
  * Normal conversational chat with Gemini.
@@ -16,25 +45,38 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 export const chatWithGemini = async (history, message) => {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
-    
-    // Format history for Gemini API
-    const formattedHistory = history.map(msg => ({
-      role: msg.role === 'user' ? 'user' : 'model',
-      parts: [{ text: msg.parts[0].text }],
-    }));
 
-    const chat = model.startChat({
-      history: formattedHistory,
-      generationConfig: {
-        maxOutputTokens: 1000,
-      },
+    // Filter out any empty or malformed history entries
+    const formattedHistory = (history || [])
+      .filter((msg) => msg && msg.parts && msg.parts[0] && msg.parts[0].text)
+      .map((msg) => ({
+        role: msg.role === "user" ? "user" : "model",
+        parts: [{ text: msg.parts[0].text }],
+      }));
+
+    const result = await withRetry(async () => {
+      const chat = model.startChat({
+        history: formattedHistory,
+        generationConfig: {
+          maxOutputTokens: 1000,
+        },
+      });
+      return await chat.sendMessage(message);
     });
 
-    const result = await chat.sendMessage(message);
     const response = await result.response;
     return response.text();
   } catch (error) {
     console.error("Error chatting with Gemini:", error);
+
+    if (
+      error?.message?.includes("429") ||
+      error?.message?.includes("RESOURCE_EXHAUSTED")
+    ) {
+      throw new Error(
+        "The AI is currently busy. Please wait a moment and try again.",
+      );
+    }
     throw new Error("Failed to get a response from the AI. Please try again.");
   }
 };
@@ -46,8 +88,7 @@ export const chatWithGemini = async (history, message) => {
 export const generateCareerRoadmap = async (prompt) => {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
-    
-    // Explicitly ask for a JSON format containing nodes and edges
+
     const query = `
       You are an expert career counselor and curriculum designer. 
       The user wants to learn: "${prompt}".
@@ -63,26 +104,46 @@ export const generateCareerRoadmap = async (prompt) => {
       Return ONLY valid JSON. Do NOT wrap it in \`\`\`json blocks.
     `;
 
-    const result = await model.generateContent(query);
+    const result = await withRetry(async () => {
+      return await model.generateContent(query);
+    });
+
     const response = await result.response;
     const text = response.text().trim();
-    
+
     // Attempt to parse JSON. Sometimes the model wraps it in markdown blocks anyway.
     let jsonStr = text;
-    if (jsonStr.startsWith('\`\`\`json')) {
-      jsonStr = jsonStr.replace(/\`\`\`json/g, '').replace(/\`\`\`/g, '').trim();
-    } else if (jsonStr.startsWith('\`\`\`')) {
-      jsonStr = jsonStr.replace(/\`\`\`/g, '').trim();
+    if (jsonStr.startsWith("```json")) {
+      jsonStr = jsonStr
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
+    } else if (jsonStr.startsWith("```")) {
+      jsonStr = jsonStr.replace(/```/g, "").trim();
     }
 
     const data = JSON.parse(jsonStr);
+
+    if (!data.nodes || !data.edges) {
+      throw new Error("AI response is missing nodes or edges.");
+    }
+
     return data;
   } catch (error) {
     console.error("Gemini Roadmap Generation Error Details:", {
       message: error.message,
       stack: error.stack,
-      prompt
+      prompt,
     });
-    throw new Error("Failed to generate the career roadmap. This could be due to API limits or invalid input. Detailed error: " + error.message);
+
+    if (
+      error?.message?.includes("429") ||
+      error?.message?.includes("RESOURCE_EXHAUSTED")
+    ) {
+      throw new Error(
+        "The AI is currently busy due to high usage. Please wait a minute and try again.",
+      );
+    }
+    throw new Error("Failed to generate the career roadmap. " + error.message);
   }
 };

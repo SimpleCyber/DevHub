@@ -10,7 +10,7 @@
   width: 100%;
   overflow: hidden;
   position: relative;
-  background-color: transparent; 
+  background-color: transparent;
 }
 
 /* Map area */
@@ -41,7 +41,7 @@
   right: -400px;
   width: 400px;
   height: 100vh;
-  background-color: #ffffff; 
+  background-color: #ffffff;
   box-shadow: -10px 0 30px rgba(0, 0, 0, 0.08);
   transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 40;
@@ -79,7 +79,7 @@
   border: 1px solid #e5e7eb;
   border-right: none;
   z-index: 50;
-  box-shadow: -4px 4px 10px rgba(0,0,0,0.05);
+  box-shadow: -4px 4px 10px rgba(0, 0, 0, 0.05);
   transition: background-color 0.2s;
 }
 
@@ -117,15 +117,21 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 768px) {
   .career-map-wrapper.chat-open {
     margin-right: 0; /* Don't squash map on mobile */
   }
-  
+
   .career-chat-wrapper {
     width: 100%;
     right: -100%;
@@ -148,7 +154,7 @@
 }
 
 .career-tab-item.active::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;

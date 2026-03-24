@@ -20,7 +20,8 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/auth" />;
   }
 
-  const needsOnboarding = !userProfile || userProfile.onboardingCompleted !== true;
+  const needsOnboarding =
+    !userProfile || userProfile.onboardingCompleted !== true;
 
   if (needsOnboarding && location.pathname !== "/onboarding") {
     return <Navigate to="/onboarding" />;

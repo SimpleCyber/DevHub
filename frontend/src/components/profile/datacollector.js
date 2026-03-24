@@ -1,7 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { auth } from "../../firebase";
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+} from "firebase/firestore";
 
 import "./profile.css";
 import useFetchPlatformData from "../../api2/data";
@@ -46,8 +58,6 @@ const DataCollector = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
-
   const loadProfileData = async () => {
     if (!auth.currentUser) return;
 
@@ -89,8 +99,6 @@ const DataCollector = () => {
 
         setFormData((prev) => ({ ...prev, ...updatedData }));
 
-
-        
         // If we are currently on the CONNECTIONS tab, we should also fetch connection details
         if (activeTab === "CONNECTIONS") {
           fetchConnectionDetails(data.connections || []);
@@ -211,13 +219,13 @@ const DataCollector = () => {
   };
 
   const handleSkillKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === ',') {
+    if (e.key === "Enter" || e.key === ",") {
       e.preventDefault();
       const newSkill = skillsInput.trim();
       if (newSkill && !formData.skills.includes(newSkill)) {
         setFormData((prev) => ({
           ...prev,
-          skills: [...prev.skills, newSkill]
+          skills: [...prev.skills, newSkill],
         }));
       }
       setSkillsInput("");
@@ -227,7 +235,7 @@ const DataCollector = () => {
   const removeSkill = (skillToRemove) => {
     setFormData((prev) => ({
       ...prev,
-      skills: prev.skills.filter((s) => s !== skillToRemove)
+      skills: prev.skills.filter((s) => s !== skillToRemove),
     }));
   };
 
@@ -261,8 +269,6 @@ const DataCollector = () => {
     });
   };
 
-
-
   const handleDocumentChange = (index, e) => {
     const { name, value } = e.target;
     setFormData((prev) => {
@@ -287,7 +293,7 @@ const DataCollector = () => {
         updatedDocs[index] = {
           ...updatedDocs[index],
           fileData: base64String,
-          fileName: file.name
+          fileName: file.name,
         };
         return { ...prev, documents: updatedDocs };
       });
@@ -301,7 +307,10 @@ const DataCollector = () => {
     if (formData.documents.length < 10) {
       setFormData((prev) => ({
         ...prev,
-        documents: [...prev.documents, { name: "", fileData: "", fileName: "", showPreview: false }],
+        documents: [
+          ...prev.documents,
+          { name: "", fileData: "", fileName: "", showPreview: false },
+        ],
       }));
     } else {
       setMessage("You can only add up to 10 documents");
@@ -377,7 +386,7 @@ const DataCollector = () => {
     }
 
     setIsSearching(true);
-    
+
     const db = getFirestore();
     const profilesRef = collection(db, "profiles");
     const term = searchTerm.trim();
@@ -386,15 +395,15 @@ const DataCollector = () => {
       // Use prefix querying for email autocomplete
       // This will match any email that STARTS WITH the typed term
       const qEmail = query(
-        profilesRef, 
+        profilesRef,
         where("email", ">=", term),
-        where("email", "<=", term + "\uf8ff")
+        where("email", "<=", term + "\uf8ff"),
       );
 
       const snapshot = await getDocs(qEmail);
 
       const results = [];
-      snapshot.forEach(doc => {
+      snapshot.forEach((doc) => {
         // Skip current logged in user
         if (doc.id !== auth.currentUser.uid) {
           results.push({ id: doc.id, ...doc.data() });
@@ -402,7 +411,7 @@ const DataCollector = () => {
       });
 
       setSearchResults(results);
-      
+
       if (results.length === 0) {
         setMessage("No users found matching that Email ID");
       } else {
@@ -429,29 +438,28 @@ const DataCollector = () => {
     if (!auth.currentUser) return;
     try {
       const db = getFirestore();
-      
+
       // Add friend to current user's connections
       const currentUserRef = doc(db, "profiles", auth.currentUser.uid);
       await updateDoc(currentUserRef, {
-        connections: arrayUnion(userId)
+        connections: arrayUnion(userId),
       });
 
       // Add current user to friend's connections
       const friendRef = doc(db, "profiles", userId);
       await updateDoc(friendRef, {
-        connections: arrayUnion(auth.currentUser.uid)
+        connections: arrayUnion(auth.currentUser.uid),
       });
 
       setMessage("Connection added successfully!");
-      
+
       // Refresh connection details locally
       const currentConnections = formData.connections || [];
       if (!currentConnections.includes(userId)) {
         const newConnections = [...currentConnections, userId];
-        setFormData(prev => ({...prev, connections: newConnections}));
+        setFormData((prev) => ({ ...prev, connections: newConnections }));
         fetchConnectionDetails(newConnections);
       }
-      
     } catch (error) {
       console.error("Error adding connection:", error);
       setMessage("Failed to add connection");
@@ -462,26 +470,27 @@ const DataCollector = () => {
     if (!auth.currentUser) return;
     try {
       const db = getFirestore();
-      
+
       // Remove friend from current user's connections
       const currentUserRef = doc(db, "profiles", auth.currentUser.uid);
       await updateDoc(currentUserRef, {
-        connections: arrayRemove(userId)
+        connections: arrayRemove(userId),
       });
 
       // Remove current user from friend's connections
       const friendRef = doc(db, "profiles", userId);
       await updateDoc(friendRef, {
-        connections: arrayRemove(auth.currentUser.uid)
+        connections: arrayRemove(auth.currentUser.uid),
       });
 
       setMessage("Connection removed.");
-      
-      // Update local state without full reload
-      const newConnections = (formData.connections || []).filter(id => id !== userId);
-      setFormData(prev => ({...prev, connections: newConnections}));
-      setConnectionsList(prev => prev.filter(user => user.id !== userId));
 
+      // Update local state without full reload
+      const newConnections = (formData.connections || []).filter(
+        (id) => id !== userId,
+      );
+      setFormData((prev) => ({ ...prev, connections: newConnections }));
+      setConnectionsList((prev) => prev.filter((user) => user.id !== userId));
     } catch (error) {
       console.error("Error removing connection:", error);
       setMessage("Failed to remove connection");
@@ -497,7 +506,7 @@ const DataCollector = () => {
     setLoadingConnections(true);
     const db = getFirestore();
     const loadedConnections = [];
-    
+
     // Process in batches if necessary, but typically connections aren't huge
     try {
       for (const id of connectionIds) {
@@ -522,7 +531,6 @@ const DataCollector = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
-
 
   return (
     <div>
@@ -577,7 +585,10 @@ const DataCollector = () => {
           </div>
 
           <div className="main-profile-nav-tabs mt-6 border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8 overflow-x-auto" aria-label="Tabs">
+            <nav
+              className="-mb-px flex space-x-8 overflow-x-auto"
+              aria-label="Tabs"
+            >
               <button
                 onClick={() => setActiveTab("DETAILS")}
                 className={`${
@@ -631,7 +642,10 @@ const DataCollector = () => {
             </nav>
           </div>
 
-          <form onSubmit={handleSubmit} className="main-profile-form form-main mt-8">
+          <form
+            onSubmit={handleSubmit}
+            className="main-profile-form form-main mt-8"
+          >
             {activeTab === "DETAILS" && (
               <div className="main-profile-form-grid">
                 <div className="main-profile-form-group">
@@ -767,10 +781,15 @@ const DataCollector = () => {
 
             {activeTab === "PROJECTS" && (
               <div className="main-profile-projects-tab">
-                <h2 className="text-xl font-bold text-gray-700 mb-4">Projects</h2>
+                <h2 className="text-xl font-bold text-gray-700 mb-4">
+                  Projects
+                </h2>
                 <div className="main-profile-projects-section flex flex-col gap-6">
                   {formData.projects.map((project, index) => (
-                    <div key={index} className="main-profile-projects-form bg-gray-50 p-6 rounded-lg border border-gray-100 relative">
+                    <div
+                      key={index}
+                      className="main-profile-projects-form bg-gray-50 p-6 rounded-lg border border-gray-100 relative"
+                    >
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="main-profile-form-group mb-0">
                           <label>Project Name</label>
@@ -807,7 +826,7 @@ const DataCollector = () => {
                           />
                         </div>
                       </div>
-                      
+
                       {isEditing && (
                         <button
                           type="button"
@@ -815,7 +834,23 @@ const DataCollector = () => {
                           onClick={() => deleteProject(index)}
                           title="Delete Project"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                          </svg>
                         </button>
                       )}
                     </div>
@@ -847,12 +882,17 @@ const DataCollector = () => {
                     </button>
                   )}
                 </div>
-                
+
                 <div className="main-profile-documents-section flex flex-col gap-6">
                   {formData.documents.map((doc, index) => (
-                    <div key={index} className="main-profile-documents-form bg-gray-50 p-6 rounded-lg border border-gray-100 relative">
+                    <div
+                      key={index}
+                      className="main-profile-documents-form bg-gray-50 p-6 rounded-lg border border-gray-100 relative"
+                    >
                       <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Document Name (e.g. 10th Marks, Semester 1)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Document Name (e.g. 10th Marks, Semester 1)
+                        </label>
                         <input
                           type="text"
                           name="name"
@@ -863,10 +903,12 @@ const DataCollector = () => {
                           className="main-profile-form-input bg-white w-full"
                         />
                       </div>
-                      
+
                       {isEditing && (
                         <div className="mb-4">
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Upload PDF/Document</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Upload PDF/Document
+                          </label>
                           <input
                             type="file"
                             onChange={(e) => handleDocumentUpload(index, e)}
@@ -880,8 +922,29 @@ const DataCollector = () => {
                         <div className="flex flex-col gap-4 mt-2">
                           <div className="flex items-center justify-between bg-green-50 border border-green-200 px-4 py-3 rounded-md">
                             <span className="text-green-800 font-medium flex items-center pr-4">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 flex-shrink-0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                              <span className="truncate">{doc.fileName || doc.name || `Document ${index + 1}`}</span>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="mr-2 flex-shrink-0"
+                              >
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                              </svg>
+                              <span className="truncate">
+                                {doc.fileName ||
+                                  doc.name ||
+                                  `Document ${index + 1}`}
+                              </span>
                             </span>
                             <div className="flex space-x-2 flex-shrink-0">
                               <button
@@ -893,26 +956,35 @@ const DataCollector = () => {
                               </button>
                               <a
                                 href={`data:application/pdf;base64,${doc.fileData}`}
-                                download={doc.fileName || `${doc.name || `document_${index+1}`}.pdf`}
+                                download={
+                                  doc.fileName ||
+                                  `${doc.name || `document_${index + 1}`}.pdf`
+                                }
                                 className="px-4 py-1.5 bg-blue-100 text-blue-700 text-sm font-medium rounded hover:bg-blue-200 transition inline-block whitespace-nowrap"
                               >
                                 Download
                               </a>
                             </div>
                           </div>
-                          
+
                           {doc.showPreview && (
                             <div className="border border-gray-300 rounded-lg overflow-hidden bg-white shadow-inner h-[600px] mt-2">
-                              <object 
-                                data={`data:application/pdf;base64,${doc.fileData}`} 
-                                type="application/pdf" 
-                                width="100%" 
+                              <object
+                                data={`data:application/pdf;base64,${doc.fileData}`}
+                                type="application/pdf"
+                                width="100%"
                                 height="100%"
                                 className="w-full h-full"
                               >
                                 <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                                  <p>Your browser does not support PDF rendering.</p>
-                                  <a href={`data:application/pdf;base64,${doc.fileData}`} download={doc.fileName || `${doc.name}.pdf`} className="text-blue-500 hover:underline mt-2">
+                                  <p>
+                                    Your browser does not support PDF rendering.
+                                  </p>
+                                  <a
+                                    href={`data:application/pdf;base64,${doc.fileData}`}
+                                    download={doc.fileName || `${doc.name}.pdf`}
+                                    className="text-blue-500 hover:underline mt-2"
+                                  >
                                     Download the PDF to view it
                                   </a>
                                 </div>
@@ -921,9 +993,11 @@ const DataCollector = () => {
                           )}
                         </div>
                       ) : (
-                        <div className="text-gray-500 italic mt-2 text-sm">No file uploaded for this document yet.</div>
+                        <div className="text-gray-500 italic mt-2 text-sm">
+                          No file uploaded for this document yet.
+                        </div>
                       )}
-                      
+
                       {isEditing && (
                         <button
                           type="button"
@@ -931,13 +1005,31 @@ const DataCollector = () => {
                           onClick={() => deleteDocument(index)}
                           title="Delete Document"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                          </svg>
                         </button>
                       )}
                     </div>
                   ))}
                   {formData.documents.length === 0 && !isEditing && (
-                    <div className="text-gray-500 italic py-4">No documents uploaded yet.</div>
+                    <div className="text-gray-500 italic py-4">
+                      No documents uploaded yet.
+                    </div>
                   )}
                 </div>
               </div>
@@ -948,7 +1040,9 @@ const DataCollector = () => {
                 <div className="main-profile-form-group mb-8">
                   {isEditing && (
                     <>
-                      <label htmlFor="skills">Add Skills (Press Enter or Comma)</label>
+                      <label htmlFor="skills">
+                        Add Skills (Press Enter or Comma)
+                      </label>
                       <input
                         type="text"
                         id="skills"
@@ -962,21 +1056,32 @@ const DataCollector = () => {
                     </>
                   )}
                   <div className="skills-chips-container mt-2 flex flex-wrap gap-2">
-                    {Array.isArray(formData.skills) && formData.skills.map((skill, index) => (
-                      <div key={index} className="skill-chip bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium flex items-center border border-blue-200 shadow-sm">
-                        {skill}
-                        {isEditing && (
-                          <button
-                            type="button"
-                            onClick={() => removeSkill(skill)}
-                            className="ml-2 w-4 h-4 rounded-full inline-flex items-center justify-center text-blue-600 hover:bg-blue-200 hover:text-blue-900 transition-colors focus:outline-none"
-                            aria-label={`Remove ${skill}`}
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /></svg>
-                          </button>
-                        )}
-                      </div>
-                    ))}
+                    {Array.isArray(formData.skills) &&
+                      formData.skills.map((skill, index) => (
+                        <div
+                          key={index}
+                          className="skill-chip bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium flex items-center border border-blue-200 shadow-sm"
+                        >
+                          {skill}
+                          {isEditing && (
+                            <button
+                              type="button"
+                              onClick={() => removeSkill(skill)}
+                              className="ml-2 w-4 h-4 rounded-full inline-flex items-center justify-center text-blue-600 hover:bg-blue-200 hover:text-blue-900 transition-colors focus:outline-none"
+                              aria-label={`Remove ${skill}`}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                className="w-3 h-3"
+                              >
+                                <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                      ))}
                   </div>
                 </div>
               </div>
@@ -985,11 +1090,12 @@ const DataCollector = () => {
             {activeTab === "CONNECTIONS" && (
               <div className="main-profile-connections-tab py-8">
                 <div className="flex flex-col md:flex-row gap-8">
-                  
                   {/* Left Main Content: Connections List */}
                   <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-gray-700 mb-6">Your Connections</h2>
-                    
+                    <h2 className="text-2xl font-bold text-gray-700 mb-6">
+                      Your Connections
+                    </h2>
+
                     {loadingConnections ? (
                       <div className="flex justify-center items-center py-12">
                         <RefreshCw className="h-8 w-8 text-blue-500 animate-spin" />
@@ -999,29 +1105,79 @@ const DataCollector = () => {
                         {connectionsList.length === 0 ? (
                           <div className="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-12 text-center flex flex-col items-center justify-center h-full min-h-[300px]">
                             <div className="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mb-4 mx-auto text-blue-500">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="40"
+                                height="40"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                              </svg>
                             </div>
-                            <h3 className="text-xl font-bold text-gray-700 mb-2">Search and Connect</h3>
-                            <p className="text-gray-500 max-w-sm">You haven't added any connections yet. Use the search panel on the right to find friends and colleagues by their Email ID.</p>
+                            <h3 className="text-xl font-bold text-gray-700 mb-2">
+                              Search and Connect
+                            </h3>
+                            <p className="text-gray-500 max-w-sm">
+                              You haven't added any connections yet. Use the
+                              search panel on the right to find friends and
+                              colleagues by their Email ID.
+                            </p>
                           </div>
                         ) : (
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {connectionsList.map((user) => (
-                              <div key={user.id} className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex items-center justify-between">
+                              <div
+                                key={user.id}
+                                className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex items-center justify-between"
+                              >
                                 <div className="flex items-center min-w-0 pr-4">
-                                  <img className="h-12 w-12 rounded-full border border-gray-100 object-cover" src={user.profileImage || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT24JcMoDyGbsqmmeqU3bwUaXCB98_pwm9IBQ&s"} alt={user.name} />
+                                  <img
+                                    className="h-12 w-12 rounded-full border border-gray-100 object-cover"
+                                    src={
+                                      user.profileImage ||
+                                      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT24JcMoDyGbsqmmeqU3bwUaXCB98_pwm9IBQ&s"
+                                    }
+                                    alt={user.name}
+                                  />
                                   <div className="ml-4 truncate">
-                                    <p className="text-sm font-medium text-gray-900 truncate">{user.name || "Unknown User"}</p>
-                                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                                    <p className="text-sm font-medium text-gray-900 truncate">
+                                      {user.name || "Unknown User"}
+                                    </p>
+                                    <p className="text-xs text-gray-500 truncate">
+                                      {user.email}
+                                    </p>
                                   </div>
                                 </div>
                                 <button
                                   type="button"
-                                  onClick={() => handleRemoveConnection(user.id)}
+                                  onClick={() =>
+                                    handleRemoveConnection(user.id)
+                                  }
                                   className="text-gray-400 hover:text-red-500 transition-colors shrink-0"
                                   title="Remove Connection"
                                 >
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <path d="M18 6 6 18" />
+                                    <path d="m6 6 12 12" />
+                                  </svg>
                                 </button>
                               </div>
                             ))}
@@ -1034,9 +1190,13 @@ const DataCollector = () => {
                   {/* Right Sidebar: Search Panel */}
                   <div className="md:w-80 flex-shrink-0">
                     <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 sticky top-6">
-                      <h3 className="text-lg font-bold text-gray-700 mb-2">Find People</h3>
-                      <p className="text-sm text-gray-500 mb-6">Search for developers using their Email IDs.</p>
-                      
+                      <h3 className="text-lg font-bold text-gray-700 mb-2">
+                        Find People
+                      </h3>
+                      <p className="text-sm text-gray-500 mb-6">
+                        Search for developers using their Email IDs.
+                      </p>
+
                       <div className="flex gap-2 relative mb-6">
                         <div className="relative flex-1">
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -1059,44 +1219,67 @@ const DataCollector = () => {
                       {/* Search Results side panel */}
                       {searchResults.length > 0 && (
                         <div>
-                          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Results</h4>
+                          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                            Results
+                          </h4>
                           <ul className="divide-y divide-gray-100 max-h-[400px] overflow-y-auto pr-1">
                             {searchResults.map((user) => {
-                              const isAlreadyConnected = formData.connections?.includes(user.id);
+                              const isAlreadyConnected =
+                                formData.connections?.includes(user.id);
                               return (
-                              <li key={user.id} className="py-3 flex flex-col gap-2">
-                                <div className="flex items-center">
-                                  <img className="h-8 w-8 rounded-full border border-gray-100" src={user.profileImage || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT24JcMoDyGbsqmmeqU3bwUaXCB98_pwm9IBQ&s"} alt="" />
-                                  <div className="ml-3 truncate">
-                                    <p className="text-sm font-medium text-gray-900 truncate">{user.name || "Unknown User"}</p>
-                                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                                <li
+                                  key={user.id}
+                                  className="py-3 flex flex-col gap-2"
+                                >
+                                  <div className="flex items-center">
+                                    <img
+                                      className="h-8 w-8 rounded-full border border-gray-100"
+                                      src={
+                                        user.profileImage ||
+                                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT24JcMoDyGbsqmmeqU3bwUaXCB98_pwm9IBQ&s"
+                                      }
+                                      alt=""
+                                    />
+                                    <div className="ml-3 truncate">
+                                      <p className="text-sm font-medium text-gray-900 truncate">
+                                        {user.name || "Unknown User"}
+                                      </p>
+                                      <p className="text-xs text-gray-500 truncate">
+                                        {user.email}
+                                      </p>
+                                    </div>
                                   </div>
-                                </div>
-                                {isAlreadyConnected ? (
-                                  <span className="inline-flex w-full items-center justify-center px-2 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-500 bg-gray-50 cursor-not-allowed">
-                                    Already Connected
-                                  </span>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    onClick={() => handleAddConnection(user.id)}
-                                    className="inline-flex w-full items-center justify-center px-2 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                                  >
-                                    <UserPlus className="h-3 w-3 mr-1.5" />
-                                    Add Connection
-                                  </button>
-                                )}
-                              </li>
-                            )})}
+                                  {isAlreadyConnected ? (
+                                    <span className="inline-flex w-full items-center justify-center px-2 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-500 bg-gray-50 cursor-not-allowed">
+                                      Already Connected
+                                    </span>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        handleAddConnection(user.id)
+                                      }
+                                      className="inline-flex w-full items-center justify-center px-2 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                                    >
+                                      <UserPlus className="h-3 w-3 mr-1.5" />
+                                      Add Connection
+                                    </button>
+                                  )}
+                                </li>
+                              );
+                            })}
                           </ul>
                         </div>
                       )}
-                      {searchQuery.trim().length > 0 && searchResults.length === 0 && !isSearching && (
-                         <div className="text-center text-sm text-gray-500 py-4">No users found.</div>
-                      )}
+                      {searchQuery.trim().length > 0 &&
+                        searchResults.length === 0 &&
+                        !isSearching && (
+                          <div className="text-center text-sm text-gray-500 py-4">
+                            No users found.
+                          </div>
+                        )}
                     </div>
                   </div>
-                  
                 </div>
               </div>
             )}
