@@ -1,12 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Bot, User, Loader2 } from "lucide-react";
-import { chatWithGemini } from "../../services/gemini";
+import { Send, Bot, User } from "lucide-react";
 
-const CareerChat = ({ messages, onSendMessage, loading: externalLoading }) => {
+const CareerChat = ({ messages, onSendMessage, loading }) => {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
-  const [internalLoading, setInternalLoading] = useState(false);
-  const loading = externalLoading || internalLoading;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

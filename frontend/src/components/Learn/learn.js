@@ -3,7 +3,7 @@ import { Sidebar } from "../sidebar/sidebar";
 import LearnCollector from "./LearnCollector";
 import { useUser } from "../context/UserContext";
 import { useSidebar } from "../context/SidebarContext";
-import { Video, X, Plus, Copy, Check } from "lucide-react";
+import { Video, X, Copy, Check } from "lucide-react";
 import JitsiCall from "./JitsiCall";
 import "./learn.css";
 
@@ -41,7 +41,7 @@ const Learn = () => {
       <Sidebar />
       <div
         className={`transition-all duration-300 flex flex-col h-screen overflow-hidden`}
-        // style={{ marginLeft: isOpen ? "256px" : "64px" }}
+        style={{ marginLeft: isOpen ? "256px" : "64px" }}
       >
         <div className="learn-container">
           {/* Main Content Area */}
