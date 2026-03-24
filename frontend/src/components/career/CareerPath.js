@@ -192,7 +192,6 @@ const CareerPath = () => {
       <Sidebar />
       <div 
         className="overflow-hidden bg-blue-50 min-h-screen mt-14 sm:mt-0 transition-all duration-300 relative"
-        style={{ marginLeft: isOpen ? "256px" : "64px" }}
       >
         <div className="career-path-container flex flex-col h-screen">
           {/* VS Code Style Tabs Bar */}
@@ -254,10 +253,10 @@ const CareerPath = () => {
             <div className={`career-chat-wrapper ${chatOpen ? 'open' : ''}`}>
               <button 
                 className="chat-close-btn"
-                onClick={() => setChatOpen(false)}
-                title="Close Chat"
+                onClick={() => setChatOpen(!chatOpen)}
+                title={chatOpen ? "Close Chat" : "Open Chat"}
               >
-                <ChevronRight className="w-6 h-6 text-gray-400 hover:text-white" />
+                <ChevronRight className={`w-6 h-6 text-gray-500 hover:text-gray-800 transition-transform ${chatOpen ? '' : 'rotate-180'}`} />
               </button>
               <CareerChat 
                 messages={activeTab?.messages || []} 

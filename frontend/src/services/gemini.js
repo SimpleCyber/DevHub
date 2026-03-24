@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const API_KEY = process.env.REACT_APP_GEMINI_API_KEY || "AIzaSyD5DyPspsLI6GctPvw8jLgGGYhgV0B36hQ";
+const API_KEY = process.env.REACT_APP_GEMINI_API_KEY ;
 
 if (!API_KEY || API_KEY.startsWith('YOUR_')) {
   console.warn("Gemini API Key is missing or invalid. Please check your .env file.");
