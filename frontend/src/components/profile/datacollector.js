@@ -43,13 +43,10 @@ const DataCollector = () => {
 
   useEffect(() => {
     loadProfileData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (Array.isArray(formData.skills) && formData.skills.length > 0) {
-      setSkillsInput(formData.skills.join(", "));
-    }
-  }, [formData.skills]);
+
 
   const loadProfileData = async () => {
     if (!auth.currentUser) return;
@@ -92,10 +89,7 @@ const DataCollector = () => {
 
         setFormData((prev) => ({ ...prev, ...updatedData }));
 
-        // Set the skills input field with the joined skills
-        if (skills.length > 0) {
-          setSkillsInput(skills.join(", "));
-        }
+
         
         // If we are currently on the CONNECTIONS tab, we should also fetch connection details
         if (activeTab === "CONNECTIONS") {
@@ -121,11 +115,12 @@ const DataCollector = () => {
       const platforms = ["github", "linkedin", "leetcode"];
       const platformObjects = {};
 
-      // Process skills from the skillsInput string before saving
-      const skillsArray = skillsInput
+      // Merge skills from the skills array and any pending input
+      const pendingSkills = skillsInput
         .split(",")
         .map((skill) => skill.trim())
-        .filter((skill) => skill !== "");
+        .filter((skill) => skill !== "" && !formData.skills.includes(skill));
+      const finalSkills = [...formData.skills, ...pendingSkills];
 
       // Fetch current data to compare and preserve cache if username hasn't changed
       const docRef = doc(db, "profiles", auth.currentUser.uid);
@@ -176,7 +171,7 @@ const DataCollector = () => {
       // Create a data object with the processed skills array and platform usernames
       const dataToSave = {
         ...formData,
-        skills: skillsArray,
+        skills: finalSkills,
         ...platformObjects, // Add platform objects to the data
       };
 
@@ -188,7 +183,7 @@ const DataCollector = () => {
       // Update formData with the new skills array
       setFormData((prev) => ({
         ...prev,
-        skills: skillsArray,
+        skills: finalSkills,
       }));
 
       setMessage("Profile saved successfully!");
@@ -213,6 +208,27 @@ const DataCollector = () => {
         [name]: value,
       }));
     }
+  };
+
+  const handleSkillKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const newSkill = skillsInput.trim();
+      if (newSkill && !formData.skills.includes(newSkill)) {
+        setFormData((prev) => ({
+          ...prev,
+          skills: [...prev.skills, newSkill]
+        }));
+      }
+      setSkillsInput("");
+    }
+  };
+
+  const removeSkill = (skillToRemove) => {
+    setFormData((prev) => ({
+      ...prev,
+      skills: prev.skills.filter((s) => s !== skillToRemove)
+    }));
   };
 
   const handleProjectChange = (index, e) => {
@@ -245,27 +261,7 @@ const DataCollector = () => {
     });
   };
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
 
-    const reader = new FileReader();
-
-    reader.onloadend = () => {
-      const base64String = reader.result.split(",")[1];
-      setFormData((prev) => ({
-        ...prev,
-        resume: base64String,
-      }));
-      setMessage("Resume uploaded successfully!");
-    };
-
-    reader.onerror = () => {
-      setMessage("Error uploading the file");
-    };
-
-    reader.readAsDataURL(file);
-  };
 
   const handleDocumentChange = (index, e) => {
     const { name, value } = e.target;
@@ -524,6 +520,7 @@ const DataCollector = () => {
     if (activeTab === "CONNECTIONS") {
       fetchConnectionDetails(formData.connections || []);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
 
@@ -949,23 +946,38 @@ const DataCollector = () => {
             {activeTab === "SKILLS" && (
               <div className="main-profile-skills-tab">
                 <div className="main-profile-form-group mb-8">
-                  <label htmlFor="skills">Skills (comma separated)</label>
-                  <input
-                    type="text"
-                    id="skills"
-                    name="skills"
-                    value={skillsInput}
-                    onChange={handleInputChange}
-                    disabled={!isEditing}
-                    placeholder="e.g. React, Node.js, MongoDB"
-                    className="main-profile-form-input"
-                  />
-                  {Array.isArray(formData.skills) &&
-                    formData.skills.length > 0 && (
-                      <div className="skills-preview text-sm text-gray-600 mt-2">
-                        Current skills: {formData.skills.join(", ")}
+                  {isEditing && (
+                    <>
+                      <label htmlFor="skills">Add Skills (Press Enter or Comma)</label>
+                      <input
+                        type="text"
+                        id="skills"
+                        name="skills"
+                        value={skillsInput}
+                        onChange={handleInputChange}
+                        onKeyDown={handleSkillKeyDown}
+                        placeholder="e.g. React, Node.js, MongoDB"
+                        className="main-profile-form-input mb-4"
+                      />
+                    </>
+                  )}
+                  <div className="skills-chips-container mt-2 flex flex-wrap gap-2">
+                    {Array.isArray(formData.skills) && formData.skills.map((skill, index) => (
+                      <div key={index} className="skill-chip bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium flex items-center border border-blue-200 shadow-sm">
+                        {skill}
+                        {isEditing && (
+                          <button
+                            type="button"
+                            onClick={() => removeSkill(skill)}
+                            className="ml-2 w-4 h-4 rounded-full inline-flex items-center justify-center text-blue-600 hover:bg-blue-200 hover:text-blue-900 transition-colors focus:outline-none"
+                            aria-label={`Remove ${skill}`}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /></svg>
+                          </button>
+                        )}
                       </div>
-                    )}
+                    ))}
+                  </div>
                 </div>
               </div>
             )}

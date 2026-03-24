@@ -1,9 +1,10 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useUser } from "./components/context/UserContext";
 
 const ProtectedRoute = ({ children }) => {
-  const { user, isLoading } = useUser();
+  const { user, userProfile, isLoading } = useUser();
+  const location = useLocation();
 
   if (isLoading) {
     return (
@@ -17,6 +18,16 @@ const ProtectedRoute = ({ children }) => {
 
   if (!user) {
     return <Navigate to="/auth" />;
+  }
+
+  const needsOnboarding = !userProfile || userProfile.onboardingCompleted !== true;
+
+  if (needsOnboarding && location.pathname !== "/onboarding") {
+    return <Navigate to="/onboarding" />;
+  }
+
+  if (!needsOnboarding && location.pathname === "/onboarding") {
+    return <Navigate to="/profile" />;
   }
 
   return children;

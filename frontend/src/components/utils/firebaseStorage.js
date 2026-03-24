@@ -52,4 +52,44 @@ export const userAnswerStorage = {
   },
 };
 
+// Career Path storage
+export const careerPathStorage = {
+  // Create a new career path
+  create: async (userId, pathData) => {
+    const docRef = await addDoc(collection(db, "careerPaths"), {
+      userId,
+      ...pathData,
+      createdAt: new Date().toISOString(),
+    });
+    return { id: docRef.id, ...pathData };
+  },
+
+  // Get all career paths for a specific user
+  getByUserId: async (userId) => {
+    const q = query(
+      collection(db, "careerPaths"),
+      where("userId", "==", userId)
+    );
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  },
+
+  // Update an existing career path
+  update: async (pathId, updateData) => {
+    const { doc, updateDoc } = await import("firebase/firestore");
+    const docRef = doc(db, "careerPaths", pathId);
+    await updateDoc(docRef, { ...updateData, updatedAt: new Date().toISOString() });
+  },
+
+  // Delete a career path
+  delete: async (pathId) => {
+    const { doc, deleteDoc } = await import("firebase/firestore");
+    const docRef = doc(db, "careerPaths", pathId);
+    await deleteDoc(docRef);
+  },
+};
+
 export { db };

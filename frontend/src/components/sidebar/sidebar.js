@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   Users,
+  Map,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
@@ -224,6 +225,7 @@ export function Sidebar() {
       path: userData ? `/interview` : "/auth",
     },
     { icon: MessageSquareText, text: "Internships", path: "/internships" },
+    { icon: Map, text: "Career Path", path: "/career-path" },
     { icon: User, text: "Profile", path: "/profile" },
   ];
 
