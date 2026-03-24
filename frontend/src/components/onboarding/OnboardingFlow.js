@@ -13,13 +13,12 @@ import {
   CheckCircle,
   Github,
   Linkedin,
-  ExternalLink,
 } from "lucide-react";
 import "./OnboardingFlow.css";
 
 const OnboardingFlow = () => {
   const navigate = useNavigate();
-  const { user, userProfile } = useUser();
+  const { userProfile } = useUser();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

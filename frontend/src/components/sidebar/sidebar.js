@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Home,
   ClipboardPenLine,
   User,
   ChevronLeft,
@@ -12,7 +11,6 @@ import {
   MessageSquareText,
   Menu,
   X,
-  Users,
   Map,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -169,7 +167,7 @@ export function Sidebar() {
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  }, [setIsOpen]);
 
   useEffect(() => {
     const fetchUserData = async () => {

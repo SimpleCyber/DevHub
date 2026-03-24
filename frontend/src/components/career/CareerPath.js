@@ -6,7 +6,7 @@ import { Sidebar } from "../sidebar/sidebar";
 import { useSidebar } from "../context/SidebarContext";
 import { careerPathStorage } from "../utils/firebaseStorage";
 import { auth } from "../../firebase";
-import { Plus, X as CloseIcon, Layout, Bot, ChevronRight } from "lucide-react";
+import { Plus, X as CloseIcon, ChevronRight } from "lucide-react";
 import { onAuthStateChanged } from "firebase/auth";
 import { chatWithGemini } from "../../services/gemini";
 
@@ -108,7 +108,7 @@ const CareerPath = () => {
 
   const handleCloseTab = (id, e) => {
     e.stopPropagation();
-    const tabToClose = tabs.find((t) => t.id === id);
+    tabs.find((t) => t.id === id);
 
     // If it's a saved tab, maybe we don't delete from DB here, just close?
     // User requirement: "Tabs... opening different items creates new tabs"
@@ -224,7 +224,10 @@ const CareerPath = () => {
   return (
     <div className="bg-[#e9effe] min-h-screen font-sans">
       <Sidebar />
-      <div className="overflow-hidden bg-blue-50 min-h-screen mt-14 sm:mt-0 transition-all duration-300 relative">
+      <div
+        className="overflow-hidden bg-blue-50 min-h-screen mt-14 sm:mt-0 transition-all duration-300 relative"
+        style={{ marginLeft: isOpen ? "256px" : "64px" }}
+      >
         <div className="career-path-container flex flex-col h-screen">
           {/* VS Code Style Tabs Bar */}
           <div className="career-tabs-bar flex items-center bg-gray-900 overflow-x-auto custom-scrollbar no-scrollbar h-11 border-b border-gray-800">
