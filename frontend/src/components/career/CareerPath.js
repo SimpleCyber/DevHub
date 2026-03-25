@@ -3,7 +3,7 @@ import CareerMap from "./CareerMap";
 import CareerChat from "./CareerChat";
 import "./CareerPath.css";
 import { Sidebar } from "../sidebar/sidebar";
-import { useSidebar } from "../context/SidebarContext";
+// import { useSidebar } from "../context/SidebarContext";
 import { careerPathStorage } from "../utils/firebaseStorage";
 import { auth } from "../../firebase";
 import { Plus, X as CloseIcon, ChevronRight } from "lucide-react";
@@ -11,7 +11,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { chatWithGemini } from "../../services/gemini";
 
 const CareerPath = () => {
-  const { isOpen } = useSidebar();
+  // const { isOpen } = useSidebar();
   const [tabs, setTabs] = useState([]); // Array of { id, title, nodes, edges, hasRoadmap }
   const [activeTabId, setActiveTabId] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -226,7 +226,6 @@ const CareerPath = () => {
       <Sidebar />
       <div
         className="overflow-hidden bg-blue-50 min-h-screen mt-14 sm:mt-0 transition-all duration-300 relative"
-        style={{ marginLeft: isOpen ? "256px" : "64px" }}
       >
         <div className="career-path-container flex flex-col h-screen">
           {/* VS Code Style Tabs Bar */}

@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Sidebar } from "../sidebar/sidebar";
 import LearnCollector from "./LearnCollector";
 import { useUser } from "../context/UserContext";
-import { useSidebar } from "../context/SidebarContext";
+// import { useSidebar } from "../context/SidebarContext";
 import { Video, X, Copy, Check } from "lucide-react";
 import JitsiCall from "./JitsiCall";
 import "./learn.css";
 
 const Learn = () => {
   const { user } = useUser();
-  const { isOpen } = useSidebar();
+  // const { isOpen } = useSidebar();
   const [showActiveCall, setShowActiveCall] = useState(false);
   const [callRoomName, setCallRoomName] = useState("");
   const [copied, setCopied] = useState(false);
@@ -41,7 +41,6 @@ const Learn = () => {
       <Sidebar />
       <div
         className={`transition-all duration-300 flex flex-col h-screen overflow-hidden`}
-        style={{ marginLeft: isOpen ? "256px" : "64px" }}
       >
         <div className="learn-container">
           {/* Main Content Area */}
