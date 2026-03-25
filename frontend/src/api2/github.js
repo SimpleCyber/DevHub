@@ -22,9 +22,7 @@ const GitHubCard = ({ data }) => {
 
     return {
       profile: {
-        avatar:
-          profile.avatar ||
-          "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+        avatar: profile.avatar || "/github.png",
         full_name: profile.full_name || "Unknown User",
         email: profile.email || profile.username || "No email provided",
         username: profile.username || "unknown",
@@ -53,8 +51,17 @@ const GitHubCard = ({ data }) => {
 
   if (!data) {
     return (
-      <div className="flex justify-center items-center h-32">
-        <div className="border-4 border-gray-200 border-t-blue-500 rounded-full w-10 h-10 animate-spin"></div>
+      <div className="flex flex-col items-center justify-center py-12 px-4 bg-white rounded-xl shadow-sm border border-gray-100 italic">
+        <div className="mb-4 p-3 bg-gray-50 rounded-full">
+          <img src="/github.png" alt="GitHub" className="w-8 h-8 opacity-40" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-700 mb-1">
+          No GitHub Data
+        </h3>
+        <p className="text-gray-500 text-sm max-w-xs text-center">
+          Connect your GitHub account in profile settings to showcase your
+          repositories and contributions.
+        </p>
       </div>
     );
   }
@@ -82,8 +89,7 @@ const GitHubCard = ({ data }) => {
             className="w-24 h-24 rounded-full object-cover mb-4"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src =
-                "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png";
+              e.target.src = "/github.png";
             }}
           />
 

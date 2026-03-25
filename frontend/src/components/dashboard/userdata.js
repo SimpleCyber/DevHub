@@ -21,6 +21,7 @@ import { getFirestore, doc, getDoc } from "firebase/firestore";
 
 const MetricCard = ({
   icon: Icon,
+  logo,
   title,
   value,
   subValue,
@@ -31,15 +32,28 @@ const MetricCard = ({
 }) => (
   <div className="card">
     {loading ? (
-      <div className="loading-state">
-        <Loader className="animate-spin" />
+      <div className="loading-state flex flex-col items-center justify-center py-4">
+        {logo ? (
+          <>
+            <img
+              src={logo}
+              alt={title}
+              className="w-10 h-10 opacity-20 animate-pulse mb-2"
+            />
+            <span className="text-[10px] text-gray-400 uppercase tracking-wider font-medium animate-pulse">
+              {!link ? "Data not available" : "Fetching data..."}
+            </span>
+          </>
+        ) : (
+          <Loader className="animate-spin" />
+        )}
       </div>
     ) : (
       <>
         <div className="card-header">
           <h3 className="card-title">{title}</h3>
           <div
-            className={`icon-bg ${color} cursor-pointer`}
+            className={`icon-bg ${color} cursor-pointer flex items-center justify-center p-2`}
             onClick={() => {
               if (link) {
                 let url;
@@ -60,7 +74,15 @@ const MetricCard = ({
               }
             }}
           >
-            <Icon />
+            {logo ? (
+              <img
+                src={logo}
+                alt={title}
+                className="w-5 h-5 object-contain brightness-0 invert"
+              />
+            ) : (
+              <Icon />
+            )}
           </div>
         </div>
         <div className="straight">
@@ -145,6 +167,7 @@ export default function UserData() {
     return [
       {
         icon: Github,
+        logo: "/github.png",
         title: "GitHub",
         value: githubData?.profile?.public_repos || "0",
         subValue: "Public Repository",
@@ -166,6 +189,7 @@ export default function UserData() {
       },
       {
         icon: Code2,
+        logo: "/leetcode.png",
         title: "Leetcode",
         value:
           leetcodeData?.matchedUser?.submitStats?.acSubmissionNum?.[0]?.count ||
@@ -189,6 +213,7 @@ export default function UserData() {
       },
       {
         icon: Linkedin,
+        logo: "/linkedin.png",
         title: "LinkedIn",
         value: linkedinData?.Skills?.length || "0",
         subValue: "Skills",

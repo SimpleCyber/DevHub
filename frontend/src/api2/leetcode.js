@@ -92,14 +92,27 @@ const LeetCodeStats = ({ profile }) => {
   }, [submitStats]);
 
   const avatarUrl = useMemo(() => {
-    const defaultAvatar = "https://placeholder.com/user";
+    const defaultAvatar = "/leetcode.png";
     return userProfile.userAvatar || defaultAvatar;
   }, [userProfile]);
 
   if (!profile) {
     return (
-      <div className="bg-white rounded-xl shadow-sm p-6 text-center text-gray-500">
-        No LeetCode data available
+      <div className="flex flex-col items-center justify-center py-12 px-4 bg-white rounded-xl shadow-sm border border-gray-100 italic text-center">
+        <div className="mb-4 p-3 bg-gray-50 rounded-full">
+          <img
+            src="/leetcode.png"
+            alt="LeetCode"
+            className="w-8 h-8 opacity-40"
+          />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-700 mb-1">
+          No LeetCode Data
+        </h3>
+        <p className="text-gray-500 text-sm max-w-xs mx-auto">
+          Add your LeetCode username in profile settings to track your coding
+          progress and rankings.
+        </p>
       </div>
     );
   }
@@ -119,7 +132,7 @@ const LeetCodeStats = ({ profile }) => {
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   e.target.onerror = null;
-                  e.target.src = "https://placeholder.com/user";
+                  e.target.src = "/leetcode.png";
                 }}
               />
             </div>
