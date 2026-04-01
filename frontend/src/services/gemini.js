@@ -114,11 +114,16 @@ export const generateCareerRoadmap = async (prompt) => {
       Design a step-by-step roadmap to master this topic and get a job.
       Format your response EXACTLY as a valid JSON object with two arrays: "nodes" and "edges", suitable for React Flow.
       
-      Nodes must look like: { "id": "1", "position": { "x": 0, "y": 0 }, "data": { "label": "Topic Name", "description": "Short explanation" }, "type": "default" }
-      Edges must look like: { "id": "e1-2", "source": "1", "target": "2", "animated": true }
+      Nodes must look like: { "id": "1", "data": { "label": "Topic Name", "description": "Short explanation" }, "type": "custom" }
+      Edges must look like: { "id": "e1-2", "source": "1", "target": "2" }
       
-      Space the nodes out vertically (y increasing by 150 each step) and horizontally if there are parallel topics.
-      Keep it practical: include basics, advanced topics, projects, and interview prep.
+      CRITICAL STRUCTURE RULES:
+      1. Create a logical, branching learning tree.
+      2. STRICT LIMIT: A parent node MUST NOT have more than 3 child nodes. NEVER exceed 3 children for any single node.
+      3. Format the label exactly like a structured syllabus (e.g., "1. Version Control", "1(a) Git and related tools", "2. DevOps").
+      4. Organize content logically (Main Topic -> Subtopics). 
+      5. To avoid excessive clutter, DO NOT generate more than 5 or 6 nodes in the same width/parallel scope.
+      6. Keep it practical: include basics, advanced topics, projects, and interview prep.
       
       Return ONLY valid JSON. Do NOT wrap it in \`\`\`json blocks.
     `;
