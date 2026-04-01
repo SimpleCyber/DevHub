@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from "react";
 import { ReactFlow, Controls, Background, Handle, Position, MiniMap } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { generateCareerRoadmap } from "../../services/gemini";
-import { Loader2, Sparkles, Map as MapIcon, GraduationCap, Star, ChevronDown, ChevronRight } from "lucide-react";
+import { Loader2, Sparkles, Map as MapIcon, Star, ChevronDown, ChevronRight } from "lucide-react";
 import dagre from "dagre";
 
 const extractLabelText = (label) => {
