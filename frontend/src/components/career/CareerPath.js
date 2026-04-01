@@ -17,6 +17,7 @@ const CareerPath = () => {
   const [loading, setLoading] = useState(true);
   const [chatOpen, setChatOpen] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [chatLoading, setChatLoading] = useState(false);
 
   // Load saved paths on mount
   useEffect(() => {
@@ -136,6 +137,7 @@ const CareerPath = () => {
     setTabs(updatedTabsWithUser);
 
     try {
+      setChatLoading(true);
       const chatHistory = activeTab.messages || [];
       const responseText = await chatWithGemini(chatHistory, text);
       const modelMessage = { role: "model", parts: [{ text: responseText }] };
@@ -165,6 +167,8 @@ const CareerPath = () => {
             : tab,
         ),
       );
+    } finally {
+      setChatLoading(false);
     }
   };
 
@@ -295,6 +299,7 @@ const CareerPath = () => {
               <CareerChat
                 messages={activeTab?.messages || []}
                 onSendMessage={handleSendMessage}
+                loading={chatLoading}
               />
             </div>
           </div>

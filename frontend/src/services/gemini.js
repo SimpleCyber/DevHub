@@ -1,14 +1,33 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
+let API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 
-if (!API_KEY || API_KEY.startsWith("YOUR_")) {
+// Clean API key if it contains quotes from .env
+if (API_KEY && (API_KEY.startsWith('"') || API_KEY.startsWith("'"))) {
+  API_KEY = API_KEY.substring(1, API_KEY.length - 1);
+}
+
+if (
+  !API_KEY ||
+  API_KEY === "undefined" ||
+  API_KEY === "null" ||
+  API_KEY.startsWith("YOUR_")
+) {
+  console.error(
+    "Gemini API Key is missing, undefined, or invalid. Found:",
+    API_KEY,
+  );
   console.warn(
-    "Gemini API Key is missing or invalid. Please check your .env file.",
+    "Please check your .env file and RESTART the dev server (npm start).",
+  );
+} else {
+  console.log(
+    "Gemini API Key loaded successfully. Starts with:",
+    `${API_KEY.substring(0, 10)}...`,
   );
 }
 
-const genAI = new GoogleGenerativeAI(API_KEY);
+const genAI = new GoogleGenerativeAI(API_KEY || "");
 
 /**
  * Retries a function with exponential backoff on rate limit errors.
@@ -44,7 +63,7 @@ const withRetry = async (fn, maxRetries = 3) => {
  */
 export const chatWithGemini = async (history, message) => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     // Filter out any empty or malformed history entries
     const formattedHistory = (history || [])

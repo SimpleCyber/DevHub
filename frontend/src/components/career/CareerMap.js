@@ -27,6 +27,19 @@ const CareerMap = ({ nodes, edges, hasRoadmap, setRoadmapData }) => {
             x: index % 2 === 0 ? 100 : 300,
             y: index * 150,
           }, // fallback position
+          data: {
+            ...node.data,
+            label: (
+              <div className="flex flex-col text-left">
+                <strong className="text-blue-700 text-base mb-1">{node.data.label}</strong>
+                {node.data.description && (
+                  <span className="text-gray-600 text-sm leading-snug">
+                    {node.data.description}
+                  </span>
+                )}
+              </div>
+            )
+          },
           style: {
             background: "#ffffff",
             color: "#1f2937",
@@ -34,6 +47,7 @@ const CareerMap = ({ nodes, edges, hasRoadmap, setRoadmapData }) => {
             borderRadius: "12px",
             padding: "16px",
             boxShadow: "0 4px 15px rgba(59, 130, 246, 0.15)",
+            width: 250,
           },
         }));
 
