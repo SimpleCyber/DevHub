@@ -3,10 +3,11 @@ import { Sidebar } from "../sidebar/sidebar";
 import { careerStatsStorage, careerPathStorage } from "../utils/firebaseStorage";
 import { auth } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { getCareerSuggestions, generateTimelineRoadmap } from "../../services/gemini";
+import { getCareerSuggestions, generateTimelineRoadmap, chatWithGemini } from "../../services/gemini";
 import CareerTimeline from "./CareerTimeline";
+import CareerChat from "./CareerChat";
 import "./CareerPath.css";
-import { Loader2, Sparkles, ChevronDown, X } from "lucide-react";
+import { Loader2, Sparkles, ChevronDown, ChevronRight, X } from "lucide-react";
 
 const EDUCATION_OPTIONS = [
   "B.Tech Computer Science",
@@ -38,19 +39,35 @@ const CareerPath = () => {
   const [maxLimitsReached, setMaxLimitsReached] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showAllSuggestions, setShowAllSuggestions] = useState(false);
+  
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [messages, setMessages] = useState([
+    {
+      role: "model",
+      parts: [
+        { text: "Hi! I'm your AI Career Guide. Feel free to ask me anything about your generated roadmap, or ask for general career advice!" }
+      ]
+    }
+  ]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUserId(user.uid);
         try {
-          const stats = await careerStatsStorage.getStats(user.uid);
-          setGenerationsCount(stats.generationsCount || 0);
-          if ((stats.generationsCount || 0) >= 3) {
-            setMaxLimitsReached(true);
-          }
-          if (stats.latestSuggestions && Array.isArray(stats.latestSuggestions)) {
-            setSuggestions(stats.latestSuggestions);
+          const existingStats = await careerStatsStorage.getStats(user.uid);
+          if (existingStats) {
+            setGenerationsCount(existingStats.generationsCount || 0);
+            if (existingStats.latestSuggestions) {
+              setSuggestions(existingStats.latestSuggestions);
+            }
+            if (existingStats.chatHistory && existingStats.chatHistory.length > 0) {
+              setMessages(existingStats.chatHistory);
+            }
+            if (existingStats.generationsCount >= 3) {
+              setMaxLimitsReached(true);
+            }
           }
         } catch(e) {
           console.error(e);
@@ -111,6 +128,12 @@ const CareerPath = () => {
           name: existing.name || existing.role,
           steps: existing.steps
         });
+        setMessages(existing.messages || [
+          {
+            role: "model",
+            parts: [{ text: "Hi! I'm your AI Career Guide. Feel free to ask me anything about your generated roadmap, or ask for general career advice!" }]
+          }
+        ]);
         setLoadingRoadmap(false);
         return;
       }
@@ -143,6 +166,38 @@ const CareerPath = () => {
       alert(error.message);
     } finally {
       setLoadingRoadmap(false);
+    }
+  };
+
+  const handleSendMessage = async (text) => {
+    if (!text.trim()) return;
+
+    const userMessage = { role: "user", parts: [{ text }] };
+    const newHistory = [...messages, userMessage];
+    setMessages(newHistory);
+
+    try {
+      setChatLoading(true);
+      const contextData = { education, interests, roadmapName: roadmap?.name || "" };
+      
+      const responseText = await chatWithGemini(contextData, text);
+      const modelMessage = { role: "model", parts: [{ text: responseText }] };
+      const updatedMessages = [...newHistory, modelMessage];
+      setMessages(updatedMessages);
+
+      if (userId) {
+        await careerStatsStorage.updateStats(userId, { chatHistory: updatedMessages });
+      }
+
+      if (roadmap && roadmap.id) {
+        await careerPathStorage.update(roadmap.id, { messages: updatedMessages });
+      }
+    } catch (err) {
+      console.error(err);
+      const errorMessage = { role: "model", parts: [{ text: "Sorry, I'm having trouble connecting right now." }] };
+      setMessages([...newHistory, errorMessage]);
+    } finally {
+      setChatLoading(false);
     }
   };
 
@@ -367,6 +422,25 @@ const CareerPath = () => {
           )}
         </div>
       </div>
+
+      {/* Chat Area */}
+      <div className={`career-chat-wrapper ${chatOpen ? "open" : ""}`}>
+        <button
+          className="chat-close-btn"
+          onClick={() => setChatOpen(!chatOpen)}
+          title={chatOpen ? "Close Chat" : "Open Chat"}
+        >
+          <ChevronRight className={`w-6 h-6 text-gray-500 hover:text-gray-800 transition-transform ${chatOpen ? "" : "rotate-180"}`} />
+        </button>
+        <CareerChat
+          messages={messages}
+          onSendMessage={handleSendMessage}
+          loading={chatLoading}
+        />
+      </div>
+      
+      
+
     </div>
   );
 };

@@ -56,31 +56,29 @@ const withRetry = async (fn, maxRetries = 3) => {
   }
 };
 
-/**
- * Normal conversational chat with Gemini.
- * @param {Array} history - Array of previous messages in format: { role: 'user' | 'model', parts: [{text: string}] }
- * @param {string} message - The current user message
- */
-export const chatWithGemini = async (history, message) => {
+export const chatWithGemini = async (contextData, message) => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    // Switching to the same reliable model used for roadmap generation
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 
-    // Filter out any empty or malformed history entries
-    const formattedHistory = (history || [])
-      .filter((msg) => msg && msg.parts && msg.parts[0] && msg.parts[0].text)
-      .map((msg) => ({
-        role: msg.role === "user" ? "user" : "model",
-        parts: [{ text: msg.parts[0].text }],
-      }));
+    const query = `
+      You are an expert AI Career Guide assisting a software professional or learner.
+      
+      USER CONTEXT:
+      - Education: ${contextData.education || "Unknown"}
+      - Interests: ${contextData.interests?.join(", ") || "Unknown"}
+      - Current Career Goal / Roadmap: ${contextData.roadmapName || "Currently exploring options"}
+      
+      Answer the user's question clearly, concisely, and supportively based on this context. 
+      CRITICAL RULE: Keep your response short and precise (maximum 2-3 sentences).
+      CRITICAL RULE: DO NOT use any markdown formatting like **bolding** or *italics*. Use plain text only so it renders nicely.
+      
+      User's message:
+      "${message}"
+    `;
 
     const result = await withRetry(async () => {
-      const chat = model.startChat({
-        history: formattedHistory,
-        generationConfig: {
-          maxOutputTokens: 1000,
-        },
-      });
-      return await chat.sendMessage(message);
+      return await model.generateContent(query);
     });
 
     const response = await result.response;
