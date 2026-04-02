@@ -171,3 +171,72 @@ export const generateCareerRoadmap = async (prompt) => {
     throw new Error("Failed to generate the career roadmap. " + error.message);
   }
 };
+
+/**
+ * Generates top 3 career suggestions based on education and interests.
+ */
+export const getCareerSuggestions = async (education, interests) => {
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+
+    const query = `
+      You are an expert career counselor. 
+      The user has education: "${education}" and interests: "${interests.join(', ')}".
+      Based on this, suggest the top 3 best matching career roles.
+      Return the output strictly as a JSON array of objects with keys: "role" (e.g. Software Developer), "match" (e.g. 92), "description" (a short 1-sentence description).
+      Do NOT wrap in markdown \`\`\`json blocks. Return ONLY valid JSON array.
+    `;
+
+    const result = await withRetry(async () => {
+      return await model.generateContent(query);
+    });
+
+    const response = await result.response;
+    let text = response.text().trim();
+    if (text.startsWith("```json")) text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    else if (text.startsWith("```")) text = text.replace(/```/g, "").trim();
+
+    const data = JSON.parse(text);
+    return data; // Should be array of 3 objects
+  } catch (error) {
+    console.error("AI Generation Error:", error);
+    throw new Error("Failed to get suggestions. Please try again.");
+  }
+};
+
+/**
+ * Generates a simpler 5-step horizontal/vertical roadmap.
+ */
+export const generateTimelineRoadmap = async (careerRole) => {
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+
+    const query = `
+      You are an expert career counselor.
+      The user wants to become a "${careerRole}".
+      Provide exactly 5 key steps to reach this career.
+      For each step, include 1 to 5 subtasks that break down the step into actionable items.
+      Return the output strictly as a JSON array of objects with exactly these keys:
+      "title" (e.g., "Learn Programming Basics"),
+      "description" (short 1 sentence description),
+      "subtasks" (an array of objects with keys: "title" (e.g., "Basic Syntax"), "completed" always set to false).
+      Do NOT wrap in markdown \`\`\`json blocks. Return ONLY valid JSON array.
+    `;
+
+    const result = await withRetry(async () => {
+      return await model.generateContent(query);
+    });
+
+    const response = await result.response;
+    let text = response.text().trim();
+    if (text.startsWith("```json")) text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    else if (text.startsWith("```")) text = text.replace(/```/g, "").trim();
+
+    const data = JSON.parse(text);
+    return data; // Should be array of 5 objects
+  } catch (error) {
+    console.error("AI Generation Error:", error);
+    throw new Error("Failed to generate roadmap. Please try again.");
+  }
+};
+

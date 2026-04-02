@@ -216,6 +216,7 @@ export function Sidebar() {
       text: "Dashboard",
       path: userData ? `/dashboard/${auth.currentUser?.uid}` : "/auth",
     },
+    { icon: Map, text: "Career Path", path: "/career-path" },
     { icon: BookOpenCheck, text: "Learn", path: "/learn" },
     {
       icon: ClipboardPenLine,
@@ -223,7 +224,7 @@ export function Sidebar() {
       path: userData ? `/interview` : "/auth",
     },
     { icon: MessageSquareText, text: "Internships", path: "/internships" },
-    { icon: Map, text: "Career Path", path: "/career-path" },
+    
     { icon: User, text: "Profile", path: "/profile" },
   ];
 

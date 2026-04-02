@@ -7,6 +7,7 @@ import {
   doc,
   getDoc,
   updateDoc,
+  setDoc,
   deleteDoc,
   query,
   where,
@@ -104,7 +105,6 @@ export const careerPathStorage = {
     }
   },
 
-  // Delete a career path
   delete: async (pathId) => {
     try {
       const docRef = doc(db, "careerPaths", pathId);
@@ -114,6 +114,51 @@ export const careerPathStorage = {
       throw error;
     }
   },
+};
+
+// Career Stats storage (for rate limits)
+export const careerStatsStorage = {
+  getStats: async (userId) => {
+    try {
+      const docRef = doc(db, "careerStats", userId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        return docSnap.data();
+      }
+      return { generationsCount: 0 };
+    } catch (error) {
+      console.error("Error getting user career stats:", error);
+      return { generationsCount: 0 };
+    }
+  },
+  
+  incrementCount: async (userId) => {
+    try {
+      const docRef = doc(db, "careerStats", userId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        await updateDoc(docRef, { generationsCount: (docSnap.data().generationsCount || 0) + 1 });
+      } else {
+        await setDoc(docRef, { generationsCount: 1 });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  },
+
+  updateStats: async (userId, updateData) => {
+    try {
+      const docRef = doc(db, "careerStats", userId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        await updateDoc(docRef, updateData);
+      } else {
+        await setDoc(docRef, { generationsCount: 0, ...updateData });
+      }
+    } catch (err) {
+      console.error("Error updating stats:", err);
+    }
+  }
 };
 
 export { db };
