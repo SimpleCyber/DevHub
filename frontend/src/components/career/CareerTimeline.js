@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Code, CheckCircle, Hourglass, Clock, Sparkles, ChevronDown, ChevronRight } from "lucide-react";
+import React, { useState } from "react";
+import { Code, CheckCircle, Hourglass, Sparkles, ChevronDown, ChevronRight } from "lucide-react";
 
 const getStatusColor = (status) => {
   switch (status) {

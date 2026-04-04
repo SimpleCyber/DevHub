@@ -95,7 +95,6 @@ const CareerPath = () => {
       setSuggestions(results);
       
       // Save suggestions to user stats so we can retrieve them on reload
-      const stats = await careerStatsStorage.getStats(userId);
       await careerStatsStorage.updateStats(userId, {
         latestSuggestions: results
       });
@@ -262,7 +261,7 @@ const CareerPath = () => {
       });
       setProgress(total === 0 ? 0 : Math.round((comp / total) * 100));
     }
-  }, [roadmap?.id]);
+  }, [roadmap]);
 
   if (loading) {
     return (
