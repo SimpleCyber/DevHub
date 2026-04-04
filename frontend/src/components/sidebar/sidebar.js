@@ -255,7 +255,7 @@ export function Sidebar() {
             </button>
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-purple-400 animate-pulse" />
-              <span className="text-lg font-bold text-purple-400">DevHub</span>
+              <span className="text-lg font-bold text-purple-400">Freshers Hub</span>
             </div>
           </div>
           {userData && (
@@ -293,7 +293,7 @@ export function Sidebar() {
               <div className="flex items-center gap-2">
                 <Sparkles className="w-6 h-6 text-purple-400 animate-pulse flex-shrink-0" />
                 <span className="text-xl font-bold text-purple-400">
-                  DevHub
+                  Freshers Hub
                 </span>
               </div>
             ) : (
