@@ -4,17 +4,6 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { getFallbackCourses } from "../../data/courseData";
 
-const getStatusColor = (status) => {
-  switch (status) {
-    case "Completed":
-      return "bg-green-100 text-green-700";
-    case "Started":
-      return "bg-blue-100 text-blue-700";
-    case "Pending":
-    default:
-      return "bg-orange-50 text-orange-600";
-  }
-};
 
 const getStatusIcon = (status) => {
   switch (status) {
