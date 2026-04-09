@@ -1,21 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Code, CheckCircle, Hourglass, Sparkles, ChevronDown, ChevronRight, BookOpen } from "lucide-react";
+import { Code, Sparkles, ChevronDown, ChevronRight, BookOpen } from "lucide-react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { getFallbackCourses } from "../../data/courseData";
 
 
-const getStatusIcon = (status) => {
-  switch (status) {
-    case "Completed":
-      return <CheckCircle className="w-3 h-3 mr-1" />;
-    case "Started":
-      return <Hourglass className="w-3 h-3 mr-1" />;
-    case "Pending":
-    default:
-      return <Hourglass className="w-3 h-3 mr-1" />;
-  }
-};
+
 
 const getCircleColor = (index) => {
   const colors = [
@@ -30,7 +20,7 @@ const getCircleColor = (index) => {
   return colors[index % colors.length];
 };
 
-const CareerTimeline = ({ roadmapName, steps = [], progress = 0, onToggleSubtask }) => {
+const CareerTimeline = ({ roadmapName, steps = [] }) => {
   const [expandedSteps, setExpandedSteps] = useState(new Set());
   const [suggestedCourses, setSuggestedCourses] = useState([]);
   const [loadingCourses, setLoadingCourses] = useState(false);
