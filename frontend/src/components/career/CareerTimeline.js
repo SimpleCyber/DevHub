@@ -1,5 +1,7 @@
-import React, { useState } from "react";
-import { Code, CheckCircle, Hourglass, Sparkles, ChevronDown, ChevronRight } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Code, CheckCircle, Hourglass, Sparkles, ChevronDown, ChevronRight, BookOpen } from "lucide-react";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "../../firebase";
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -40,6 +42,49 @@ const getCircleColor = (index) => {
 
 const CareerTimeline = ({ roadmapName, steps = [], progress = 0, onToggleSubtask }) => {
   const [expandedSteps, setExpandedSteps] = useState(new Set());
+  const [suggestedCourses, setSuggestedCourses] = useState([]);
+  const [loadingCourses, setLoadingCourses] = useState(false);
+
+  useEffect(() => {
+    if (!roadmapName || steps.length === 0) return;
+
+    const fetchCourses = async () => {
+      setLoadingCourses(true);
+      try {
+        const topicId = roadmapName.toLowerCase().replace(/[^a-z0-9]/g, "_");
+        const docRef = doc(db, "suggested_courses", topicId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setSuggestedCourses(docSnap.data().courses || []);
+        } else {
+          // Fetch from API
+          const response = await fetch(`https://paid-udemy-course-for-free.p.rapidapi.com/search?s=${encodeURIComponent(roadmapName)}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "x-rapidapi-host": "paid-udemy-course-for-free.p.rapidapi.com",
+              "x-rapidapi-key": process.env.REACT_APP_RAPIDAPI_KEY || "63e87f7f8bmsh602fffeb8cef799p15e30ejsn889cc10bbe2b"
+            }
+          });
+          const data = await response.json();
+          let courses = Array.isArray(data) ? data.slice(0, 3) : []; 
+          if(data && data.results && Array.isArray(data.results)) { courses = data.results.slice(0,3); }
+          
+          if (courses.length > 0) {
+            await setDoc(docRef, { courses, topic: roadmapName, fetchedAt: new Date().toISOString() });
+          }
+          setSuggestedCourses(courses);
+        }
+      } catch (err) {
+        console.error("Error fetching recommended courses:", err);
+      } finally {
+        setLoadingCourses(false);
+      }
+    };
+
+    fetchCourses();
+  }, [roadmapName, steps.length]);
 
   const toggleStep = (index) => {
     setExpandedSteps(prev => {
@@ -144,6 +189,58 @@ const CareerTimeline = ({ roadmapName, steps = [], progress = 0, onToggleSubtask
             </div>
           </div>
         ))}
+
+        {/* Suggested Courses Step */}
+        {(loadingCourses || (suggestedCourses && suggestedCourses.length > 0)) && (
+          <div className="flex relative items-start gap-6 mb-8 group mt-8">
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold shrink-0 shadow-sm relative z-10 ${getCircleColor(steps.length)}`}>
+              <BookOpen className="w-5 h-5" />
+            </div>
+
+            <div className="flex-1 bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 rounded-2xl p-5 shadow-sm transition-shadow hover:shadow-md">
+              <div className="pr-4 mb-5">
+                <h3 className="text-lg font-bold text-slate-800 mb-1 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-indigo-500" />
+                  Recommended Courses
+                </h3>
+                <p className="text-sm text-slate-600">Accelerate your journey with these curated Udemy courses matching your topic.</p>
+              </div>
+
+              {loadingCourses ? (
+                <div className="text-sm text-indigo-600 flex items-center gap-3 bg-white/50 p-4 rounded-xl border border-indigo-50">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600"></div>
+                  Finding the best courses for your career path...
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {suggestedCourses.map(course => (
+                    <a key={course.id} href={course.coupon || course.url} target="_blank" rel="noopener noreferrer" className="group/course block bg-white border border-slate-100 rounded-xl overflow-hidden hover:border-indigo-300 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                      <div className="relative">
+                        <img src={course.pic || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500&q=80"} alt={course.title} className="w-full h-36 object-cover" />
+                        <div className="absolute top-2 right-2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm uppercase tracking-wide">
+                          Paid for Free
+                        </div>
+                      </div>
+                      <div className="p-4">
+                        <h4 className="font-bold text-slate-800 text-sm line-clamp-2 mb-2 group-hover/course:text-indigo-600 transition-colors" title={course.title}>{course.title}</h4>
+                        <div className="flex justify-between items-center text-xs text-slate-500 mb-3">
+                          <span className="bg-slate-100 px-2 py-1 rounded truncate max-w-[100px]">{course.category || course.platform || "Development"}</span>
+                          <span className="flex items-center gap-1 font-medium bg-amber-50 text-amber-600 px-2 py-1 rounded">⭐ {course.rating || "4.5"}</span>
+                        </div>
+                        <div className="flex items-center justify-between mt-auto">
+                          <span className="text-xs line-through text-slate-400">{course.org_price || "$19.99"}</span>
+                          {(course.duration > 0 || typeof course.duration === 'string') && (
+                            <span className="text-xs font-medium text-indigo-600 bg-indigo-50 px-2 py-1 rounded">{course.duration} hrs</span>
+                          )}
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
