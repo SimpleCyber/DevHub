@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Code, CheckCircle, Hourglass, Sparkles, ChevronDown, ChevronRight, BookOpen } from "lucide-react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
+import { getFallbackCourses } from "../../data/courseData";
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -56,7 +57,12 @@ const CareerTimeline = ({ roadmapName, steps = [], progress = 0, onToggleSubtask
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setSuggestedCourses(docSnap.data().courses || []);
+          const data = docSnap.data();
+          if (data.courses && data.courses.length > 0) {
+            setSuggestedCourses(data.courses);
+          } else {
+            setSuggestedCourses(getFallbackCourses(roadmapName));
+          }
         } else {
           // Fetch from API
           const response = await fetch(`https://paid-udemy-course-for-free.p.rapidapi.com/search?s=${encodeURIComponent(roadmapName)}`, {
@@ -71,6 +77,10 @@ const CareerTimeline = ({ roadmapName, steps = [], progress = 0, onToggleSubtask
           let courses = Array.isArray(data) ? data.slice(0, 3) : []; 
           if(data && data.results && Array.isArray(data.results)) { courses = data.results.slice(0,3); }
           
+          if (courses.length === 0) {
+            courses = getFallbackCourses(roadmapName);
+          }
+          
           if (courses.length > 0) {
             await setDoc(docRef, { courses, topic: roadmapName, fetchedAt: new Date().toISOString() });
           }
@@ -78,6 +88,8 @@ const CareerTimeline = ({ roadmapName, steps = [], progress = 0, onToggleSubtask
         }
       } catch (err) {
         console.error("Error fetching recommended courses:", err);
+        // If API fails, show at least some recommendations
+        setSuggestedCourses(getFallbackCourses(roadmapName));
       } finally {
         setLoadingCourses(false);
       }
@@ -118,20 +130,7 @@ const CareerTimeline = ({ roadmapName, steps = [], progress = 0, onToggleSubtask
         </div>
       </div>
 
-      {/* Progress */}
-      <div className="px-2 mb-8">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-semibold text-slate-700">Overall Progress</span>
-          <span className="text-sm font-bold text-slate-900">{progress}%</span>
-        </div>
-        <div className="w-full bg-slate-100 rounded-full h-2.5">
-          <div
-            className="bg-indigo-500 h-2.5 rounded-full transition-all duration-500"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-      </div>
-
+     
       {/* Timeline */}
       <div className="relative px-4">
         {/* Vertical Line */}
@@ -156,10 +155,6 @@ const CareerTimeline = ({ roadmapName, steps = [], progress = 0, onToggleSubtask
                 </div>
                 {/* Status Badge + Chevron */}
                 <div className="flex items-center gap-2">
-                  <div className={`flex items-center px-3 py-1 rounded-full text-xs font-semibold shrink-0 whitespace-nowrap ${getStatusColor(step.status || "Pending")}`}>
-                    {getStatusIcon(step.status || "Pending")}
-                    {step.status || "Pending"}
-                  </div>
                   {step.subtasks && step.subtasks.length > 0 && (
                     <div className="text-slate-400 hover:text-slate-600 transition-colors">
                       {expandedSteps.has(index) ? <ChevronDown className="w-5 h-5"/> : <ChevronRight className="w-5 h-5"/>}
@@ -173,12 +168,6 @@ const CareerTimeline = ({ roadmapName, steps = [], progress = 0, onToggleSubtask
                 <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-3">
                   {step.subtasks.map((sub, sIdx) => (
                     <label key={sIdx} className="flex items-start gap-3 cursor-pointer group/label">
-                      <input 
-                        type="checkbox" 
-                        checked={sub.completed}
-                        onChange={() => onToggleSubtask && onToggleSubtask(index, sIdx)}
-                        className="w-4 h-4 mt-0.5 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer"
-                      />
                       <span className={`text-sm select-none transition-colors ${sub.completed ? 'text-slate-400 line-through' : 'text-slate-700 group-hover/label:text-slate-900'}`}>
                         {sub.title}
                       </span>
